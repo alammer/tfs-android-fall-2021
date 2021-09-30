@@ -15,6 +15,6 @@ class GetContactsContract : ActivityResultContract<CharSequence?, String?>() {
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
         if(resultCode != Activity.RESULT_OK) return null
         intent ?: return null
-        return intent.dataString
+        return intent.getStringExtra("TEST_STRING")
     }
 }

@@ -1,14 +1,16 @@
 package com.example.tfs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 
 class MainActivity : AppCompatActivity() {
-    private val startButton = findViewById<MaterialButton>(R.id.btnStartActivity2)
-    private val tvContacts = findViewById<MaterialTextView>(R.id.tvEmptyResult)
+
+    private lateinit var btnStart: MaterialButton
+    private lateinit var tvContacts: MaterialTextView
 
     private val getContacts = registerForActivityResult(GetContactsContract()) { text ->
         tvContacts.visibility = View.VISIBLE
@@ -16,9 +18,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i("MainActivity", "Function called: onCreate()")
         super.onCreate(savedInstanceState)
-        startButton.setOnClickListener {
-            startButton.visibility = View.GONE
+        setContentView(R.layout.activity_main)
+
+        btnStart = findViewById(R.id.btnStartActivity2)
+        tvContacts = findViewById(R.id.tvEmptyResult)
+
+        btnStart.setOnClickListener {
+            btnStart.visibility = View.GONE
             getContacts.launch(null)
         }
     }
