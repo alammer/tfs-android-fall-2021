@@ -12,10 +12,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStart: MaterialButton
     private lateinit var tvContacts: MaterialTextView
 
-    private val getContacts = registerForActivityResult(GetContactsContract()) { text ->
+    private val getContacts = registerForActivityResult(GetContactsContract()) { data ->
         tvContacts.visibility = View.VISIBLE
-        tvContacts.text = text
+        tvContacts.text = "TODO"
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i("MainActivity", "Function called: onCreate()")
