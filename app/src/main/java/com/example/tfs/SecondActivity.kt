@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.button.MaterialButton
@@ -21,7 +22,7 @@ class SecondActivity : AppCompatActivity() {
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
 
         btnStartService.setOnClickListener {
-            //TODO("Start service")
+            startService(Intent(this, ContactService::class.java))
         }
     }
 
@@ -29,6 +30,7 @@ class SecondActivity : AppCompatActivity() {
         super.onStart()
         contactReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
+                Log.i("ContactRecieve", "Function called: onReceive()")
                 val bundle = intent.extras
                 if (bundle != null) {
                     if (bundle.containsKey("contacts")) {
@@ -48,7 +50,7 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun sendResult(contactList: String?) {
-        setResult(Activity.RESULT_OK, Intent().putExtra("TEST_STRING", contactList))
+        setResult(Activity.RESULT_OK, Intent().putExtra("contacts", contactList))
         finish()
     }
 }
