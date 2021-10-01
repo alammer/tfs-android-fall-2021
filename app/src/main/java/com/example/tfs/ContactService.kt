@@ -33,7 +33,7 @@ class ContactService : Service() {
                 val contactList = getContacts()
                 contactList?.let {
                     bundle.putString("status", "OK")
-                    bundle.putString("contacts", "WTF???")
+                    bundle.putStringArrayList("contacts", contactList)
                 } ?: bundle.putString("status", "ERROR")
                 sendBroadcastData(bundle)
                 }).start()
@@ -93,6 +93,6 @@ class ContactService : Service() {
         broadcastIntent.action = "GET_CONTACTS"
         val innerdata = data
         LocalBroadcastManager.getInstance(this)
-            .sendBroadcast(broadcastIntent.putExtra("contacts", "wtf????"))
+            .sendBroadcast(broadcastIntent.putExtra("contacts", data))
     }
 }

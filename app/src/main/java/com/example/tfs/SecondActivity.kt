@@ -44,7 +44,8 @@ class SecondActivity : AppCompatActivity() {
                     val bundle = intent.extras
                     if (bundle != null) {
                         if (bundle.containsKey("contacts")) {
-                            val contactList = bundle.getString("contacts")
+                            Log.i("SecondActivity", "$bundle")
+                            val contactList = bundle.getBundle("contacts")
                             Log.i("SecondActivity", "$contactList")
                             sendResult(contactList)
                         }
@@ -89,8 +90,8 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendResult(serviceData: String?) {
-        setResult(Activity.RESULT_OK, Intent().putExtra("contacts", serviceData))
+    private fun sendResult(serviceData: Bundle?) {
+        setResult(Activity.RESULT_OK, Intent().putExtras(serviceData!!))
         finish()
     }
 }

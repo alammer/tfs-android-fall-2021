@@ -13,15 +13,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvContacts: MaterialTextView
 
     private val getContacts = registerForActivityResult(GetContactsContract()) { data ->
-//        data?.let {
-//            when (it.size) {
-//                0 -> emptyContactsMessage()
-//                1 -> aloneContacMessage(it[0])
-//                else -> showContactList(it)
-//            }
-//        } ?: errorMessage()
-        tvContacts.visibility = View.VISIBLE
-        tvContacts.text = data
+        data?.let {
+            when (it.size) {
+                0 -> emptyContactsMessage()
+                1 -> aloneContacMessage(it[0])
+                else -> showContactList(it)
+            }
+        } ?: errorMessage()
     }
 
     private fun showContactList(contactList: ArrayList<String>){
