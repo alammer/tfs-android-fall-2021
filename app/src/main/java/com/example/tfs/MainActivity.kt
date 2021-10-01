@@ -13,8 +13,35 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvContacts: MaterialTextView
 
     private val getContacts = registerForActivityResult(GetContactsContract()) { data ->
+//        data?.let {
+//            when (it.size) {
+//                0 -> emptyContactsMessage()
+//                1 -> aloneContacMessage(it[0])
+//                else -> showContactList(it)
+//            }
+//        } ?: errorMessage()
         tvContacts.visibility = View.VISIBLE
-        tvContacts.text = "TODO"
+        tvContacts.text = data
+    }
+
+    private fun showContactList(contactList: ArrayList<String>){
+        tvContacts.visibility = View.VISIBLE
+        tvContacts.text = "YOUR CONTACT LIST FULL OF PERSONS!!!"
+    }
+
+    private fun aloneContacMessage(aloneContact: String) {
+        tvContacts.visibility = View.VISIBLE
+        tvContacts.text = aloneContact
+    }
+
+    private fun emptyContactsMessage() {
+        tvContacts.visibility = View.VISIBLE
+        tvContacts.text = "YOUR CONTACT LIST IS EMPTY :("
+    }
+
+    private fun errorMessage() {
+        tvContacts.visibility = View.VISIBLE
+        tvContacts.text = "CAN'T ACCESS CONTACTS DATA"
     }
 
 

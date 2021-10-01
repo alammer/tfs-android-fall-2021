@@ -28,10 +28,10 @@ class SecondActivity : AppCompatActivity() {
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
 
         btnStartService.setOnClickListener {
-            if (checkContactPermission()) {
+            if (checkReadContactPermission()) {
                 startService(Intent(this, ContactService::class.java))
             } else {
-                requestContactPermission()
+                requestReadContactPermission()
             }
         }
     }
@@ -39,14 +39,20 @@ class SecondActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         contactReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                Log.i("ContactRecieve", "Function called: onReceive()")
-                sendResult(intent.getBundleExtra("contacts"))
-            }
+
+                override fun onReceive(context: Context, intent: Intent) {
+                    val bundle = intent.extras
+                    if (bundle != null) {
+                        if (bundle.containsKey("contacts")) {
+                            val contactList = bundle.getString("contacts")
+                            Log.i("SecondActivity", "$contactList")
+                            sendResult(contactList)
+                        }
+                    }
+                }
         }
 
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(contactReceiver, IntentFilter("GET_CONTACTS"))
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactReceiver,  IntentFilter("GET_CONTACTS"))
     }
 
     override fun onStop() {
@@ -54,7 +60,7 @@ class SecondActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactReceiver)
     }
 
-    private fun checkContactPermission(): Boolean {
+    private fun checkReadContactPermission(): Boolean {
         //check if permission was granted/allowed or not, returns true if granted/allowed, false if not
         return ContextCompat.checkSelfPermission(
             this,
@@ -62,8 +68,7 @@ class SecondActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun requestContactPermission() {
-        //request the READ_CONTACTS permission
+    private fun requestReadContactPermission() {
         val permission = arrayOf(android.Manifest.permission.READ_CONTACTS)
         ActivityCompat.requestPermissions(this, permission, CONTACT_PERMISSION_CODE)
     }
@@ -74,10 +79,9 @@ class SecondActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //handle permission request results || calls when user from Permission request dialog presses Allow or Deny
+
         if (requestCode == CONTACT_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted, can pick contact
                 startService(Intent(this, ContactService::class.java))
             } else {
                 Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show()
@@ -85,7 +89,7 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendResult(serviceData: Bundle?) {
+    private fun sendResult(serviceData: String?) {
         setResult(Activity.RESULT_OK, Intent().putExtra("contacts", serviceData))
         finish()
     }

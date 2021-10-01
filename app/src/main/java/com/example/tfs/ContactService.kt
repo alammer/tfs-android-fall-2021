@@ -1,6 +1,5 @@
 package com.example.tfs
 
-import android.annotation.SuppressLint
 import android.app.Service
 import android.content.ContentResolver
 import android.content.Intent
@@ -14,7 +13,6 @@ class ContactService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         getContactsInBackground()
-        stopSelf()
         return START_STICKY
     }
 
@@ -31,38 +29,46 @@ class ContactService : Service() {
     private fun getContactsInBackground() {
         val bundle = Bundle()
         try {
-            Thread(Runnable {
+            Thread ( Runnable{
                 val contactList = getContacts()
-                bundle.putString("status", "OK")
-                bundle.putString("contacts", "TEST_DATA")
-            }).start()
+                contactList?.let {
+                    bundle.putString("status", "OK")
+                    bundle.putString("contacts", "WTF???")
+                } ?: bundle.putString("status", "ERROR")
+                sendBroadcastData(bundle)
+                }).start()
         } catch (e: InterruptedException) {
             bundle.putString("status", "ERROR")
-            bundle.putString("contacts", e.message)
+            bundle.putString("error", e.message)
+            sendBroadcastData(bundle)
         }
-        sendBroadcastData(bundle)
+
     }
 
 
-    private fun getContacts() {
+    private fun getContacts(): ArrayList<String>? {
         val contentResolver: ContentResolver = contentResolver
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI, null, null, null,
             null
-        )
-        cursor ?: return
+        ) ?: return null
+
+        val contactList = arrayListOf<String>()
 
         while (cursor.moveToNext()) {
-            val contactId = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+            val contactId =
+                cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
             val name =
                 cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-            Log.i("get Name", "Function called: getContacts() fetch NAME = $name")
 
-            if (cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)).toInt() > 0) {
-                Log.i("get Name", "Contact has phone!!!")
+            var phoneNumber: String? = null
 
+            if (cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER))
+                    .toInt() > 0
+            ) {
                 //SQLite throw error on spaces in selection param?
-                val cursorPhone = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                val cursorPhone = contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     null,
                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
                     null,
@@ -70,18 +76,23 @@ class ContactService : Service() {
                 )
 
                 if (cursorPhone?.moveToNext() == true) {
-                    val contactNumber = cursorPhone.getString(cursorPhone.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                    Log.i("get Number", "It's number: $contactNumber")
+                    phoneNumber =
+                        cursorPhone.getString(cursorPhone.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 }
+                cursorPhone?.close()
             }
+            contactList.add("$name: $phoneNumber")
         }
+        cursor.close()
+
+        return contactList
     }
 
     private fun sendBroadcastData(data: Bundle?) {
-        Log.i("Contact", "Function called: sendBroad()")
         val broadcastIntent = Intent()
         broadcastIntent.action = "GET_CONTACTS"
+        val innerdata = data
         LocalBroadcastManager.getInstance(this)
-            .sendBroadcast(broadcastIntent.putExtra("result", data))
+            .sendBroadcast(broadcastIntent.putExtra("contacts", "wtf????"))
     }
 }
