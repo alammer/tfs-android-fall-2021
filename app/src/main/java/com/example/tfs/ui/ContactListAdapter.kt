@@ -29,6 +29,7 @@ class ContactListAdapter : ListAdapter<UserContact, ContactListAdapter.ContactVi
 }
 
 private class ContactDiffCallback : DiffUtil.ItemCallback<UserContact>() {
+
     override fun areItemsTheSame(oldItem: UserContact, newItem: UserContact) = oldItem.phoneNumber == newItem.phoneNumber
 
     override fun areContentsTheSame(oldItem: UserContact, newItem: UserContact) = oldItem == newItem
