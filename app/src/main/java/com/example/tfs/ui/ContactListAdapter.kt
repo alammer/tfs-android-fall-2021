@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.model.UserContact
 
-class ContactListAdapter : ListAdapter<String, ContactListAdapter.ContactViewHolder>(ContactDiffCallback()) {
+class ContactListAdapter : ListAdapter<UserContact, ContactListAdapter.ContactViewHolder>(ContactDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
         val view =
@@ -18,24 +19,17 @@ class ContactListAdapter : ListAdapter<String, ContactListAdapter.ContactViewHol
     }
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
-        holder.bind(getItem(position), position)
+        val item = getItem(position)
+        holder.contactTextView.text = holder.itemView.context.getString(R.string.user_contact_template, item.name, item.phoneNumber)
     }
 
     class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val contactTextView = itemView.findViewById<TextView>(R.id.tvContactItem)
-
-        fun bind(item: String, position: Int) {
-            contactTextView.text = item
-        }
+        val contactTextView: TextView = itemView.findViewById<TextView>(R.id.tvContactItem)
     }
 }
 
-private class ContactDiffCallback : DiffUtil.ItemCallback<String>() {
-    override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-        return oldItem === newItem
-    }
+private class ContactDiffCallback : DiffUtil.ItemCallback<UserContact>() {
+    override fun areItemsTheSame(oldItem: UserContact, newItem: UserContact) = oldItem.phoneNumber == newItem.phoneNumber
 
-    override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
-        return oldItem == newItem
-    }
+    override fun areContentsTheSame(oldItem: UserContact, newItem: UserContact) = oldItem == newItem
 }
