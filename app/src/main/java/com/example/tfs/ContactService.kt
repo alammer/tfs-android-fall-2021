@@ -6,20 +6,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.ContactsContract
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 class ContactService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         getContactsInBackground()
+        stopSelf()
         return START_STICKY
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Log.i("ContactServiceStop", "Function called: onDestroy()")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -29,24 +23,23 @@ class ContactService : Service() {
     private fun getContactsInBackground() {
         val bundle = Bundle()
         try {
-            Thread ( Runnable{
+            Thread {
                 val contactList = getContacts()
                 contactList?.let {
                     bundle.putString("status", "OK")
-                    bundle.putStringArrayList("contacts", contactList)
-                } ?: bundle.putString("status", "ERROR")
+                    bundle.putStringArray("contacts", contactList)
+                } ?: bundle.putString("status", "FAILED")
                 sendBroadcastData(bundle)
-                }).start()
+            }.start()
         } catch (e: InterruptedException) {
             bundle.putString("status", "ERROR")
             bundle.putString("error", e.message)
             sendBroadcastData(bundle)
         }
-
     }
 
 
-    private fun getContacts(): ArrayList<String>? {
+    private fun getContacts(): Array<String>? {
         val contentResolver: ContentResolver = contentResolver
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI, null, null, null,
@@ -85,14 +78,13 @@ class ContactService : Service() {
         }
         cursor.close()
 
-        return contactList
+        return contactList.toTypedArray()
     }
 
-    private fun sendBroadcastData(data: Bundle?) {
+    private fun sendBroadcastData(data: Bundle) {
         val broadcastIntent = Intent()
         broadcastIntent.action = "GET_CONTACTS"
-        val innerdata = data
         LocalBroadcastManager.getInstance(this)
-            .sendBroadcast(broadcastIntent.putExtra("contacts", data))
+            .sendBroadcast(broadcastIntent.putExtras(data))
     }
 }

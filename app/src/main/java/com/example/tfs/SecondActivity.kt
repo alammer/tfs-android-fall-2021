@@ -8,11 +8,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.tfs.util.toast
 import com.google.android.material.button.MaterialButton
 
 class SecondActivity : AppCompatActivity() {
@@ -42,12 +42,16 @@ class SecondActivity : AppCompatActivity() {
 
                 override fun onReceive(context: Context, intent: Intent) {
                     val bundle = intent.extras
-                    if (bundle != null) {
-                        if (bundle.containsKey("contacts")) {
-                            Log.i("SecondActivity", "$bundle")
-                            val contactList = bundle.getBundle("contacts")
-                            Log.i("SecondActivity", "$contactList")
-                            sendResult(contactList)
+                    Log.i("ComtactActivity0", "$bundle")
+                    bundle?.let {
+                        val getContactsResult = it.getString("status")
+                        when (getContactsResult) {
+                            "ERROR" -> toast("Error! Service() crash!")
+                            "FAILED" -> toast("Failed! Denied access to contact list!")
+                            "OK" -> {
+                                sendResult(it.getStringArray("contacts"))
+                            }
+                            else -> throw IllegalArgumentException("Get uknown argument from service bundle")
                         }
                     }
                 }
@@ -85,13 +89,15 @@ class SecondActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startService(Intent(this, ContactService::class.java))
             } else {
-                Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show()
+                toast("Permission denied..")
             }
         }
     }
 
-    private fun sendResult(serviceData: Bundle?) {
-        setResult(Activity.RESULT_OK, Intent().putExtras(serviceData!!))
+    private fun sendResult(serviceData: Array<String>?) {
+        serviceData?.let {
+            setResult(Activity.RESULT_OK, Intent().putExtra("contacts", serviceData) )
+        }
         finish()
     }
 }
