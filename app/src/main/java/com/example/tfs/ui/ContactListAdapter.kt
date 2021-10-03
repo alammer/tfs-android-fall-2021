@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 
-class ContactListAdapter() : ListAdapter<String, ContactListAdapter.ContactViewHolder>(ContactDiffCallback()) {
+class ContactListAdapter : ListAdapter<String, ContactListAdapter.ContactViewHolder>(ContactDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
         val view =

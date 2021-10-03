@@ -1,11 +1,8 @@
 package com.example.tfs
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.ui.ContactListAdapter
@@ -48,17 +45,9 @@ class MainActivity : AppCompatActivity() {
         contactRecycler.adapter = contactListAdapter
         contactListAdapter.submitList(contactList.toList())
 
-        contactRecycler.layoutManager =
-            when (resources.configuration.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> GridLayoutManager(this, GREED_SPAN_COUNT).apply {
-                    orientation = LinearLayoutManager.HORIZONTAL
-                }
-
-                else ->
-                    LinearLayoutManager(this).apply {
-                        orientation = LinearLayoutManager.VERTICAL
-                    }
-            }
+        contactRecycler.layoutManager = LinearLayoutManager(this).apply {
+            orientation = LinearLayoutManager.VERTICAL
+        }
 
         contactRecycler.visibility = View.VISIBLE
     }
@@ -70,13 +59,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun emptyContactsMessage() {
         tvContacts.visibility = View.VISIBLE
-        tvContacts.text = "YOUR CONTACT LIST IS EMPTY :("
+        tvContacts.text = getString(R.string.empty_contact_message)
     }
 
     private fun errorMessage() {
         tvContacts.visibility = View.VISIBLE
-        tvContacts.text = "ERROR FETCHING CONTACTS LIST"
+        tvContacts.text = getString(R.string.error_data_message)
     }
 }
-
-private const val GREED_SPAN_COUNT = 2

@@ -9,13 +9,12 @@
         android:id="@+id/btnStartActivity2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="START ACTIVITY 2"/>
+        android:text="@string/btn_start_activity_label"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvEmptyResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="NO CONTACTS FOUND"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView

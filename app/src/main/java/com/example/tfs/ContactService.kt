@@ -68,10 +68,9 @@ class ContactService : Service() {
                     null
                 )
 
-                if (cursorPhone?.moveToNext() == true) {
-                    phoneNumber =
-                        cursorPhone.getString(cursorPhone.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                }
+                if (cursorPhone?.moveToNext() == true) phoneNumber =
+                    cursorPhone.getString(cursorPhone.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
                 cursorPhone?.close()
             }
             contactList.add("$name: $phoneNumber")
