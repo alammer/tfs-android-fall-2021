@@ -1,8 +1,3 @@
 <resources>
     <string name="app_name">TFS</string>
-    <string name="btn_start_activity_label">START ACTIVITY 2</string>
-    <string name="empty_contact_message">YOUR CONTACT LIST IS EMPTY :(</string>
-    <string name="error_data_message">ERROR FETCHING CONTACTS LIST</string>
-    <string name="btn_start_service_label">START SERVICE</string>
-    <string name="user_contact_template">%s: %s</string>
 </resources>
