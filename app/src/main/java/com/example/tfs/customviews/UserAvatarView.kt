@@ -22,9 +22,6 @@ class UserAvatarView @JvmOverloads constructor(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val viewRect = Rect()
-    private lateinit var avatarBitmap : Bitmap
-    private lateinit var maskBitmap : Bitmap
-    private lateinit var srcBitmap : Bitmap
     private var initials = "UK"
 
     init {
@@ -62,35 +59,21 @@ class UserAvatarView @JvmOverloads constructor(
             bottom = h
         }
 
-        prepareBitmaps(w, h)
+        prepareShader(w, h)
     }
 
     override fun onDraw(canvas: Canvas?) {
-        canvas?.drawBitmap(avatarBitmap, viewRect, viewRect, null)
+        canvas?.drawOval(viewRect.toRectF(), paint)
     }
 
     private fun setup() {
         scaleType = ScaleType.CENTER_CROP
-
-        with(paint) {
-            color = Color.BLUE
-            style = Paint.Style.FILL
-        }
     }
 
-    private fun prepareBitmaps(w: Int, h: Int) {
-        maskBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ALPHA_8)
-        avatarBitmap = maskBitmap.copy(Bitmap.Config.ARGB_8888, true)
-        val maskCanvas = Canvas(maskBitmap)
-        maskCanvas.drawOval(viewRect.toRectF(), paint)
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-
-
-        val avatarCanvas = Canvas(avatarBitmap)
-        avatarCanvas.drawBitmap(maskBitmap, viewRect, viewRect, null)
+    private fun prepareShader(w: Int, h: Int) {
         drawable?.let {
-            srcBitmap = drawable.toBitmap(w, h, Bitmap.Config.ARGB_8888)
-            avatarCanvas.drawBitmap(srcBitmap, viewRect, viewRect, paint)
+            val srcBitmap = drawable.toBitmap(w, h, Bitmap.Config.ARGB_8888)
+            paint.shader = BitmapShader(srcBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
         }
     }
 }
