@@ -2,7 +2,9 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.ViewGroup
+import com.example.tfs.util.DpToPixels
 
 class EmojisLayout @JvmOverloads constructor(
     context: Context,
@@ -12,34 +14,52 @@ class EmojisLayout @JvmOverloads constructor(
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var totalWidth = 0
+        var rowWidth = 0
         var totalHeight = 0
+
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
+
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, totalHeight)
-            totalHeight += child.measuredHeight
-            totalWidth = maxOf(totalWidth, child.measuredWidth)
+            measureChild(child, widthMeasureSpec, heightMeasureSpec)
+            if (totalHeight == 0) totalHeight = child.measuredHeight
+            if (rowWidth + child.measuredWidth <= widthSize ) {
+                rowWidth += (child.measuredWidth + DIVIDER_WIDTH)
+            } else {
+                rowWidth = child.measuredWidth + DIVIDER_WIDTH
+                totalHeight += child.measuredHeight + DIVIDER_HEIGHT
+            }
+
+            Log.i("EmojisLayout", "Function called: onMeasure() $rowWidth")
         }
-        val resultWidth = resolveSize(totalWidth, widthMeasureSpec)
-        val resultHeight = resolveSize(totalHeight, heightMeasureSpec)
-        setMeasuredDimension(resultWidth, resultHeight)
+
+        Log.i("EmojisLayout", "Function called: onMeasure() $rowWidth $totalHeight $widthSize $paddingStart $paddingEnd $widthMeasureSpec $heightMeasureSpec")
+
+        setMeasuredDimension(widthSize, totalHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var currentBottom = 0
+        var currentWidth = 0
+
+        val maxWidth = width
+//        Log.i("EmojisLayout", "Function called: onLayout() maxWidth = ${maxWidth.PixelsToDp()}")
         for (i in 0 until childCount) {
             val child = getChildAt(i)
+            if (currentWidth + child.measuredWidth  >  maxWidth) {
+                currentWidth = 0
+                currentBottom += (child.measuredHeight + DIVIDER_HEIGHT)
+            }
             child.layout(
-                0,
+                currentWidth,
                 currentBottom,
-                child.measuredWidth,
+                currentWidth + child.measuredWidth,
                 currentBottom + child.measuredHeight
             )
-            currentBottom = child.bottom
+            currentWidth += (child.measuredWidth + DIVIDER_WIDTH)
         }
     }
-
-
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         return MarginLayoutParams(context, attrs)
@@ -51,5 +71,29 @@ class EmojisLayout @JvmOverloads constructor(
 
     override fun generateLayoutParams(p: LayoutParams): LayoutParams {
         return MarginLayoutParams(p)
+    }
+
+    fun setReactionData(data: List<Reaction>) {
+        addReaction(data)
+    }
+
+    private fun addReaction(data: List<Reaction>) {
+        data.forEach {
+
+            val view = EmojiView(
+                context,
+                emoji = "😄",
+                count = it.count
+            )
+
+            addView(view)
+        }
+        requestLayout()
+    }
+
+    companion object {
+        //private var INTERVAL = 5.DpToPixels().toFloat()
+        private var DIVIDER_HEIGHT = 8.DpToPixels()
+        private var DIVIDER_WIDTH = 10.DpToPixels()
     }
 }

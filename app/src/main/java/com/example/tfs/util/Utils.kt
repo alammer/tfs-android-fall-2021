@@ -5,6 +5,10 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.widget.Toast
+import android.util.TypedValue
+
+
+
 
 fun Context?.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -13,6 +17,9 @@ fun Context?.toast(message: String) {
 fun Int.DpToPixels() = (this / Resources.getSystem().displayMetrics.density).toInt()
 
 fun  Int.PixelsToDp() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+fun Int.SPtoPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity).toFloat()
+
 
 fun Cursor.getContactId() =
     getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
