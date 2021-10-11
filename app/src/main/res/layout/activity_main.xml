@@ -5,10 +5,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.tfs.customviews.UserAvatarView
-        android:id="@+id/imgAvatar"
-        android:layout_width="37dp"
-        android:layout_height="37dp"
-        android:src="@drawable/bad"/>
-
 </LinearLayout>

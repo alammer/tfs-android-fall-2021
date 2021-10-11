@@ -40,7 +40,7 @@ class UserAvatarView @JvmOverloads constructor(
             typedArray.recycle()
         }
 
-        setup()
+        scaleType = ScaleType.CENTER_CROP
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -64,10 +64,6 @@ class UserAvatarView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.drawOval(viewRect.toRectF(), paint)
-    }
-
-    private fun setup() {
-        scaleType = ScaleType.CENTER_CROP
     }
 
     private fun prepareShader(w: Int, h: Int) {
