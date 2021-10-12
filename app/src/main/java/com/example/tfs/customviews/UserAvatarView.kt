@@ -5,12 +5,10 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRectF
 import com.example.tfs.R
-
 
 @SuppressLint("AppCompatCustomView")
 class UserAvatarView @JvmOverloads constructor(
@@ -34,9 +32,6 @@ class UserAvatarView @JvmOverloads constructor(
             )
 
             initials = typedArray.getString(R.styleable.UserAvatarView_uav_initials) ?: "UK"
-//            text = typedArray.getString(R.styleable.CustomTextView_customText).orEmpty()
-//            textPaint.color =
-//                typedArray.getColor(R.styleable.CustomTextView_customTextColor, Color.BLACK)
             typedArray.recycle()
         }
         scaleType = ScaleType.CENTER_CROP

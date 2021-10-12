@@ -2,7 +2,6 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
 
@@ -17,7 +16,6 @@ class EmojisLayout @JvmOverloads constructor(
         var rowWidth = 0
         var totalHeight = 0
 
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
 
         for (i in 0 until childCount) {
@@ -30,11 +28,7 @@ class EmojisLayout @JvmOverloads constructor(
                 rowWidth = child.measuredWidth + DIVIDER_WIDTH
                 totalHeight += child.measuredHeight + DIVIDER_HEIGHT
             }
-
-            Log.i("EmojisLayout", "Function called: onMeasure() $rowWidth")
         }
-
-        Log.i("EmojisLayout", "Function called: onMeasure() $rowWidth $totalHeight $widthSize $paddingStart $paddingEnd $widthMeasureSpec $heightMeasureSpec")
 
         setMeasuredDimension(widthSize, totalHeight)
     }
@@ -42,9 +36,8 @@ class EmojisLayout @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var currentBottom = 0
         var currentWidth = 0
-
         val maxWidth = width
-//        Log.i("EmojisLayout", "Function called: onLayout() maxWidth = ${maxWidth.PixelsToDp()}")
+
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             if (currentWidth + child.measuredWidth  >  maxWidth) {
@@ -86,16 +79,20 @@ class EmojisLayout @JvmOverloads constructor(
                 count = it.count
             )
 
-            view.layoutParams.width = LayoutParams.WRAP_CONTENT
-            view.layoutParams.height = 30
-
+            val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
+            view.setLayoutParams(params)
             addView(view)
         }
+
+        val addView = EmojiView(context)
+        val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
+        addView.setLayoutParams(params)
+        addView(addView)
+
         requestLayout()
     }
 
     companion object {
-        //private var INTERVAL = 5.DpToPixels().toFloat()
         private var DIVIDER_HEIGHT = 8.dpToPixels()
         private var DIVIDER_WIDTH = 10.dpToPixels()
     }
