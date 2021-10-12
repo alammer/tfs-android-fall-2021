@@ -39,7 +39,6 @@ class UserAvatarView @JvmOverloads constructor(
 //                typedArray.getColor(R.styleable.CustomTextView_customTextColor, Color.BLACK)
             typedArray.recycle()
         }
-
         scaleType = ScaleType.CENTER_CROP
     }
 

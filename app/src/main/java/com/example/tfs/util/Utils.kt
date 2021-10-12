@@ -14,11 +14,11 @@ fun Context?.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-fun Int.DpToPixels() = (this / Resources.getSystem().displayMetrics.density).toInt()
+fun Int.dpToPixels() = (this / Resources.getSystem().displayMetrics.density).toInt()
 
-fun  Int.PixelsToDp() = (this * Resources.getSystem().displayMetrics.density).toInt()
+fun  Int.pixelsToDp() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-fun Int.SPtoPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity).toFloat()
+fun Int.stToPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity).toFloat()
 
 
 fun Cursor.getContactId() =

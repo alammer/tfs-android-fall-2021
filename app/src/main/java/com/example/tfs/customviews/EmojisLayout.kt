@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.ViewGroup
-import com.example.tfs.util.DpToPixels
+import com.example.tfs.util.dpToPixels
 
 class EmojisLayout @JvmOverloads constructor(
     context: Context,
@@ -86,6 +86,9 @@ class EmojisLayout @JvmOverloads constructor(
                 count = it.count
             )
 
+            view.layoutParams.width = LayoutParams.WRAP_CONTENT
+            view.layoutParams.height = 30
+
             addView(view)
         }
         requestLayout()
@@ -93,7 +96,7 @@ class EmojisLayout @JvmOverloads constructor(
 
     companion object {
         //private var INTERVAL = 5.DpToPixels().toFloat()
-        private var DIVIDER_HEIGHT = 8.DpToPixels()
-        private var DIVIDER_WIDTH = 10.DpToPixels()
+        private var DIVIDER_HEIGHT = 8.dpToPixels()
+        private var DIVIDER_WIDTH = 10.dpToPixels()
     }
 }

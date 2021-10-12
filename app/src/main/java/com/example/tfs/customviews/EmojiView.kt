@@ -1,14 +1,12 @@
 package com.example.tfs.customviews
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import com.example.tfs.R
-import com.example.tfs.util.DpToPixels
-import com.example.tfs.util.SPtoPixels
+import com.example.tfs.util.dpToPixels
+import com.example.tfs.util.stToPixels
 
 class EmojiView @JvmOverloads constructor(
     context: Context,
@@ -28,7 +26,7 @@ class EmojiView @JvmOverloads constructor(
 
     private val textPaint = Paint().apply {
         color = Color.BLUE
-        textSize = 14.SPtoPixels()
+        textSize = 14.stToPixels()
         textAlign = Paint.Align.CENTER
     }
     private val backPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -42,7 +40,9 @@ class EmojiView @JvmOverloads constructor(
 //        )
 //
 //        typedArray.recycle()
+        setPadding(8.dpToPixels(), 4.dpToPixels(), 8.dpToPixels(), 4.dpToPixels())
         setReaction("😄", count)
+
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -85,8 +85,8 @@ class EmojiView @JvmOverloads constructor(
 
     companion object {
         //private var INTERVAL = 5.DpToPixels().toFloat()
-        private var VIEW_BG_RECT_RADIUS = 10.DpToPixels().toFloat()
-        private var HORIZONTAL_PADDING = 8.DpToPixels()
-        private var VERTICAL_PADDING = 4.DpToPixels()
+        private var VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
+        private var HORIZONTAL_PADDING = 8.dpToPixels()
+        private var VERTICAL_PADDING = 4.dpToPixels()
     }
 }
