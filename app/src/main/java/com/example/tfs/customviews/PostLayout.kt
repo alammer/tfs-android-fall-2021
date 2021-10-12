@@ -2,6 +2,7 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
@@ -22,6 +23,8 @@ class PostLayout @JvmOverloads constructor(
         get() = if (childCount > 2) getChildAt(2) else null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        checkChildCount()
+
         avatarChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         messageChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         emojiChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
@@ -38,7 +41,7 @@ class PostLayout @JvmOverloads constructor(
 
         val height = max(avatarHeight, messageHeight + emojiHeight)
 
-        setMeasuredDimension(width + paddingLeft + paddingRight, height + paddingLeft + paddingRight)
+        setMeasuredDimension(widthSize + paddingLeft + paddingRight, height + paddingLeft + paddingRight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -49,16 +52,16 @@ class PostLayout @JvmOverloads constructor(
             paddingTop + (avatarChild?.measuredHeight ?: 0)
         )
         messageChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + 8,
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingLeft,
             paddingTop,
-            (avatarChild?.measuredWidth ?: 0) + 8 +  (messageChild?.measuredWidth ?: 0)- paddingRight,
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (messageChild?.measuredWidth ?: 0)- paddingRight,
             paddingTop + (messageChild?.measuredHeight ?: 0)
         )
         emojiChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + 8,
-            paddingTop + (messageChild?.measuredHeight ?: 0) + 8,
-            (avatarChild?.measuredWidth ?: 0) + 8 +  (emojiChild?.measuredWidth ?: 0) - paddingRight,
-            paddingTop + (messageChild?.measuredHeight ?: 0) + 8 + (emojiChild?.measuredHeight ?: 0) - paddingBottom
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingLeft,
+            paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER,
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (emojiChild?.measuredWidth ?: 0) - paddingRight,
+            paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0) - paddingBottom
         )
     }
 
@@ -75,12 +78,32 @@ class PostLayout @JvmOverloads constructor(
     }
 
     private fun checkChildCount() {
+        Log.i("PostLayout", "Function called: checkChildCount()")
         if (childCount > 3) error("CustomViewGroup should not contain more than 2 children")
     }
 
-    companion object {
-        private var DIVIDER_HEIGHT = 8.dpToPixels()
-        private var DIVIDER_WIDTH = 10.dpToPixels()
+    fun createLayout() {
+        val dataSet = List<Reaction>(26) { i -> Reaction(('A' + i).toString(), i) }
+
+        val emojisLayout = EmojisLayout(context)
+        //val messageView = UserMessageLayout(context)
+
+        val params = LayoutParams(265.dpToPixels(), LayoutParams.WRAP_CONTENT)
+        emojisLayout.setLayoutParams(params)
+
+
+
+        emojisLayout.setReactionData(dataSet)
+
+        addView(emojisLayout)
+        requestLayout()
     }
+
+    companion object {
+        private var CHILD_DIVIDER = 8.dpToPixels()
+        //private var DIVIDER_WIDTH = 8.dpToPixels()
+    }
+
+
 
 }
