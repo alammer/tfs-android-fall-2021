@@ -38,31 +38,51 @@ class PostLayout @JvmOverloads constructor(
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec) - paddingTop - paddingBottom
 
-        val height = max(avatarHeight, messageHeight + emojiHeight)
+//        Log.i("PostLayout", "Function called: Parent $widthSize $heightSize")
+//
+//        Log.i("PostLayout", "Function called: Paddings $paddingBottom $paddingTop $paddingStart $paddingEnd $CHILD_DIVIDER")
+//
+//        Log.i("PostLayout", "Function called: Avatar $avatarWidth $avatarHeight")
+//        Log.i("PostLayout", "Function called: Message $messageWidth $messageHeight")
+//        Log.i("PostLayout", "Function called: Emoji $emojiWidth $emojiHeight")
 
-        setMeasuredDimension(widthSize + paddingLeft + paddingRight, height + paddingLeft + paddingRight)
+
+        val height = max(avatarHeight, messageHeight + emojiHeight + CHILD_DIVIDER)
+
+//        Log.i("PostLayout", "Function called: Final height ${height + paddingBottom + paddingTop}")
+
+        setMeasuredDimension(widthSize + paddingStart + paddingEnd, height + paddingTop + paddingBottom)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+
+//        Log.i("PostLayout", "Function called: onLayout() $width $height")
         avatarChild?.layout(
-            paddingLeft,
+            paddingStart,
             paddingTop,
-            paddingLeft + (avatarChild?.measuredWidth ?: 0),
+            paddingStart + (avatarChild?.measuredWidth ?: 0),
             paddingTop + (avatarChild?.measuredHeight ?: 0)
         )
+//        Log.i("PostLayout", "left: $paddingStart top: $paddingBottom right: ${paddingStart + (avatarChild?.measuredWidth ?: 0)}  bottom: ${paddingTop + (avatarChild?.measuredHeight ?: 0)}")
         messageChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingLeft,
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
             paddingTop,
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (messageChild?.measuredWidth ?: 0)- paddingRight,
+            paddingStart + (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (messageChild?.measuredWidth ?: 0),
             paddingTop + (messageChild?.measuredHeight ?: 0)
         )
+
+//        Log.i("PostLayout", "left: ${(avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart} top: $paddingBottom right: ${(avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (messageChild?.measuredWidth ?: 0)}  bottom: ${paddingTop + (messageChild?.measuredHeight ?: 0)}")
         emojiChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingLeft,
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
             paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER,
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (emojiChild?.measuredWidth ?: 0) - paddingRight,
-            paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0) - paddingBottom
+            paddingStart + (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (emojiChild?.measuredWidth ?: 0),
+            paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0)
         )
+
+//        Log.i("PostLayout", "left: ${(avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart} top: ${paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER} right: ${(avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER +  (emojiChild?.measuredWidth ?: 0)}  bottom: ${paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0)}")
+
     }
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
@@ -86,12 +106,12 @@ class PostLayout @JvmOverloads constructor(
         val dataSet = List<Reaction>(26) { i -> Reaction(('A' + i).toString(), i) }
 
         val emojisLayout = EmojisLayout(context)
-        //val messageView = UserMessageLayout(context)
+        val messageView = UserMessageLayout(context)
 
         val params = LayoutParams(265.dpToPixels(), LayoutParams.WRAP_CONTENT)
         emojisLayout.setLayoutParams(params)
 
-
+        addView(messageView)
 
         emojisLayout.setReactionData(dataSet)
 

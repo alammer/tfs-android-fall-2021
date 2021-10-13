@@ -38,7 +38,7 @@ class UserMessageLayout @JvmOverloads constructor(
 
     private val namePaint = Paint().apply {
         isAntiAlias = true
-        color = Color.BLUE
+        color = Color.WHITE
         textSize = 14.spToPixels()
         textAlign = Paint.Align.CENTER
     }
@@ -123,11 +123,10 @@ class UserMessageLayout @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         canvas.drawRoundRect(
             backgroundRect,
-            UserMessageLayout.VIEW_BG_RECT_RADIUS,
-            UserMessageLayout.VIEW_BG_RECT_RADIUS, backPaint
+            VIEW_BG_RECT_RADIUS, VIEW_BG_RECT_RADIUS, backPaint
         )
         if (name.isNotBlank()) {
-            canvas.drawText(name, textCoordinate.x, textCoordinate.y, textPaint)
+            canvas.drawText(name, textCoordinate.x, textCoordinate.y, namePaint)
         }
     }
 

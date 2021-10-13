@@ -8,7 +8,7 @@
     <com.example.tfs.customviews.PostLayout
         android:id="@+id/cvPost"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="4dp">
 
         <com.example.tfs.customviews.UserAvatarView
@@ -17,24 +17,6 @@
             android:layout_height="37dp"
             android:layout_marginStart="4dp"
             android:src="@drawable/bad" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/tvMessage"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tvUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/tvText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </com.example.tfs.customviews.PostLayout>
 
