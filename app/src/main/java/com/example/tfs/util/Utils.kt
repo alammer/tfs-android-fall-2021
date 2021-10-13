@@ -5,9 +5,6 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.widget.Toast
-import android.util.TypedValue
-
-
 
 
 fun Context?.toast(message: String) {

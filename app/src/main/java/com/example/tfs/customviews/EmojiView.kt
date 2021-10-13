@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
-
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
 import kotlin.math.max
@@ -50,14 +49,6 @@ class EmojiView @JvmOverloads constructor(
     }
 
     init {
-//        val typedArray: TypedArray = context.obtainStyledAttributes(
-//            attrs,
-//            R.styleable.EmojiView,
-//            defStyleAttr,
-//            defStyleRes
-//        )
-//
-//        typedArray.recycle()
         if (currentEmoji.isNullOrEmpty()) isPlusButton = true
 
         count?.let {
@@ -142,8 +133,7 @@ class EmojiView @JvmOverloads constructor(
             alreadyClicked = true
             backPaint.color = CHECK_BG_COLOR
             addReaction()
-        }
-        else {
+        } else {
             //TODO("add emoji by click on plus")
         }
         return true
@@ -152,7 +142,7 @@ class EmojiView @JvmOverloads constructor(
     private fun addReaction() {
         val newCount = currentCount + 1
         val newReaction = "$currentEmoji $newCount"
-        if (newReaction.length  > text.length) {
+        if (newReaction.length > text.length) {
             text = newReaction
             requestLayout()
         } else {

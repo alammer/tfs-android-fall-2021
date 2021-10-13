@@ -7,9 +7,8 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
 import kotlin.math.max
@@ -20,41 +19,41 @@ class UserMessageLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
     userName: String = "Anonimous",
-    message: String = "EmptyMessage",
+    userMessage: String = "Error! Message not found!",
     timeStamp: String? = null
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private var name = ""
+    private var nameWidth = 0
+    private var message = ""
+    private var messageWidth = 0
     private val backgroundRect = RectF()
     private val nameBounds = Rect()
     private val messageBounds = Rect()
-    private val textCoordinate = PointF()
-    private val centerPoint = PointF()
-    private var isPlusButton = false
-    private var alreadyClicked = false
+    private val nameCoordinate = PointF()
+    private val messageCoordinate = PointF()
 
-    private val userName = userName
-    private val message = message
+    private var staticLayout: StaticLayout? = null
 
     private val namePaint = Paint().apply {
         isAntiAlias = true
         color = Color.WHITE
         textSize = 14.spToPixels()
-        textAlign = Paint.Align.CENTER
+        textAlign = Paint.Align.LEFT
     }
 
     private val messagePaint = Paint().apply {
         isAntiAlias = true
         color = Color.WHITE
-        textSize = 14.spToPixels()
-        textAlign = Paint.Align.CENTER
+        textSize = 16.spToPixels()
+        textAlign = Paint.Align.LEFT
     }
 
     private val staticPaint = TextPaint().apply {
         isAntiAlias = true
         color = Color.WHITE
-        textSize = 14.spToPixels()
-        textAlign = Paint.Align.CENTER
+        textSize = 16.spToPixels()
+        textAlign = Paint.Align.LEFT
     }
     private val backPaint = Paint().apply {
         isAntiAlias = true
@@ -64,47 +63,36 @@ class UserMessageLayout @JvmOverloads constructor(
 
 
     init {
-//        val typedArray: TypedArray = context.obtainStyledAttributes(
-//            attrs,
-//            R.styleable.EmojiView,
-//            defStyleAttr,
-//            defStyleRes
-//        )
-//
-//        typedArray.recycle()
-        setMessage(userName, message)
+        name = userName
+        nameWidth = namePaint.measureText(name).toInt()
+
+        message = userMessage
+        messageWidth = messagePaint.measureText(message).toInt()
+
+        if (messageWidth >= MAX_WIDTH) {
+            multiLineDraw(message)
+        } else {
+            singleLineDraw(message)
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (name.isNotBlank()) {
             namePaint.getTextBounds(name, 0, name.length, nameBounds)
 
             val nameHeight = nameBounds.height()
-            val nameWidth = nameBounds.width()
+            val messageHeight = staticLayout?.height ?: messageBounds.height()
 
-            messagePaint.getTextBounds(message, 0, name.length, messageBounds)
 
-            if (messageBounds.width() < MAX_WIDTH) {
-                val messageHeight = messageBounds.height()
-                val messageWidth = messageBounds.width()
+            val totalWidth = max(nameWidth, messageWidth) + END_PADDING + START_PADDING
+            val totalHeight =
+                nameHeight + messageHeight + TOP_PADDING + INNER_PADDING + BOTTOM_PADDING
 
-                val totalWidth = max(nameWidth, messageWidth) + RIGHT_PADDING + LEFT_PADDING
-                val totalHeight =
-                    nameHeight + messageHeight + TOP_PADDING + INNER_PADDING + BOTTOM_PADDING
+            setMeasuredDimension(totalWidth, totalHeight)
 
-                setMeasuredDimension(totalWidth, totalHeight)
-            } else {
-                val staticLayout = StaticLayout.Builder
-                    .obtain(message, 0, message.length, staticPaint, MAX_WIDTH)
-                    .build()
-
-                val totalWidth = max(staticLayout.width, nameWidth) + RIGHT_PADDING + LEFT_PADDING
-                val totalHeight =
-                    staticLayout.height + nameHeight + TOP_PADDING + INNER_PADDING + BOTTOM_PADDING
-                setMeasuredDimension(totalWidth, totalHeight)
-            }
-        } else setMeasuredDimension(0, 0)
+        } else {
+            setMeasuredDimension(0, 0)
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -115,37 +103,77 @@ class UserMessageLayout @JvmOverloads constructor(
             bottom = h.toFloat()
         }
 
-        textCoordinate.x = w / 2f
-        textCoordinate.y = h / 2f + nameBounds.height() / 2 - namePaint.fontMetrics.descent
+        nameCoordinate.x = 0f + START_PADDING
+        nameCoordinate.y = 0f + TOP_PADDING + nameBounds.height()
 
+        if (staticLayout != null) {
+            messageCoordinate.x = 0f + START_PADDING
+            messageCoordinate.y = 0f + TOP_PADDING + nameBounds.height() + INNER_PADDING
+        } else {
+            messageCoordinate.x = 0f + START_PADDING //+ messageBounds.width() / 2
+            messageCoordinate.y =
+                0f + TOP_PADDING + messageBounds.height() + INNER_PADDING + messageBounds.height()
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
+        Log.i("measure", "$backgroundRect")
         canvas.drawRoundRect(
             backgroundRect,
             VIEW_BG_RECT_RADIUS, VIEW_BG_RECT_RADIUS, backPaint
         )
         if (name.isNotBlank()) {
-            canvas.drawText(name, textCoordinate.x, textCoordinate.y, namePaint)
+            canvas.drawText(name, nameCoordinate.x, nameCoordinate.y, namePaint)
+
+            if (staticLayout != null) {
+                canvas.save()
+                canvas.translate(messageCoordinate.x, messageCoordinate.y)
+                staticLayout?.draw(canvas)
+                canvas.restore()
+            } else {
+                Log.i(
+                    "measure",
+                    "$messageCoordinate $messageCoordinate ${messagePaint.measureText(message)} "
+                )
+                canvas.drawText(message, messageCoordinate.x, messageCoordinate.y, messagePaint)
+            }
         }
     }
 
-    private fun setMessage(userName: String, message: String) {
-        name = userName
+    private fun multiLineDraw(message: String) {
+        staticLayout = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            StaticLayout(
+                message,
+                staticPaint,
+                MAX_WIDTH,
+                Layout.Alignment.ALIGN_NORMAL,
+                1f,
+                0f,
+                false
+            )
+        } else {
+            StaticLayout.Builder
+                .obtain(message, 0, message.length, staticPaint, MAX_WIDTH)
+                .build()
+        }
+        staticLayout?.apply {
+            messageWidth = width
+        }
+    }
+
+    private fun singleLineDraw(message: String) {
+        messagePaint.getTextBounds(message, 0, message.length, messageBounds)
     }
 
     companion object {
-        private val LINE_LENGHT = 7.dpToPixels().toFloat()
-        private val LINE_WIDTH = 2.dpToPixels().toFloat()
-        private val VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
-        private val LEFT_PADDING = 12.dpToPixels()
-        private val RIGHT_PADDING = 4.dpToPixels()
+        private val VIEW_BG_RECT_RADIUS = 18.dpToPixels().toFloat()
+        private val START_PADDING = 12.dpToPixels()
+        private val END_PADDING = 4.dpToPixels()
         private val TOP_PADDING = 8.dpToPixels()
         private val INNER_PADDING = 4.dpToPixels()
         private val BOTTOM_PADDING = 20.dpToPixels()
-        private val MAX_WIDTH = 265.dpToPixels() - RIGHT_PADDING - LEFT_PADDING
+        private val MAX_WIDTH = 265.dpToPixels() - END_PADDING - START_PADDING
         private const val DEFAUL_BG_COLOR = Color.DKGRAY
-        private const val CHECK_BG_COLOR = Color.LTGRAY
     }
 
 }

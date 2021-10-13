@@ -22,7 +22,7 @@ class EmojisLayout @JvmOverloads constructor(
             val child = getChildAt(i)
             measureChild(child, widthMeasureSpec, heightMeasureSpec)
             if (totalHeight == 0) totalHeight = child.measuredHeight
-            if (rowWidth + child.measuredWidth <= widthSize ) {
+            if (rowWidth + child.measuredWidth <= widthSize) {
                 rowWidth += (child.measuredWidth + DIVIDER_WIDTH)
             } else {
                 rowWidth = child.measuredWidth + DIVIDER_WIDTH
@@ -40,7 +40,7 @@ class EmojisLayout @JvmOverloads constructor(
 
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (currentWidth + child.measuredWidth  >  maxWidth) {
+            if (currentWidth + child.measuredWidth > maxWidth) {
                 currentWidth = 0
                 currentBottom += (child.measuredHeight + DIVIDER_HEIGHT)
             }
@@ -72,13 +72,11 @@ class EmojisLayout @JvmOverloads constructor(
 
     private fun addReaction(data: List<Reaction>) {
         data.forEach {
-
             val view = EmojiView(
                 context,
                 emoji = "😄",
                 count = it.count
             )
-
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
             view.setLayoutParams(params)
             addView(view)
