@@ -83,20 +83,21 @@ class PostLayout @JvmOverloads constructor(
     fun createLayout() {
         val dataSet = List<Reaction>(26) { i -> Reaction(('A' + i).toString(), i) }
 
-        val emojisLayout = EmojisLayout(context)
         val messageView = UserMessageLayout(context)
-        val params = LayoutParams(265.dpToPixels(), LayoutParams.WRAP_CONTENT)
+        addView(messageView)
 
+        val emojisLayout = EmojisLayout(context)
+        val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
         emojisLayout.setLayoutParams(params)
         emojisLayout.setReactionData(dataSet)
         addView(emojisLayout)
-        addView(messageView)
 
         requestLayout()
     }
 
     companion object {
         private var CHILD_DIVIDER = 8.dpToPixels()
+        private val VIEW_WIDTH = 265.dpToPixels()
     }
 
 

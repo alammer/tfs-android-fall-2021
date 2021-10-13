@@ -37,7 +37,7 @@ class UserMessageLayout @JvmOverloads constructor(
 
     private val namePaint = Paint().apply {
         isAntiAlias = true
-        color = Color.WHITE
+        color = Color.GREEN
         textSize = 14.spToPixels()
         textAlign = Paint.Align.LEFT
     }
