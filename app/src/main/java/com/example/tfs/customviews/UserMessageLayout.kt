@@ -7,7 +7,6 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
@@ -114,7 +113,6 @@ class UserMessageLayout @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        Log.i("measure", "$backgroundRect")
         canvas.drawRoundRect(
             backgroundRect,
             VIEW_BG_RECT_RADIUS, VIEW_BG_RECT_RADIUS, backPaint
@@ -128,10 +126,6 @@ class UserMessageLayout @JvmOverloads constructor(
                 staticLayout?.draw(canvas)
                 canvas.restore()
             } else {
-                Log.i(
-                    "measure",
-                    "$messageCoordinate $messageCoordinate ${messagePaint.measureText(message)} "
-                )
                 canvas.drawText(message, messageCoordinate.x, messageCoordinate.y, messagePaint)
             }
         }
