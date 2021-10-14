@@ -16,7 +16,7 @@ class EmojiView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
-    emoji: String? = null,
+    emoji: Int? = null,
     count: Int? = null,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
@@ -49,14 +49,13 @@ class EmojiView @JvmOverloads constructor(
     }
 
     init {
-        if (currentEmoji.isNullOrEmpty()) isPlusButton = true
+        if (currentEmoji == null) isPlusButton = true
 
         count?.let {
-            currentCount = count
-        }
-
-        currentEmoji?.let {
-            setReaction(currentEmoji, currentCount)
+            currentEmoji?.let {
+                currentCount = count
+                setReaction(currentEmoji, currentCount)
+            }
         }
     }
 
@@ -152,8 +151,9 @@ class EmojiView @JvmOverloads constructor(
         currentCount++
     }
 
-    private fun setReaction(emoji: String, count: Int?) {
-        text = count?.let { "$emoji $count" } ?: emoji
+    private fun setReaction(emoji: Int, count: Int) {
+        val c = StringBuilder().appendCodePoint(emoji)
+        text =  "$emoji $count"
         requestLayout()
     }
 

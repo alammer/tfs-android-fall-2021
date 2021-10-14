@@ -15,7 +15,8 @@ class UserAvatarView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
+    defStyleRes: Int = 0,
+drawable: Int = 0
 ) : ImageView(context, attrs, defStyleAttr, defStyleRes) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)

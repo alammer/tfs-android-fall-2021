@@ -2,6 +2,7 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
 
@@ -72,9 +73,13 @@ class EmojisLayout @JvmOverloads constructor(
 
     private fun addReaction(data: List<Reaction>) {
         data.forEach {
+            val em = "😄".toByteArray()
+
+            Log.i("EmojisLayout", "Function called: addReaction() $em")
+
             val view = EmojiView(
                 context,
-                emoji = "😄",
+                emoji = it.emoji,
                 count = it.count
             )
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())

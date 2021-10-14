@@ -4,7 +4,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.marginStart
+import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
+import com.example.tfs.util.toast
 import kotlin.math.max
 
 class PostLayout @JvmOverloads constructor(
@@ -81,21 +85,33 @@ class PostLayout @JvmOverloads constructor(
     }
 
     fun createLayout() {
-        val dataSet = List<Reaction>(26) { i -> Reaction(('A' + i).toString(), i) }
+        if (childCount > 1) {
+            removeViewAt(2)
+            removeViewAt(1)
+
+            requestLayout()
+
+            context.toast("TRY TO UPDATE LAYOUT PARAMS")
+        }
+
+        val dataSet = List((0..25).random()) { Reaction(START_CODE_POINT + (0..40).random(), (0..1000).random()) }
 
         val messageView = UserMessageLayout(context)
         addView(messageView)
 
-        val emojisLayout = EmojisLayout(context)
         val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
-        emojisLayout.setLayoutParams(params)
-        emojisLayout.setReactionData(dataSet)
-        addView(emojisLayout)
+        val emojisLayout = EmojisLayout(context)
+        with(emojisLayout) {
+            layoutParams = params
+            setReactionData(dataSet)
+            addView(this)
+        }
 
         requestLayout()
     }
 
     companion object {
+        private const val START_CODE_POINT = 0x1f600
         private var CHILD_DIVIDER = 8.dpToPixels()
         private val VIEW_WIDTH = 265.dpToPixels()
     }
