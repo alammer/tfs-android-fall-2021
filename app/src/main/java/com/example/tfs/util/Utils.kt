@@ -15,7 +15,6 @@ fun Int.dpToPixels() = (this * Resources.getSystem().displayMetrics.density).toI
 
 fun Int.spToPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity)
 
-
 fun Cursor.getContactId() =
     getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
 

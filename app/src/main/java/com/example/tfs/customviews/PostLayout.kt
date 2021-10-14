@@ -4,9 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.marginStart
-import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.toast
 import kotlin.math.max
@@ -88,24 +85,26 @@ class PostLayout @JvmOverloads constructor(
         if (childCount > 1) {
             removeViewAt(2)
             removeViewAt(1)
-
             requestLayout()
-
-            context.toast("TRY TO UPDATE LAYOUT PARAMS")
+            context.toast("try to update custom group")
         }
 
         val dataSet = List((0..25).random()) { Reaction(START_CODE_POINT + (0..40).random(), (0..1000).random()) }
 
-        val messageView = UserMessageLayout(context)
+        val testMessage = """
+hi if are you new in android use this way Apply your view to make it gone GONE is one way, else, get hold of the parent view, and remove the child from there..... else get the parent layout and use this method an remove all child parentView.remove(child)
+
+I would suggest using the GONE approach...
+"""
+
+        val messageView = UserMessageLayout(context, userMessage = testMessage.substring((1..testMessage.length).random()))
         addView(messageView)
 
         val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
         val emojisLayout = EmojisLayout(context)
-        with(emojisLayout) {
-            layoutParams = params
-            setReactionData(dataSet)
-            addView(this)
-        }
+        emojisLayout.layoutParams = params
+        emojisLayout.setReactionData(dataSet)
+        addView(emojisLayout)
 
         requestLayout()
     }

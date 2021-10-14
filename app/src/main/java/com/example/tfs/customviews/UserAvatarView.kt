@@ -16,7 +16,6 @@ class UserAvatarView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
-drawable: Int = 0
 ) : ImageView(context, attrs, defStyleAttr, defStyleRes) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -31,7 +30,6 @@ drawable: Int = 0
                 defStyleAttr,
                 defStyleRes
             )
-
             initials = typedArray.getString(R.styleable.UserAvatarView_uav_initials) ?: "UK"
             typedArray.recycle()
         }
@@ -40,7 +38,6 @@ drawable: Int = 0
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
     }
 
@@ -53,7 +50,6 @@ drawable: Int = 0
             right = w
             bottom = h
         }
-
         prepareShader(w, h)
     }
 

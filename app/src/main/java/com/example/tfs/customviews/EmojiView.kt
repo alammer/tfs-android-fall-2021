@@ -16,7 +16,7 @@ class EmojiView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
-    emoji: Int? = null,
+    emojiCode: Int? = null,
     count: Int? = null,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
@@ -29,7 +29,7 @@ class EmojiView @JvmOverloads constructor(
     private var alreadyClicked = false
 
     private var currentCount = 0
-    private val currentEmoji = emoji
+    private var emojiGliph = ""
 
     private val textPaint = Paint().apply {
         isAntiAlias = true
@@ -49,12 +49,13 @@ class EmojiView @JvmOverloads constructor(
     }
 
     init {
-        if (currentEmoji == null) isPlusButton = true
+        if (emojiCode == null) isPlusButton = true
 
         count?.let {
-            currentEmoji?.let {
+            emojiCode?.let {
                 currentCount = count
-                setReaction(currentEmoji, currentCount)
+                emojiGliph = StringBuilder().appendCodePoint(emojiCode).toString()
+                setReaction(emojiGliph, currentCount)
             }
         }
     }
@@ -140,7 +141,7 @@ class EmojiView @JvmOverloads constructor(
 
     private fun addReaction() {
         val newCount = currentCount + 1
-        val newReaction = "$currentEmoji $newCount"
+        val newReaction = "$emojiGliph $newCount"
         if (newReaction.length > text.length) {
             text = newReaction
             requestLayout()
@@ -151,9 +152,8 @@ class EmojiView @JvmOverloads constructor(
         currentCount++
     }
 
-    private fun setReaction(emoji: Int, count: Int) {
-        val c = StringBuilder().appendCodePoint(emoji)
-        text =  "$emoji $count"
+    private fun setReaction(emoji: String, count: Int) {
+        text = "$emoji $count"
         requestLayout()
     }
 

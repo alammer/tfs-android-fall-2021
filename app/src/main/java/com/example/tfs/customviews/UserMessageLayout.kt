@@ -32,7 +32,6 @@ class UserMessageLayout @JvmOverloads constructor(
     private val messageBounds = Rect()
     private val nameCoordinate = PointF()
     private val messageCoordinate = PointF()
-
     private var staticLayout: StaticLayout? = null
 
     private val namePaint = Paint().apply {
@@ -61,7 +60,6 @@ class UserMessageLayout @JvmOverloads constructor(
         color = DEFAUL_BG_COLOR
     }
 
-
     init {
         name = userName
         nameWidth = namePaint.measureText(name).toInt()
@@ -82,7 +80,6 @@ class UserMessageLayout @JvmOverloads constructor(
 
             val nameHeight = nameBounds.height()
             val messageHeight = staticLayout?.height ?: messageBounds.height()
-
 
             val totalWidth = max(nameWidth, messageWidth) + END_PADDING + START_PADDING
             val totalHeight =

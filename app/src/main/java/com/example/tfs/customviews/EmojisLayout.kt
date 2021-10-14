@@ -2,7 +2,6 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
 
@@ -16,7 +15,6 @@ class EmojisLayout @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var rowWidth = 0
         var totalHeight = 0
-
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
 
         for (i in 0 until childCount) {
@@ -30,7 +28,6 @@ class EmojisLayout @JvmOverloads constructor(
                 totalHeight += child.measuredHeight + DIVIDER_HEIGHT
             }
         }
-
         setMeasuredDimension(widthSize, totalHeight)
     }
 
@@ -73,23 +70,19 @@ class EmojisLayout @JvmOverloads constructor(
 
     private fun addReaction(data: List<Reaction>) {
         data.forEach {
-            val em = "😄".toByteArray()
-
-            Log.i("EmojisLayout", "Function called: addReaction() $em")
-
             val view = EmojiView(
                 context,
-                emoji = it.emoji,
+                emojiCode = it.emoji,
                 count = it.count
             )
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-            view.setLayoutParams(params)
+            view.layoutParams = params
             addView(view)
         }
 
         val addView = EmojiView(context)
         val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-        addView.setLayoutParams(params)
+        addView.layoutParams = params
         addView(addView)
 
         requestLayout()
