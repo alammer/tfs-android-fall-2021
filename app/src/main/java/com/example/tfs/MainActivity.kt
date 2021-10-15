@@ -16,10 +16,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val postLayout = findViewById<PostLayout>(R.id.cvPost)
-        val btnTest = findViewById<MaterialButton>(R.id.btnTest)
+        //val postLayout = findViewById<PostLayout>(R.id.cvPost)
+        //val btnTest = findViewById<MaterialButton>(R.id.btnTest)
 
-        btnTest.setOnClickListener { postLayout.createLayout() }
+        //btnTest.setOnClickListener { postLayout.createLayout() }
     }
 }
 
