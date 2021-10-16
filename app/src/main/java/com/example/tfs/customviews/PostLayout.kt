@@ -81,36 +81,27 @@ class PostLayout @JvmOverloads constructor(
         if (childCount > 3) error("CustomViewGroup should not contain more than 2 children")
     }
 
-    fun createLayout() {
+    fun createLayout(data: Post) {
         if (childCount > 1) {
             removeViewAt(2)
             removeViewAt(1)
             requestLayout()
-            context.toast("try to update custom group")
+            //context.toast("try to update custom group")
         }
 
-        val dataSet = List((0..25).random()) { Reaction(START_CODE_POINT + (0..40).random(), (0..1000).random()) }
-
-        val testMessage = """
-hi if are you new in android use this way Apply your view to make it gone GONE is one way, else, get hold of the parent view, and remove the child from there..... else get the parent layout and use this method an remove all child parentView.remove(child)
-
-I would suggest using the GONE approach...
-"""
-
-        val messageView = UserMessageLayout(context, userMessage = testMessage.substring((1..testMessage.length).random()))
+        val messageView = UserMessageLayout(context, userMessage = data.message)
         addView(messageView)
 
         val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
         val emojisLayout = EmojisLayout(context)
         emojisLayout.layoutParams = params
-        emojisLayout.setReactionData(dataSet)
+        emojisLayout.setReactionData(data.reaction)
         addView(emojisLayout)
 
         requestLayout()
     }
 
     companion object {
-        private const val START_CODE_POINT = 0x1f600
         private var CHILD_DIVIDER = 8.dpToPixels()
         private val VIEW_WIDTH = 265.dpToPixels()
     }
