@@ -92,11 +92,13 @@ class PostLayout @JvmOverloads constructor(
         val messageView = UserMessageLayout(context, userMessage = data.message)
         addView(messageView)
 
-        val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
-        val emojisLayout = EmojisLayout(context)
-        emojisLayout.layoutParams = params
-        emojisLayout.setReactionData(data.reaction)
-        addView(emojisLayout)
+        data.reaction?.let {
+            val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
+            val emojisLayout = EmojisLayout(context)
+            emojisLayout.layoutParams = params
+            emojisLayout.setReactionData(it)
+            addView(emojisLayout)
+        }
 
         requestLayout()
     }
