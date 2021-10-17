@@ -31,16 +31,21 @@ class EmojiView @JvmOverloads constructor(
     private var currentCount = 0
     private var emojiGliph = ""
 
+    private val backColor = Color.parseColor("#1C1C1C")
+    private val checkBackColor = Color.parseColor("#3A3A3A")
+    private val textColor = Color.parseColor("#CCCCCC")
+    private val checkTextColor = Color.parseColor("#EAEAEA")
+
     private val textPaint = Paint().apply {
         isAntiAlias = true
-        color = Color.WHITE
+        color = textColor
         textSize = 14.spToPixels()
         textAlign = Paint.Align.CENTER
     }
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
-        color = DEFAUL_BG_COLOR
+        color = backColor
     }
     private val linePaint = Paint().apply {
         isAntiAlias = true
@@ -131,7 +136,8 @@ class EmojiView @JvmOverloads constructor(
     private fun onClickReaction(): Boolean {
         if (!isPlusButton) {
             alreadyClicked = true
-            backPaint.color = CHECK_BG_COLOR
+            backPaint.color = checkBackColor
+            textPaint.color = checkTextColor
             addReaction()
         } else {
             //TODO("add emoji by click on plus")

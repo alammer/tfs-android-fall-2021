@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="12dp">
+    android:background="@color/layout_bg">
 
     <TextView
         android:id="@+id/tvTopic"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="center"
+        android:background="@color/view_bg"
         android:text="Topic: #testing"
-        android:textColor="@color/purple_200"
+        android:textColor="@color/edit_hint_color"
         android:textSize="20sp"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,57 +21,94 @@
         android:id="@+id/rvTopic"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/lSend"
+        android:paddingStart="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/sendBlock"
         app:layout_constraintTop_toBottomOf="@+id/tvTopic" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/lSend"
+        android:id="@+id/sendBlock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"
         android:paddingTop="6dp"
         android:paddingEnd="16dp"
         android:paddingBottom="6dp"
+        android:background="@color/control_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvTopic">
 
-        <EditText
-            android:id="@+id/etTopicName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="#testing"
-            android:textColor="@color/purple_200"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/etMessage"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/etMessage"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiTopic"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="6dp"
+            app:boxCornerRadiusBottomEnd="90dp"
+            app:boxCornerRadiusBottomStart="90dp"
+            app:boxCornerRadiusTopEnd="90dp"
+            app:boxCornerRadiusTopStart="90dp"
+            app:boxBackgroundColor="@color/edit_bg"
+            app:boxStrokeColor="@null"
+            app:hintEnabled="false"
+            app:layout_constraintBottom_toTopOf="@id/tiMessage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTopicName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/edit_hint_color"
+                android:hint="#testing"
+                android:textColor="@color/purple_200"
+                android:textSize="20sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiMessage"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_marginEnd="12dp"
-            android:text="Написать..."
-            android:textColor="@color/purple_200"
-            android:textSize="20sp"
+            android:gravity="bottom"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:boxCornerRadiusBottomEnd="90dp"
+            app:boxCornerRadiusBottomStart="90dp"
+            app:boxCornerRadiusTopEnd="90dp"
+            app:boxCornerRadiusTopStart="90dp"
+            app:boxBackgroundColor="@color/edit_bg"
+            app:hintEnabled="false"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgPlus"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etTopicName" />
+            app:layout_constraintTop_toBottomOf="@+id/tiTopic">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etMessageBody"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColorHint="@color/edit_hint_color"
+                android:paddingStart="20dp"
+                android:hint="Написать..."
+                android:textColor="@color/purple_200"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/imgPlus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:src="@drawable/ic_text_plus"
+            android:src="@drawable/ic_send_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/etMessage"
-            app:layout_constraintTop_toBottomOf="@id/etTopicName" />
+            app:layout_constraintStart_toEndOf="@id/tiMessage"
+            app:layout_constraintTop_toBottomOf="@id/tiTopic" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

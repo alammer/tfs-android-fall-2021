@@ -33,30 +33,32 @@ class UserMessageLayout @JvmOverloads constructor(
     private val messageCoordinate = PointF()
     private var staticLayout: StaticLayout? = null
 
+    private val textColor = Color.parseColor("#FAFAFA")
+
     private val namePaint = Paint().apply {
         isAntiAlias = true
-        color = Color.GREEN
+        color = Color.parseColor("#2A9D8F")
         textSize = 14.spToPixels()
         textAlign = Paint.Align.LEFT
     }
 
     private val messagePaint = Paint().apply {
         isAntiAlias = true
-        color = Color.WHITE
+        color = textColor
         textSize = 16.spToPixels()
         textAlign = Paint.Align.LEFT
     }
 
     private val staticPaint = TextPaint().apply {
         isAntiAlias = true
-        color = Color.WHITE
+        color = textColor
         textSize = 16.spToPixels()
         textAlign = Paint.Align.LEFT
     }
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
-        color = DEFAUL_BG_COLOR
+        color = Color.parseColor("#1C1C1C")
     }
 
     init {
@@ -164,7 +166,7 @@ class UserMessageLayout @JvmOverloads constructor(
         private val INNER_PADDING = 4.dpToPixels()
         private val BOTTOM_PADDING = 20.dpToPixels()
         private val MAX_WIDTH = 265.dpToPixels() - END_PADDING - START_PADDING
-        private const val DEFAUL_BG_COLOR = Color.DKGRAY
+        private const val DEFAUL_BG_COLOR = "            android:textColorHint=\"@color/edit_hint_color\""
     }
 
 }

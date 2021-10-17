@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginTop="20dp">
 
         <com.example.tfs.customviews.PostLayout
             android:id="@+id/cvPost"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:layout_height="wrap_content">
 
             <com.example.tfs.customviews.UserAvatarView
                 android:id="@+id/cvAvatar"
                 android:layout_width="@dimen/user_avatar_size"
                 android:layout_height="@dimen/user_avatar_size"
-                android:layout_marginStart="4dp"
                 android:src="@drawable/bad" />
 
         </com.example.tfs.customviews.PostLayout>
