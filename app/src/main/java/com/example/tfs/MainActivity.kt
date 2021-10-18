@@ -7,9 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tfs.customviews.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicViewAdapter
 
-private const val START_CODE_POINT = 0x1f600
+const val START_CODE_POINT = 0x1f600
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +26,10 @@ class MainActivity : AppCompatActivity() {
         showContactList(generateTestTopic())
 
         sendButton.setOnClickListener {
-            topicListAdapter.submitList(generateTestTopic())
+            EmojiDialogFragment().apply {
+                show(supportFragmentManager, tag)
+            }
+            //topicListAdapter.submitList(generateTestTopic())
         }
     }
 
