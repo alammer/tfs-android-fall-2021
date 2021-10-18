@@ -13,21 +13,17 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <!--        <item name="android:windowBackground">@android:color/darker_gray</item>-->
-
         <item name="textInputStyle">@style/AppTheme.TextInputLayout.OutlinedBox</item>
     </style>
 
     <style name="AppTheme.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
         <item name="materialThemeOverlay">
             @style/AppTheme.ThemeOverlay.TextInputEditText.OutlinedBox
         </item>
-
     </style>
 
     <style name="AppTheme.ThemeOverlay.TextInputEditText.OutlinedBox" parent="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
-
         <item name="android:textSize">20sp</item>
-
     </style>
+
 </resources>
