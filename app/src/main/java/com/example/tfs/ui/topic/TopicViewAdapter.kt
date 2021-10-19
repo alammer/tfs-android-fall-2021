@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,13 +32,13 @@ class TopicViewAdapter :
 
         holder.postView.getChildAt(2)?.let { emojiGroup ->
             if (emojiGroup is ViewGroup) {
-                (0 until emojiGroup.childCount).forEach { emojiPosition ->
+                (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
                     emojiGroup.getChildAt(emojiPosition).setOnClickListener {
                         this.recyclerViewCallback?.onRecycleViewItemClick(position, emojiPosition)
                     }
                 }
                 //click on "+"
-                emojiGroup.getChildAt(emojiGroup.childCount -1).setOnClickListener {
+                emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
                     this.recyclerViewCallback?.onRecycleViewItemClick(position, 555)//this.recyclerViewCallback?.onRecycleViewLongPress(position)
                 }
             }

@@ -1,5 +1,5 @@
 package com.example.tfs.customviews
 
-class Reaction (val emoji: Int?, val count: Int?, val userId: List<Int>? = null)
+class Reaction (val emoji: Int, var count: Int, val userId: List<Int>? = null, var isClicked: Boolean = false)
 
-class Post (val reaction: List<Reaction>? = null, val message: String, val isOwner: Boolean = false)
+class Post (val reaction: MutableList<Reaction>, val message: String, val isOwner: Boolean = false)

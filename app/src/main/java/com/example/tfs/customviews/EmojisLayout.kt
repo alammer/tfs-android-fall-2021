@@ -80,10 +80,10 @@ class EmojisLayout @JvmOverloads constructor(
             addView(view)
         }
 
-        val addView = EmojiView(context)
+        val plusView = EmojiView(context)
         val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-        addView.layoutParams = params
-        addView(addView)
+        plusView.layoutParams = params
+        addView(plusView)
 
         requestLayout()
     }

@@ -19,6 +19,7 @@ class EmojiView @JvmOverloads constructor(
     defStyleRes: Int = 0,
     emojiCode: Int? = null,
     count: Int? = null,
+    isClicked: Boolean = false
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private var text = ""
@@ -27,7 +28,6 @@ class EmojiView @JvmOverloads constructor(
     private val textCoordinate = PointF()
     private val centerPoint = PointF()
     private var isPlusButton = false
-    private var alreadyClicked = false
 
     private var currentCount = 0
     private var emojiGliph = ""
@@ -124,41 +124,40 @@ class EmojiView @JvmOverloads constructor(
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.i("MainTouchEvent", "Function called: onTouchEvent() $event")
-        if (!alreadyClicked) {
-            when (event?.action) {
-                ACTION_DOWN -> onClickReaction()
-                else -> return false
-            }
-        }
-        return super.onTouchEvent(event)
-    }
+//    override fun onTouchEvent(event: MotionEvent?): Boolean {
+//        if (!alreadyClicked) {
+//            when (event?.action) {
+//                ACTION_DOWN -> onClickReaction()
+//                else -> return false
+//            }
+//        }
+//        return super.onTouchEvent(event)
+//    }
 
-    private fun onClickReaction(): Boolean {
-        if (!isPlusButton) {
-            alreadyClicked = true
-            backPaint.color = checkBackColor
-            textPaint.color = checkTextColor
-            addReaction()
-        } else {
-            return true
-        }
-        return true
-    }
-
-    private fun addReaction() {
-        val newCount = currentCount + 1
-        val newReaction = "$emojiGliph $newCount"
-        if (newReaction.length > text.length) {
-            text = newReaction
-            requestLayout()
-        } else {
-            text = newReaction
-            invalidate()
-        }
-        currentCount++
-    }
+//    private fun onClickReaction(): Boolean {
+//        if (!isPlusButton) {
+//            alreadyClicked = true
+//            backPaint.color = checkBackColor
+//            textPaint.color = checkTextColor
+//            addReaction()
+//        } else {
+//            return true
+//        }
+//        return true
+//    }
+//
+//    private fun addReaction() {
+//        val newCount = currentCount + 1
+//        val newReaction = "$emojiGliph $newCount"
+//        if (newReaction.length > text.length) {
+//            text = newReaction
+//            requestLayout()
+//        } else {
+//            text = newReaction
+//            invalidate()
+//        }
+//        currentCount++
+//    }
 
     private fun setReaction(emoji: String, count: Int) {
         text = "$emoji $count"

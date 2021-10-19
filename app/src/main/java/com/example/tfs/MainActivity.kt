@@ -21,35 +21,52 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     private lateinit var topicRecycler: RecyclerView
     private lateinit var topicListAdapter: TopicViewAdapter
+    private val dataSet = generateTestTopic()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
-            Log.i("MainActivity", "Function called: result listener")
-            val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
-            Log.i("MainActivity", "Function called: Get emoji code $selectedEmoji")
-        }
-
         val sendButton = findViewById<ImageView>(R.id.imgPlus)
 
-        showContactList(generateTestTopic())
+        showTopicList(dataSet)
 
-        sendButton.setOnClickListener {
-            EmojiDialogFragment().apply {
-                show(supportFragmentManager, tag)
-            }
-            //topicListAdapter.submitList(generateTestTopic())
+//        sendButton.setOnClickListener {
+//            EmojiDialogFragment().apply {
+//                show(supportFragmentManager, tag)
+//            }
+//        }
+    }
+
+    override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
+        if (dataSet[position].reaction[emojiPosition].isClicked) {
+            dataSet[position].reaction[emojiPosition].count --
+            dataSet[position].reaction[emojiPosition].isClicked = false
+        } else {
+            dataSet[position].reaction[emojiPosition].count ++
+            dataSet[position].reaction[emojiPosition].isClicked = true
+        }
+        topicListAdapter.submitList(dataSet.filter {it.reaction.any {emoji ->  emoji.count == 0 } })
+    }
+
+    override fun onRecycleViewLongPress(position: Int) {
+        supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
+            val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
+            dataSet[position].reaction.firstOrNull { it.emoji == selectedEmoji }?.let {
+               it.count ++
+               it.isClicked = true
+            } ?: dataSet[position].reaction.add(Reaction(selectedEmoji, 1, null, true))
+
+            topicListAdapter.submitList(dataSet)
         }
     }
 
-    private fun showContactList(contactList: List<Post>) {
+    private fun showTopicList(postList: List<Post>) {
         topicRecycler = findViewById(R.id.rvTopic)
         topicListAdapter = TopicViewAdapter()
         topicRecycler.adapter = topicListAdapter
         topicListAdapter.setOnCallbackListener(this)
-        topicListAdapter.submitList(contactList)
+        topicListAdapter.submitList(postList)
 
         topicRecycler.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.VERTICAL
@@ -57,15 +74,17 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         topicRecycler.visibility = View.VISIBLE
 
     }
+    
+    
 
-    private fun generateTestTopic(): List<Post> {
+    private fun generateTestTopic(): MutableList<Post> {
         val testTopic = mutableListOf<Post>()
 
         (0..(0..20).random()).forEach { _ ->
             testTopic.add(Post(generateTestReaction(), generateTestMessage()))
         }
 
-        return testTopic.toList()
+        return testTopic
     }
 
     private fun generateTestMessage(): String {
@@ -78,22 +97,18 @@ I would suggest using the GONE approach...
         return testMessage.substring((1 until (testMessage.length / 2)).random(), (testMessage.length / 2..testMessage.length).random() )
     }
 
-    private fun generateTestReaction(): List<Reaction> {
+    private fun generateTestReaction(): MutableList<Reaction> {
         val emojiSet = List((0..10).random()) {
             Reaction(
                 START_CODE_POINT + (0..40).random(),
-                (0..1000).random()
+                (0..1000).random(),
+                null,
+                it % 2 == 0
             )
         }
-        return emojiSet
+        return emojiSet.toMutableList()
     }
 
-    override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
-        Log.i("MainActivity", "ItemClick message positon $position emoji position $emojiPosition")
-    }
-
-    override fun onRecycleViewLongPress(position: Int) {
-        Log.i("MainActivity", "LongClick positon $position")
-    }
+    
 }
 
