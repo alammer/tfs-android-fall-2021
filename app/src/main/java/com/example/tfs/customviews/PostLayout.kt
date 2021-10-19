@@ -87,8 +87,11 @@ class PostLayout @JvmOverloads constructor(
             requestLayout()
         }
 
-        val messageView = UserMessageLayout(context, userMessage = data.message)
-        addView(messageView)
+        if (data.isOwner) {
+            addView(OwnerMessageLayout(context, userMessage = data.message))
+        } else {
+            addView(UserMessageLayout(context, userMessage = data.message))
+        }
 
         data.reaction.filter { it.count > 0 }.let {
             val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)

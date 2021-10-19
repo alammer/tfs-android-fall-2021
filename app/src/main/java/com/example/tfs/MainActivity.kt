@@ -1,7 +1,10 @@
 package com.example.tfs
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +23,9 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     private lateinit var topicRecycler: RecyclerView
     private lateinit var topicListAdapter: TopicViewAdapter
+    private lateinit var textMessage: EditText
+    private lateinit var sendButton: ImageView
+
     private var dataSet = generateTestTopic()
     private var currentPost = -1
 
@@ -27,6 +33,8 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initSendView()
+        onChangeMessage()
         showTopicList(dataSet)
 
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
@@ -37,6 +45,16 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
             } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
             topicListAdapter.submitList(dataSet)
             topicListAdapter.notifyDataSetChanged()
+        }
+
+        sendButton.setOnClickListener {
+            if (textMessage.text.isNotBlank()) {
+                dataSet.add(Post(message = textMessage.text.toString(), isOwner = true))
+                topicListAdapter.submitList(dataSet)
+                topicListAdapter.notifyDataSetChanged()
+                textMessage.text.clear()
+                sendButton.setImageResource(R.drawable.ic_text_plus)
+            }
         }
     }
 
@@ -58,6 +76,34 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         EmojiDialogFragment().apply {
             show(supportFragmentManager, tag)
         }
+    }
+
+    private fun onChangeMessage() {
+        textMessage.addTextChangedListener(object : TextWatcher {
+            var changeImage = false
+            override fun afterTextChanged(p0: Editable?) {
+                if (textMessage.text.isNotBlank() && !changeImage) {
+                    sendButton.setImageResource(R.drawable.ic_send_arrow)
+                    changeImage = true
+                }
+                if (textMessage.text.isBlank() && changeImage) {
+                    sendButton.setImageResource(R.drawable.ic_text_plus)
+                        changeImage = false
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+        })
+    }
+
+    private fun initSendView() {
+        textMessage = findViewById(R.id.etMessageBody)
+        sendButton = findViewById(R.id.imgPlus)
     }
 
     private fun showTopicList(postList: List<Post>) {
