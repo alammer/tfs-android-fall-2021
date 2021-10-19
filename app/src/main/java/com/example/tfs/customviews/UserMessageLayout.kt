@@ -7,13 +7,7 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
-import android.view.MotionEvent
-import android.view.MotionEvent.ACTION_DOWN
 import android.view.View
-import com.example.tfs.REQUEST_KEY
-import com.example.tfs.RESULT_KEY
-import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
 import kotlin.math.max
@@ -26,7 +20,7 @@ class UserMessageLayout @JvmOverloads constructor(
     userName: String = "Anonimous",
     userMessage: String = "Error! Message not found!",
     timeStamp: String? = null
-) : View(context, attrs, defStyleAttr, defStyleRes), View.OnLongClickListener {
+) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private var name = ""
     private var nameWidth = 0
@@ -139,22 +133,6 @@ class UserMessageLayout @JvmOverloads constructor(
         }
     }
 
-    override fun setOnLongClickListener(l: OnLongClickListener?) {
-        Log.i("UserMessageLayout", "Function called: setOnLongClickListener()")
-        super.setOnLongClickListener(l)
-
-    }
-
-    override fun onLongClick(v: View?): Boolean {
-        Log.i("UserMessageLayout", "Function called: onLongClick()")
-        EmojiDialogFragment().apply {
-            this.activity?.supportFragmentManager?.let { show(it, tag) }
-            return true
-        }
-        return false
-    }
-
-
     private fun multiLineDraw(message: String) {
         staticLayout = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             StaticLayout(
@@ -188,6 +166,5 @@ class UserMessageLayout @JvmOverloads constructor(
         private val INNER_PADDING = 4.dpToPixels()
         private val BOTTOM_PADDING = 20.dpToPixels()
         private val MAX_WIDTH = 265.dpToPixels() - END_PADDING - START_PADDING
-        private const val DEFAUL_BG_COLOR = "            android:textColorHint=\"@color/edit_hint_color\""
     }
 }

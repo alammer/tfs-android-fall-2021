@@ -2,11 +2,9 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
-import com.example.tfs.util.toast
 import kotlin.math.max
 
 class PostLayout @JvmOverloads constructor(
@@ -87,13 +85,12 @@ class PostLayout @JvmOverloads constructor(
             removeViewAt(2)
             removeViewAt(1)
             requestLayout()
-            //context.toast("try to update custom group")
         }
 
         val messageView = UserMessageLayout(context, userMessage = data.message)
         addView(messageView)
 
-        data.reaction?.let {
+        data.reaction.filter { it.count > 0 }.let {
             val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
             val emojisLayout = EmojisLayout(context)
             emojisLayout.layoutParams = params

@@ -73,17 +73,20 @@ class EmojisLayout @JvmOverloads constructor(
             val view = EmojiView(
                 context,
                 emojiCode = it.emoji,
-                count = it.count
+                count = it.count,
+                isClicked = it.isClicked
             )
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
             view.layoutParams = params
             addView(view)
         }
 
-        val plusView = EmojiView(context)
-        val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-        plusView.layoutParams = params
-        addView(plusView)
+        if (data.isNotEmpty()) {
+            val plusView = PlusView(context)
+            val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
+            plusView.layoutParams = params
+            addView(plusView)
+        }
 
         requestLayout()
     }

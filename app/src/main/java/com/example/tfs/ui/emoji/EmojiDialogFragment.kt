@@ -1,12 +1,9 @@
 package com.example.tfs.ui.emoji
 
-import android.icu.lang.UCharacter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.GridLayoutManager
@@ -36,7 +33,6 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
                 REQUEST_KEY,
                 bundleOf(RESULT_KEY to emojiCode)
             )
-
             dismiss()
         })
         emojiSheetRecycler.adapter = emojiAdapter

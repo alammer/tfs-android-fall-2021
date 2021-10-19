@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.customviews.PostLayout
 import com.example.tfs.customviews.Post
+import com.example.tfs.customviews.PostLayout
 
 class TopicViewAdapter :
-    androidx.recyclerview.widget.ListAdapter<Post, TopicViewAdapter.MessageViewHolder>(ContactDiffCallback()) {
+    ListAdapter<Post, TopicViewAdapter.MessageViewHolder>(MessageDiffCallback()) {
 
     var recyclerViewCallback: TopicAdapterCallback? = null
 
@@ -31,7 +32,7 @@ class TopicViewAdapter :
         }
 
         holder.postView.getChildAt(2)?.let { emojiGroup ->
-            if (emojiGroup is ViewGroup) {
+            if (emojiGroup is ViewGroup && emojiGroup.childCount > 1) {
                 (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
                     emojiGroup.getChildAt(emojiPosition).setOnClickListener {
                         this.recyclerViewCallback?.onRecycleViewItemClick(position, emojiPosition)
@@ -39,7 +40,7 @@ class TopicViewAdapter :
                 }
                 //click on "+"
                 emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
-                    this.recyclerViewCallback?.onRecycleViewItemClick(position, 555)//this.recyclerViewCallback?.onRecycleViewLongPress(position)
+                    this.recyclerViewCallback?.onRecycleViewLongPress(position)
                 }
             }
         }
@@ -55,9 +56,10 @@ class TopicViewAdapter :
     }
 }
 
-private class ContactDiffCallback : DiffUtil.ItemCallback<Post>() {
+private class MessageDiffCallback : DiffUtil.ItemCallback<Post>() {
 
-    override fun areItemsTheSame(oldItem: Post, newItem: Post) = oldItem.message == newItem.message
+    override fun areItemsTheSame(oldItem: Post, newItem: Post) = oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: Post, newItem: Post) = oldItem.equals(newItem)
+    override fun areContentsTheSame(oldItem: Post, newItem: Post) =
+        oldItem.reaction == newItem.reaction
 }
