@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 
-class EmojiRecyclerAdapter :
+class EmojiRecyclerAdapter(private val clickListener: EmojiClickListener) :
     ListAdapter<Int, EmojiRecyclerAdapter.ContactViewHolder>(ContactDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -21,6 +21,7 @@ class EmojiRecyclerAdapter :
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val item = getItem(position)
         holder.emojiTextView.text = StringBuilder().appendCodePoint(item).toString()
+        holder.emojiTextView.setOnClickListener { clickListener.onClick(item)}
     }
 
     class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,4 +35,8 @@ private class ContactDiffCallback : DiffUtil.ItemCallback<Int>() {
         oldItem == newItem
 
     override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
+}
+
+class EmojiClickListener(val clickListener: (emoji: Int) -> Unit, ) {
+    fun onClick(emoji: Int) = clickListener(emoji)
 }

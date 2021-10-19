@@ -2,6 +2,7 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.example.tfs.util.dpToPixels
@@ -99,7 +100,6 @@ class PostLayout @JvmOverloads constructor(
             emojisLayout.setReactionData(it)
             addView(emojisLayout)
         }
-
         requestLayout()
     }
 
@@ -107,6 +107,4 @@ class PostLayout @JvmOverloads constructor(
         private var CHILD_DIVIDER = 8.dpToPixels()
         private val VIEW_WIDTH = 265.dpToPixels()
     }
-
-
 }

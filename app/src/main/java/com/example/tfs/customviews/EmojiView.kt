@@ -3,6 +3,7 @@ package com.example.tfs.customviews
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
@@ -124,6 +125,7 @@ class EmojiView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.i("MainTouchEvent", "Function called: onTouchEvent() $event")
         if (!alreadyClicked) {
             when (event?.action) {
                 ACTION_DOWN -> onClickReaction()
@@ -140,7 +142,7 @@ class EmojiView @JvmOverloads constructor(
             textPaint.color = checkTextColor
             addReaction()
         } else {
-            //TODO("add emoji by click on plus")
+            return true
         }
         return true
     }

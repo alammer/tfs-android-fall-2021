@@ -37,7 +37,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiTopic"
-            style="@style/AppTheme.TextInputLayout.OutlinedBox"
+            style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingVertical="6dp"
@@ -68,7 +68,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiMessage"
-            style="@style/AppTheme.TextInputLayout.OutlinedBox"
+            style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
