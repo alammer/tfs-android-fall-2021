@@ -11,7 +11,7 @@
     <color name="layout_bg">#121212</color>
     <color name="control_bg">#1E1E1E</color>
     <color name="view_bg">#1C1C1C</color>
-    <color name="edit_bg">#282828</color>
-    <color name="edit_hint_color">#CCCCCC</color>
+    <color name="new_message_bg">#282828</color>
+    <color name="new_message_text">#CCCCCC</color>
 
 </resources>

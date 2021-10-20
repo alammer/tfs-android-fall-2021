@@ -18,9 +18,7 @@
     </style>
 
     <style name="ThemeOverlay.App.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">
-            @style/ThemeOverlay.App.TextInputEditText.OutlinedBox
-        </item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputEditText.OutlinedBox</item>
     </style>
 
     <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">

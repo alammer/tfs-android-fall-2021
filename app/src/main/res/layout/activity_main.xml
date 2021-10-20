@@ -12,16 +12,16 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:background="@color/view_bg"
-        android:text="Topic: #testing"
-        android:textColor="@color/edit_hint_color"
-        android:textSize="20sp"
+        android:text="@string/test_topic_name"
+        android:textColor="@color/new_message_text"
+        android:textSize="@dimen/large_text_size"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTopic"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingStart="12dp"
+        android:paddingHorizontal="@dimen/activity_main_base_padding"
         app:layout_constraintBottom_toTopOf="@+id/sendBlock"
         app:layout_constraintTop_toBottomOf="@+id/tvTopic" />
 
@@ -29,8 +29,8 @@
         android:id="@+id/sendBlock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/activity_main_base_padding"
+        android:paddingEnd="@dimen/activity_main_base_padding"
         android:background="@color/control_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvTopic">
@@ -40,15 +40,9 @@
             style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingVertical="6dp"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-            app:boxCornerRadiusBottomEnd="90dp"
-            app:boxCornerRadiusBottomStart="90dp"
-            app:boxCornerRadiusTopEnd="90dp"
-            app:boxCornerRadiusTopStart="90dp"
-            app:boxBackgroundColor="@color/edit_bg"
-            app:hintEnabled="false"
+            app:boxBackgroundColor="@color/new_message_bg"
             app:layout_constraintBottom_toTopOf="@id/tiMessage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,11 +52,11 @@
                 android:id="@+id/etTopicName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/edit_hint_color"
-                android:paddingStart="21dp"
-                android:paddingVertical="11dp"
-                android:hint="#testing"
-                android:textColor="@color/purple_200" />
+                android:textColorHint="@color/new_message_text"
+                android:paddingHorizontal="@dimen/new_message_horizontal_padding"
+                android:paddingVertical="12dp"
+                android:hint="@string/channel_name_hint"
+                android:textColor="@color/new_message_text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,15 +66,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:paddingVertical="6dp"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-            app:boxCornerRadiusBottomEnd="90dp"
-            app:boxCornerRadiusBottomStart="90dp"
-            app:boxCornerRadiusTopEnd="90dp"
-            app:boxCornerRadiusTopStart="90dp"
-            app:boxBackgroundColor="@color/edit_bg"
-            app:hintEnabled="false"
+            app:boxBackgroundColor="@color/new_message_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgPlus"
             app:layout_constraintStart_toStartOf="parent"
@@ -90,12 +78,11 @@
                 android:id="@+id/etMessageBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/edit_hint_color"
-                android:paddingStart="21dp"
+                android:textColorHint="@color/new_message_text"
+                android:paddingHorizontal="@dimen/new_message_horizontal_padding"
                 android:paddingVertical="16dp"
-                android:hint="Написать..."
-                android:textColor="@color/purple_200"
-                />
+                android:hint="@string/message_input_hint"
+                android:textColor="@color/new_message_text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
