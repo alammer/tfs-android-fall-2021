@@ -40,8 +40,16 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
             dataSet[currentPost].reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
-                count = +1
-                isClicked = true
+                if (!isClicked) {
+                    count += 1
+                    isClicked = true
+                } else {
+                    count -= 1
+                    isClicked = false
+                    if (count == 0) {
+                        dataSet[currentPost].reaction.remove(this)
+                    }
+                }
             } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
             topicListAdapter.submitList(dataSet)
             topicListAdapter.notifyItemChanged(currentPost)

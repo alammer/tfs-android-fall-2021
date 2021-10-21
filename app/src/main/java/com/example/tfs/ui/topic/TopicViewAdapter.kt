@@ -27,21 +27,26 @@ class TopicViewAdapter :
 
         val childOffset = if (item.isOwner) 0 else 1
 
-        holder.postView.getChildAt(childOffset).setOnLongClickListener {
-            this.recyclerViewCallback?.onRecycleViewLongPress(position)
-            return@setOnLongClickListener true
-        }
+        if (!item.isOwner) {
+            holder.postView.getChildAt(childOffset).setOnLongClickListener {
+                this.recyclerViewCallback?.onRecycleViewLongPress(position)
+                return@setOnLongClickListener true
+            }
 
-        holder.postView.getChildAt(childOffset + 1)?.let { emojiGroup ->
-            if (emojiGroup is ViewGroup && emojiGroup.childCount > 1) {
-                (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
-                    emojiGroup.getChildAt(emojiPosition).setOnClickListener {
-                        this.recyclerViewCallback?.onRecycleViewItemClick(position, emojiPosition)
+            holder.postView.getChildAt(childOffset + 1)?.let { emojiGroup ->
+                if (emojiGroup is ViewGroup && emojiGroup.childCount > 1) {
+                    (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
+                        emojiGroup.getChildAt(emojiPosition).setOnClickListener {
+                            this.recyclerViewCallback?.onRecycleViewItemClick(
+                                position,
+                                emojiPosition
+                            )
+                        }
                     }
-                }
-                //click on "+"
-                emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
-                    this.recyclerViewCallback?.onRecycleViewLongPress(position)
+                    //click on "+"
+                    emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
+                        this.recyclerViewCallback?.onRecycleViewLongPress(position)
+                    }
                 }
             }
         }
