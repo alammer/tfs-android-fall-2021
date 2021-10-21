@@ -3,17 +3,18 @@ package com.example.tfs.ui.topic
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.get
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.customviews.Post
+import com.example.tfs.data.Post
 import com.example.tfs.customviews.PostLayout
 
 class TopicViewAdapter :
     ListAdapter<Post, TopicViewAdapter.MessageViewHolder>(MessageDiffCallback()) {
 
-    var recyclerViewCallback: TopicAdapterCallback? = null
+    private var recyclerViewCallback: TopicAdapterCallback? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val view =
@@ -25,12 +26,14 @@ class TopicViewAdapter :
         val item = getItem(position)
         holder.postView.createLayout(item)
 
-        holder.postView.getChildAt(1).setOnLongClickListener {
+        val childOffset = if (item.isOwner) 0 else 1
+
+        holder.postView.getChildAt(childOffset).setOnLongClickListener {
             this.recyclerViewCallback?.onRecycleViewLongPress(position)
             return@setOnLongClickListener true
         }
 
-        holder.postView.getChildAt(2)?.let { emojiGroup ->
+        holder.postView.getChildAt(childOffset + 1)?.let { emojiGroup ->
             if (emojiGroup is ViewGroup && emojiGroup.childCount > 1) {
                 (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
                     emojiGroup.getChildAt(emojiPosition).setOnClickListener {

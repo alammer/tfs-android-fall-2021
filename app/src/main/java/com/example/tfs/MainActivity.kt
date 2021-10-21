@@ -3,14 +3,15 @@ package com.example.tfs
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tfs.customviews.Post
-import com.example.tfs.customviews.Reaction
+import com.example.tfs.data.Post
+import com.example.tfs.data.Reaction
 import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
@@ -39,9 +40,9 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
-            dataSet[currentPost].reaction.firstOrNull { it.emoji == selectedEmoji }?.let {
-                it.count++
-                it.isClicked = true
+            dataSet[currentPost].reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
+                count =+ 1
+                isClicked = true
             } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
             topicListAdapter.submitList(dataSet)
             topicListAdapter.notifyDataSetChanged()
@@ -59,20 +60,19 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     }
 
     override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
-        if (dataSet[position].reaction[emojiPosition].isClicked) {
-            dataSet[position].reaction[emojiPosition].count--
-            dataSet[position].reaction[emojiPosition].isClicked = false
-        } else {
-            dataSet[position].reaction[emojiPosition].count++
-            dataSet[position].reaction[emojiPosition].isClicked = true
+        dataSet[position].reaction[emojiPosition].apply {
+            count = if (isClicked) count -1 else count + 1
+            isClicked = !isClicked
+            if (count == 0) {
+                dataSet[position].reaction.remove(this)
+            }
         }
-
         topicListAdapter.submitList(dataSet)
         topicListAdapter.notifyDataSetChanged()
     }
 
-    override fun onRecycleViewLongPress(position: Int) {
-        currentPost = position
+    override fun onRecycleViewLongPress(postPosition: Int) {
+        currentPost = postPosition
         EmojiDialogFragment().apply {
             show(supportFragmentManager, tag)
         }
@@ -124,9 +124,12 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         val testTopic = mutableListOf<Post>()
 
         (0..(0..20).random()).forEach { _ ->
-            testTopic.add(Post(generateTestReaction(), generateTestMessage()))
+            testTopic.add(Post(generateTestReaction(), generateTestMessage(), isOwner = true))
         }
 
+        testTopic.forEach {post ->
+            post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
+        }
         return testTopic
     }
 
@@ -147,7 +150,7 @@ I would suggest using the GONE approach...
         val emojiSet = List((0..10).random()) {
             Reaction(
                 START_CODE_POINT + (0..40).random(),
-                (0..1000).random(),
+                (0..100).random(),
                 null,
                 false
             )

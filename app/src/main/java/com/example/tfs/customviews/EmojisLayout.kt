@@ -3,6 +3,7 @@ package com.example.tfs.customviews
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
+import com.example.tfs.data.Reaction
 import com.example.tfs.util.dpToPixels
 
 class EmojisLayout @JvmOverloads constructor(

@@ -2,8 +2,11 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.example.tfs.data.Post
+import com.example.tfs.data.Reaction
 import com.example.tfs.util.dpToPixels
 import kotlin.math.max
 
@@ -14,19 +17,19 @@ class PostLayout @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
-    private val avatarChild: View?
-        get() = if (childCount > 0) getChildAt(0) else null
-    private val messageChild: View?
-        get() = if (childCount > 1) getChildAt(1) else null
-    private val emojiChild: View?
-        get() = if (childCount > 2) getChildAt(2) else null
+    private var avatarChild: View? = null
+    private var messageChild: View? = null
+    private var emojiChild: View? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        Log.i("PostLayout", "Function called: onMeasure() checkchild $childCount")
         checkChildCount()
 
         avatarChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         messageChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         emojiChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
+
+        Log.i("PostLayout", "ava ${avatarChild?.measuredHeight} message ${messageChild?.measuredHeight} emo ${emojiChild?.measuredHeight}")
 
         val avatarHeight = avatarChild?.measuredHeight ?: 0
         val messageHeight = messageChild?.measuredHeight ?: 0
@@ -77,29 +80,38 @@ class PostLayout @JvmOverloads constructor(
     }
 
     private fun checkChildCount() {
-        if (childCount > 3) error("CustomViewGroup should not contain more than 2 children")
+        if (childCount > 3) error("CustomViewGroup should not contain more than 3 children")
     }
 
     fun createLayout(data: Post) {
-        if (childCount > 1) {
-            removeViewAt(2)
-            removeViewAt(1)
-            requestLayout()
+        removeAllViews().also {
+            avatarChild = null
+            messageChild = null
+            emojiChild = null
         }
 
-        if (data.isOwner) {
+        var childOffset = 1
+
+        if(data.isOwner) {
+            childOffset = 0
             addView(OwnerMessageLayout(context, userMessage = data.message))
+            messageChild = getChildAt(0)
         } else {
+            addView(avatarChild)
+            avatarChild = getChildAt(0)
             addView(UserMessageLayout(context, userMessage = data.message))
+            messageChild = getChildAt(1)
         }
 
-        data.reaction.filter { it.count > 0 }.let {
+        if (data.reaction.any { it.count > 0 }) {
             val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
             val emojisLayout = EmojisLayout(context)
             emojisLayout.layoutParams = params
-            emojisLayout.setReactionData(it)
+            emojisLayout.setReactionData(data.reaction)
             addView(emojisLayout)
+            emojiChild = getChildAt(childOffset + 1)
         }
+
         requestLayout()
     }
 
