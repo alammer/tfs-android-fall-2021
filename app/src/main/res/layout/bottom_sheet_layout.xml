@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_bsd_rectangle"/>
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_bsd_rectangle" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEmoji"

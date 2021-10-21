@@ -21,7 +21,7 @@ class EmojiRecyclerAdapter(private val clickListener: EmojiClickListener) :
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val item = getItem(position)
         holder.emojiTextView.text = StringBuilder().appendCodePoint(item).toString()
-        holder.emojiTextView.setOnClickListener { clickListener.onClick(item)}
+        holder.emojiTextView.setOnClickListener { clickListener.onClick(item) }
     }
 
     class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,6 +37,7 @@ private class ContactDiffCallback : DiffUtil.ItemCallback<Int>() {
     override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
 }
 
-class EmojiClickListener(val clickListener: (emoji: Int) -> Unit, ) {
+class EmojiClickListener(val clickListener: (emoji: Int) -> Unit) {
+
     fun onClick(emoji: Int) = clickListener(emoji)
 }

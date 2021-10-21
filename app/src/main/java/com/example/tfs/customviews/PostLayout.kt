@@ -18,6 +18,7 @@ class PostLayout @JvmOverloads constructor(
     private var avatarChild: View? = null
     private var messageChild: View? = null
     private var emojiChild: View? = null
+    private var isOwner = false
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         checkChildCount()
@@ -30,7 +31,10 @@ class PostLayout @JvmOverloads constructor(
         val messageHeight = messageChild?.measuredHeight ?: 0
         val emojiHeight = emojiChild?.measuredHeight ?: 0
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
-        val height = max(avatarHeight, messageHeight + emojiHeight + CHILD_DIVIDER)
+        val height = if (!isOwner) max(
+            avatarHeight,
+            messageHeight + emojiHeight + CHILD_DIVIDER
+        ) else messageHeight + emojiHeight + CHILD_DIVIDER
 
         setMeasuredDimension(
             widthSize + paddingStart + paddingEnd,
@@ -45,18 +49,29 @@ class PostLayout @JvmOverloads constructor(
             paddingStart + (avatarChild?.measuredWidth ?: 0),
             paddingTop + (avatarChild?.measuredHeight ?: 0)
         )
-        messageChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
-            paddingTop,
+
+        val startPost = if (isOwner) {
+            r - (messageChild?.measuredWidth ?: 0) - paddingEnd - CHILD_DIVIDER - paddingStart
+        } else {
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart
+        }
+
+        val endPost = if (isOwner) {
+            r - CHILD_DIVIDER - paddingEnd - paddingStart
+        } else {
             paddingStart + (avatarChild?.measuredWidth
-                ?: 0) + CHILD_DIVIDER + (messageChild?.measuredWidth ?: 0),
+                ?: 0) + CHILD_DIVIDER + (messageChild?.measuredWidth ?: 0)
+        }
+        messageChild?.layout(
+            startPost,
+            paddingTop,
+            endPost,
             paddingTop + (messageChild?.measuredHeight ?: 0)
         )
         emojiChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
+            startPost,
             paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER,
-            paddingStart + (avatarChild?.measuredWidth
-                ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredWidth ?: 0),
+            endPost,
             paddingTop + (messageChild?.measuredHeight
                 ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0)
         )
@@ -85,10 +100,11 @@ class PostLayout @JvmOverloads constructor(
             emojiChild = null
         }
 
-        var childOffset = 1
+        val childOffset = if (data.isOwner) 0 else 1
 
-        if(data.isOwner) {
-            childOffset = 0
+        isOwner = data.isOwner
+
+        if (data.isOwner) {
             addView(OwnerMessageLayout(context, userMessage = data.message))
             messageChild = getChildAt(0)
         } else {

@@ -10,8 +10,8 @@
         android:id="@+id/tvTopic"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:gravity="center"
         android:background="@color/view_bg"
+        android:gravity="center"
         android:text="@string/test_topic_name"
         android:textColor="@color/new_message_text"
         android:textSize="@dimen/large_text_size"
@@ -29,9 +29,9 @@
         android:id="@+id/sendBlock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/control_bg"
         android:paddingStart="@dimen/activity_main_base_padding"
         android:paddingEnd="@dimen/activity_main_base_padding"
-        android:background="@color/control_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvTopic">
 
@@ -40,9 +40,9 @@
             style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:boxBackgroundColor="@color/new_message_bg"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-            app:boxBackgroundColor="@color/new_message_bg"
             app:layout_constraintBottom_toTopOf="@id/tiMessage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,11 +52,11 @@
                 android:id="@+id/etTopicName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/new_message_text"
+                android:hint="@string/channel_name_hint"
                 android:paddingHorizontal="@dimen/new_message_horizontal_padding"
                 android:paddingVertical="12dp"
-                android:hint="@string/channel_name_hint"
-                android:textColor="@color/new_message_text" />
+                android:textColor="@color/new_message_text"
+                android:textColorHint="@color/new_message_text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,9 +66,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
+            app:boxBackgroundColor="@color/new_message_bg"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-            app:boxBackgroundColor="@color/new_message_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgPlus"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,11 +78,11 @@
                 android:id="@+id/etMessageBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/new_message_text"
+                android:hint="@string/message_input_hint"
                 android:paddingHorizontal="@dimen/new_message_horizontal_padding"
                 android:paddingVertical="16dp"
-                android:hint="@string/message_input_hint"
-                android:textColor="@color/new_message_text" />
+                android:textColor="@color/new_message_text"
+                android:textColorHint="@color/new_message_text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

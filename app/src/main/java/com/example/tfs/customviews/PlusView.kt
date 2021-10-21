@@ -15,7 +15,6 @@ class PlusView @JvmOverloads constructor(
 
     private val backgroundRect = RectF()
     private val centerPoint = PointF()
-
     private val backColor = Color.parseColor("#1C1C1C")
 
     private val backPaint = Paint().apply {

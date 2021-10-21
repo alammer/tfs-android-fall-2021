@@ -15,7 +15,7 @@ import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
 
-const val START_CODE_POINT = 0x1f600
+const val EMOJI_START_CODE_POINT = 0x1f600
 const val REQUEST_KEY = "emogi_key"
 const val RESULT_KEY = "emoji_id"
 
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
             dataSet[currentPost].reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
-                count =+ 1
+                count = +1
                 isClicked = true
             } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
             topicListAdapter.submitList(dataSet)
@@ -60,13 +60,12 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
         dataSet[position].reaction[emojiPosition].apply {
-            count = if (isClicked) count -1 else count + 1
+            count = if (isClicked) count - 1 else count + 1
             isClicked = !isClicked
             if (count == 0) {
                 dataSet[position].reaction.remove(this)
             }
         }
-
         topicListAdapter.submitList(dataSet)
         topicListAdapter.notifyItemChanged(position)
     }
@@ -88,7 +87,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                 }
                 if (textMessage.text.isBlank() && changeImage) {
                     sendButton.setImageResource(R.drawable.ic_text_plus)
-                        changeImage = false
+                    changeImage = false
                 }
             }
 
@@ -124,13 +123,17 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         val testTopic = mutableListOf<Post>()
 
         (0..(0..20).random()).forEach {
-            testTopic.add(Post(generateTestReaction(), generateTestMessage(), isOwner = it % 3 == 0))
+            testTopic.add(
+                Post(
+                    generateTestReaction(),
+                    generateTestMessage(),
+                    isOwner = it % 3 == 0
+                )
+            )
             testTopic[it].avatar = R.drawable.bad
         }
 
-
-
-        testTopic.forEach {post ->
+        testTopic.forEach { post ->
             post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
         }
         return testTopic
@@ -152,7 +155,7 @@ I would suggest using the GONE approach...
     private fun generateTestReaction(): MutableList<Reaction> {
         val emojiSet = List((0..20).random()) {
             Reaction(
-                START_CODE_POINT + (0..40).random(),
+                EMOJI_START_CODE_POINT + (0..40).random(),
                 (0..100).random(),
                 null,
                 it % 3 == 0
