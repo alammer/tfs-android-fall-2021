@@ -155,7 +155,7 @@ I would suggest using the GONE approach...
     private fun generateTestReaction(): MutableList<Reaction> {
         val emojiSet = List((0..20).random()) {
             Reaction(
-                EMOJI_START_CODE_POINT + (0..40).random(),
+                EMOJI_START_CODE_POINT + (0..66).random(),
                 (0..100).random(),
                 null,
                 it % 3 == 0

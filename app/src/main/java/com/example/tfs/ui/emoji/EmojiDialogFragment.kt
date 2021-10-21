@@ -16,7 +16,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EmojiDialogFragment : BottomSheetDialogFragment() {
 
-    private lateinit var rootView: View
     private lateinit var emojiAdapter: EmojiRecyclerAdapter
     private lateinit var emojiSheetRecycler: RecyclerView
 
@@ -29,7 +28,7 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        emojiSheetRecycler = rootView.findViewById(R.id.rvEmoji)
+        emojiSheetRecycler = view.findViewById(R.id.rvEmoji)
         emojiAdapter = EmojiRecyclerAdapter(EmojiClickListener { emojiCode: Int ->
             setFragmentResult(
                 REQUEST_KEY,
@@ -39,7 +38,12 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         })
         emojiSheetRecycler.adapter = emojiAdapter
 
-        val emojiSet = List(150) { EMOJI_START_CODE_POINT + it }
+        val emojiSet = mutableListOf<Int>()
+
+        emojiSet.addAll(List(56) { EMOJI_START_CODE_POINT + it } )
+        emojiSet.addAll(List(14) { EMOJI_START_CODE_POINT + 0x41 + it } )
+        emojiSet.addAll(List(27) { 0x1f682 + it } )
+        emojiSet.addAll(List(26) { 0x1f920 + it } )
 
         emojiSheetRecycler.layoutManager =
             GridLayoutManager(context, 7, GridLayoutManager.VERTICAL, false)
