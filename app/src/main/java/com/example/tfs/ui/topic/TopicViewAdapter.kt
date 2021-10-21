@@ -63,7 +63,7 @@ class TopicViewAdapter :
 }
 
 private class MessageDiffCallback : DiffUtil.ItemCallback<Post>() {
-
+    //update logics
     override fun areItemsTheSame(oldItem: Post, newItem: Post) = oldItem == newItem
 
     override fun areContentsTheSame(oldItem: Post, newItem: Post) =

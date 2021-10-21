@@ -1,24 +1,33 @@
 package com.example.tfs
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tfs.data.Post
+
 import com.example.tfs.data.Reaction
+import com.example.tfs.data.TopicCell
 import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
+
+import java.time.LocalDateTime
+import java.util.*
 
 const val EMOJI_START_CODE_POINT = 0x1f600
 const val REQUEST_KEY = "emogi_key"
 const val RESULT_KEY = "emoji_id"
 
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     private lateinit var topicRecycler: RecyclerView
@@ -57,9 +66,11 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
         sendButton.setOnClickListener {
             if (textMessage.text.isNotBlank()) {
-                dataSet.add(Post(message = textMessage.text.toString(), isOwner = true))
+                dataSet.add(TopicCell.PostCell(message = textMessage.text.toString(), isOwner = true, timeStamp = LocalDateTime.now()))
                 topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemInserted(dataSet.size)
+                topicRecycler.scrollToPosition(dataSet.size - 1)
+                //TODO("HIDE KEYBOARD")
                 textMessage.text.clear()
                 sendButton.setImageResource(R.drawable.ic_text_plus)
             }
@@ -113,7 +124,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         sendButton = findViewById(R.id.imgPlus)
     }
 
-    private fun showTopicList(postList: List<Post>) {
+    private fun showTopicList(postList: List<TopicCell>) {
         topicRecycler = findViewById(R.id.rvTopic)
         topicListAdapter = TopicViewAdapter()
         topicRecycler.adapter = topicListAdapter
@@ -127,15 +138,18 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         topicListAdapter.submitList(postList)
     }
 
-    private fun generateTestTopic(): MutableList<Post> {
-        val testTopic = mutableListOf<Post>()
+    private fun generateTestTopic(): MutableList<TopicCell> {
+        val testTopic = mutableListOf<TopicCell.PostCell>()
 
-        (0..(0..20).random()).forEach {
+        val startTime = LocalDateTime.now().minusDays(3L)
+
+        (0..30).forEach {
             testTopic.add(
-                Post(
+                TopicCell.PostCell(
                     generateTestReaction(),
                     generateTestMessage(),
-                    isOwner = it % 3 == 0
+                    isOwner = it % 3 == 0,
+                    timeStamp = startTime.plusDays(it / 10L).plusHours( it / 2L).plusSeconds(it * 10L)
                 )
             )
             testTopic[it].avatar = R.drawable.bad
@@ -144,7 +158,19 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         testTopic.forEach { post ->
             post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
         }
-        return testTopic
+
+        val datedPostList = mutableListOf<TopicCell>()
+        var startTopicDay = testTopic[0].timeStamp.toLocalDate().atStartOfDay()
+        datedPostList.add(0, TopicCell.DateCell(timeStamp = startTime))
+        testTopic.forEachIndexed { index, post ->
+            if(post.timeStamp.minusDays(1L) > startTopicDay ) {
+                startTopicDay = post.timeStamp.toLocalDate().atStartOfDay()
+                datedPostList.add(TopicCell.DateCell(timeStamp = startTopicDay))
+            }
+            datedPostList.add(post)
+        }
+
+        return datedPostList
     }
 
     private fun generateTestMessage(): String {
