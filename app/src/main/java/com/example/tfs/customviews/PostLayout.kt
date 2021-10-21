@@ -2,11 +2,9 @@ package com.example.tfs.customviews
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.example.tfs.data.Post
-import com.example.tfs.data.Reaction
 import com.example.tfs.util.dpToPixels
 import kotlin.math.max
 
@@ -22,14 +20,11 @@ class PostLayout @JvmOverloads constructor(
     private var emojiChild: View? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        Log.i("PostLayout", "Function called: onMeasure() checkchild $childCount")
         checkChildCount()
 
         avatarChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         messageChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
         emojiChild?.let { measureChild(it, widthMeasureSpec, heightMeasureSpec) }
-
-        Log.i("PostLayout", "ava ${avatarChild?.measuredHeight} message ${messageChild?.measuredHeight} emo ${emojiChild?.measuredHeight}")
 
         val avatarHeight = avatarChild?.measuredHeight ?: 0
         val messageHeight = messageChild?.measuredHeight ?: 0
@@ -97,7 +92,7 @@ class PostLayout @JvmOverloads constructor(
             addView(OwnerMessageLayout(context, userMessage = data.message))
             messageChild = getChildAt(0)
         } else {
-            addView(avatarChild)
+            addView(UserAvatarView(context, avatarUri = data.avatar))
             avatarChild = getChildAt(0)
             addView(UserMessageLayout(context, userMessage = data.message))
             messageChild = getChildAt(1)
@@ -111,7 +106,6 @@ class PostLayout @JvmOverloads constructor(
             addView(emojisLayout)
             emojiChild = getChildAt(childOffset + 1)
         }
-
         requestLayout()
     }
 

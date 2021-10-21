@@ -3,7 +3,6 @@ package com.example.tfs.ui.topic
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -63,5 +62,5 @@ private class MessageDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post) = oldItem == newItem
 
     override fun areContentsTheSame(oldItem: Post, newItem: Post) =
-        oldItem.reaction == newItem.reaction
+        oldItem.message == newItem.message
 }

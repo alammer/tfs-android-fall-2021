@@ -10,12 +10,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.example.tfs.customviews.UserAvatarView
-                android:id="@+id/cvAvatar"
-                android:layout_width="@dimen/user_avatar_size"
-                android:layout_height="@dimen/user_avatar_size"
-                android:src="@drawable/bad" />
-
         </com.example.tfs.customviews.PostLayout>
 
 </FrameLayout>

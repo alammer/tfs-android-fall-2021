@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.View
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
-import kotlin.math.max
 
 class OwnerMessageLayout @JvmOverloads constructor(
     context: Context,

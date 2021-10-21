@@ -3,7 +3,6 @@ package com.example.tfs
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -45,14 +44,14 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                 isClicked = true
             } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
             topicListAdapter.submitList(dataSet)
-            topicListAdapter.notifyDataSetChanged()
+            topicListAdapter.notifyItemChanged(currentPost)
         }
 
         sendButton.setOnClickListener {
             if (textMessage.text.isNotBlank()) {
                 dataSet.add(Post(message = textMessage.text.toString(), isOwner = true))
                 topicListAdapter.submitList(dataSet)
-                topicListAdapter.notifyDataSetChanged()
+                topicListAdapter.notifyItemInserted(dataSet.size)
                 textMessage.text.clear()
                 sendButton.setImageResource(R.drawable.ic_text_plus)
             }
@@ -67,8 +66,9 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                 dataSet[position].reaction.remove(this)
             }
         }
+
         topicListAdapter.submitList(dataSet)
-        topicListAdapter.notifyDataSetChanged()
+        topicListAdapter.notifyItemChanged(position)
     }
 
     override fun onRecycleViewLongPress(postPosition: Int) {
@@ -123,9 +123,12 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     private fun generateTestTopic(): MutableList<Post> {
         val testTopic = mutableListOf<Post>()
 
-        (0..(0..20).random()).forEach { _ ->
-            testTopic.add(Post(generateTestReaction(), generateTestMessage(), isOwner = true))
+        (0..(0..20).random()).forEach {
+            testTopic.add(Post(generateTestReaction(), generateTestMessage(), isOwner = it % 3 == 0))
+            testTopic[it].avatar = R.drawable.bad
         }
+
+
 
         testTopic.forEach {post ->
             post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
@@ -147,12 +150,12 @@ I would suggest using the GONE approach...
     }
 
     private fun generateTestReaction(): MutableList<Reaction> {
-        val emojiSet = List((0..10).random()) {
+        val emojiSet = List((0..20).random()) {
             Reaction(
                 START_CODE_POINT + (0..40).random(),
                 (0..100).random(),
                 null,
-                false
+                it % 3 == 0
             )
         }
         return emojiSet.toMutableList()
