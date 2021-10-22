@@ -1,11 +1,9 @@
 package com.example.tfs
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,15 +11,12 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
 import com.example.tfs.ui.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
-
-import java.time.LocalDateTime
-import java.util.*
+import com.example.tfs.util.*
 
 const val EMOJI_START_CODE_POINT = 0x1f600
 const val REQUEST_KEY = "emogi_key"
@@ -35,7 +30,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     private lateinit var textMessage: EditText
     private lateinit var sendButton: ImageView
 
-    private var dataSet = generateTestTopic()
+    private var dataSet = TestDataGenerator.generateTestTopic()
     private var currentPost = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,25 +43,36 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
-            dataSet[currentPost].reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
-                if (!isClicked) {
-                    count += 1
-                    isClicked = true
-                } else {
-                    count -= 1
-                    isClicked = false
-                    if (count == 0) {
-                        dataSet[currentPost].reaction.remove(this)
-                    }
+            when (val post = dataSet[currentPost]) {
+                is TopicCell.PostCell -> {
+                    post.reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
+                        if (!isClicked) {
+                            count += 1
+                            isClicked = true
+                        } else {
+                            count -= 1
+                            isClicked = false
+                            if (count == 0) {
+                                post.reaction.remove(this)
+                            }
+                        }
+                    } ?: post.reaction.add(Reaction(selectedEmoji, 1, null, true))
+                    topicListAdapter.submitList(dataSet)
+                    topicListAdapter.notifyItemChanged(currentPost)
                 }
-            } ?: dataSet[currentPost].reaction.add(Reaction(selectedEmoji, 1, null, true))
-            topicListAdapter.submitList(dataSet)
-            topicListAdapter.notifyItemChanged(currentPost)
+                is TopicCell.DateCell -> return@setFragmentResultListener
+            }
         }
 
         sendButton.setOnClickListener {
             if (textMessage.text.isNotBlank()) {
-                dataSet.add(TopicCell.PostCell(message = textMessage.text.toString(), isOwner = true, timeStamp = LocalDateTime.now()))
+                dataSet.add(
+                    TopicCell.PostCell(
+                        message = textMessage.text.toString(),
+                        isOwner = true,
+                        timeStamp = System.currentTimeMillis()
+                    )
+                )
                 topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemInserted(dataSet.size)
                 topicRecycler.scrollToPosition(dataSet.size - 1)
@@ -78,15 +84,20 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     }
 
     override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
-        dataSet[position].reaction[emojiPosition].apply {
-            count = if (isClicked) count - 1 else count + 1
-            isClicked = !isClicked
-            if (count == 0) {
-                dataSet[position].reaction.remove(this)
+        when (val post = dataSet[currentPost]) {
+            is TopicCell.PostCell -> {
+                post.reaction[emojiPosition].apply {
+                    count = if (isClicked) count - 1 else count + 1
+                    isClicked = !isClicked
+                    if (count == 0) {
+                        post.reaction.remove(this)
+                    }
+                }
+                topicListAdapter.submitList(dataSet)
+                topicListAdapter.notifyItemChanged(position)
             }
+            is TopicCell.DateCell -> return //TODO()
         }
-        topicListAdapter.submitList(dataSet)
-        topicListAdapter.notifyItemChanged(position)
     }
 
     override fun onRecycleViewLongPress(postPosition: Int) {
@@ -134,68 +145,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
             orientation = LinearLayoutManager.VERTICAL
         }
         topicRecycler.visibility = View.VISIBLE
-
         topicListAdapter.submitList(postList)
-    }
-
-    private fun generateTestTopic(): MutableList<TopicCell> {
-        val testTopic = mutableListOf<TopicCell.PostCell>()
-
-        val startTime = LocalDateTime.now().minusDays(3L)
-
-        (0..30).forEach {
-            testTopic.add(
-                TopicCell.PostCell(
-                    generateTestReaction(),
-                    generateTestMessage(),
-                    isOwner = it % 3 == 0,
-                    timeStamp = startTime.plusDays(it / 10L).plusHours( it / 2L).plusSeconds(it * 10L)
-                )
-            )
-            testTopic[it].avatar = R.drawable.bad
-        }
-
-        testTopic.forEach { post ->
-            post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
-        }
-
-        val datedPostList = mutableListOf<TopicCell>()
-        var startTopicDay = testTopic[0].timeStamp.toLocalDate().atStartOfDay()
-        datedPostList.add(0, TopicCell.DateCell(timeStamp = startTime))
-        testTopic.forEachIndexed { index, post ->
-            if(post.timeStamp.minusDays(1L) > startTopicDay ) {
-                startTopicDay = post.timeStamp.toLocalDate().atStartOfDay()
-                datedPostList.add(TopicCell.DateCell(timeStamp = startTopicDay))
-            }
-            datedPostList.add(post)
-        }
-
-        return datedPostList
-    }
-
-    private fun generateTestMessage(): String {
-        val testMessage = """
-hi if are you new in android use this way Apply your view to make it gone GONE is one way, else, get hold of the parent view, and remove the child from there..... else get the parent layout and use this method an remove all child parentView.remove(child)
-
-I would suggest using the GONE approach...
-"""
-
-        return testMessage.substring(
-            (1 until (testMessage.length / 2)).random(),
-            (testMessage.length / 2..testMessage.length).random()
-        )
-    }
-
-    private fun generateTestReaction(): MutableList<Reaction> {
-        val emojiSet = List((0..20).random()) {
-            Reaction(
-                EMOJI_START_CODE_POINT + (0..66).random(),
-                (0..100).random(),
-                null,
-                it % 3 == 0
-            )
-        }
-        return emojiSet.toMutableList()
     }
 }
 

@@ -5,4 +5,5 @@
     <dimen name="activity_main_base_padding">12dp</dimen>
     <dimen name="new_message_horizontal_padding">20dp</dimen>
     <dimen name="emoji_gliph_size">40sp</dimen>
+    <dimen name="medium_text_size">14sp</dimen>
 </resources>

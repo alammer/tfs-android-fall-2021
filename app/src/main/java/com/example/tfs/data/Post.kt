@@ -1,18 +1,16 @@
 package com.example.tfs.data
 
-import java.time.LocalDateTime
-
 sealed class TopicCell {
-    class DateCell(val timeStamp: LocalDateTime) : TopicCell()
+
+    class DateCell(val postDate: String) : TopicCell()
     class PostCell(
         var reaction: MutableList<Reaction> = mutableListOf(),
         val message: String,
         val isOwner: Boolean = false,
         var avatar: Int? = null,
-        var timeStamp: LocalDateTime
+        var timeStamp: Long,
     ) : TopicCell()
 }
-
 
 class Reaction(
     val emoji: Int,

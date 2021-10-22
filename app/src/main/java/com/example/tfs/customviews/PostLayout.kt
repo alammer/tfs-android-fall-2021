@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import com.example.tfs.data.Post
+import com.example.tfs.data.TopicCell
 import com.example.tfs.util.dpToPixels
 import kotlin.math.max
 
@@ -93,7 +93,7 @@ class PostLayout @JvmOverloads constructor(
         if (childCount > 3) error("CustomViewGroup should not contain more than 3 children")
     }
 
-    fun createLayout(data: Post) {
+    fun createLayout(data: TopicCell.PostCell) {
         removeAllViews().also {
             avatarChild = null
             messageChild = null

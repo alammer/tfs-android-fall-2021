@@ -13,5 +13,6 @@
     <color name="view_bg">#1C1C1C</color>
     <color name="new_message_bg">#282828</color>
     <color name="new_message_text">#CCCCCC</color>
+    <color name="date_item_text_color">#999999</color>
 
 </resources>
