@@ -6,4 +6,5 @@
     <dimen name="new_message_horizontal_padding">20dp</dimen>
     <dimen name="emoji_gliph_size">40sp</dimen>
     <dimen name="medium_text_size">14sp</dimen>
+    <dimen name="topic_rv_item_vertical_margins">8dp</dimen>
 </resources>
