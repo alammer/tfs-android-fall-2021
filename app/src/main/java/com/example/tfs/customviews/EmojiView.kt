@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
 import kotlin.math.max
@@ -26,10 +28,10 @@ class EmojiView @JvmOverloads constructor(
     private var currentCount = 0
     private var emojiGliph = ""
 
-    private val backColor = Color.parseColor("#1C1C1C")
-    private val checkBackColor = Color.parseColor("#3A3A3A")
-    private val textColor = Color.parseColor("#CCCCCC")
-    private val checkTextColor = Color.parseColor("#EAEAEA")
+    private val backColor = ContextCompat.getColor(context, R.color.view_bg)
+    private val checkBackColor = ContextCompat.getColor(context, R.color.check_emoji_view_bg_color)
+    private val textColor = ContextCompat.getColor(context, R.color.emoji_text_color)
+    private val checkTextColor = ContextCompat.getColor(context, R.color.check_emoji_text_color)
 
     private val textPaint = Paint().apply {
         isAntiAlias = true

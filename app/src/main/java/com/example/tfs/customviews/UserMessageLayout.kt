@@ -8,6 +8,8 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
 import kotlin.math.max
@@ -33,11 +35,11 @@ class UserMessageLayout @JvmOverloads constructor(
     private val messageCoordinate = PointF()
     private var staticLayout: StaticLayout? = null
 
-    private val textColor = Color.parseColor("#FAFAFA")
+    private val textColor = ContextCompat.getColor(context, R.color.message_text_color)
 
     private val namePaint = Paint().apply {
         isAntiAlias = true
-        color = Color.parseColor("#2A9D8F")
+        color = ContextCompat.getColor(context, R.color.message_owner_text_color)
         textSize = 14.spToPixels()
         textAlign = Paint.Align.LEFT
     }
@@ -58,7 +60,7 @@ class UserMessageLayout @JvmOverloads constructor(
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
-        color = Color.parseColor("#1C1C1C")
+        color = ContextCompat.getColor(context, R.color.view_bg)
     }
 
     init {

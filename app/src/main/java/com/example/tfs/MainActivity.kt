@@ -16,9 +16,6 @@ import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
 import com.example.tfs.util.*
 
-const val REQUEST_KEY = "emogi_key"
-const val RESULT_KEY = "emoji_id"
-
 
 class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
@@ -138,4 +135,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         })
     }
 }
+
+const val REQUEST_KEY = "emogi_key"
+const val RESULT_KEY = "emoji_id"
 

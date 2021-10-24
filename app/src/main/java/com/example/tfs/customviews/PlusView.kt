@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 
 class PlusView @JvmOverloads constructor(
@@ -15,7 +17,7 @@ class PlusView @JvmOverloads constructor(
 
     private val backgroundRect = RectF()
     private val centerPoint = PointF()
-    private val backColor = Color.parseColor("#1C1C1C")
+    private val backColor = ContextCompat.getColor(context, R.color.view_bg)
 
     private val backPaint = Paint().apply {
         isAntiAlias = true

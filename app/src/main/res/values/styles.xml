@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ThemeOverlay.App.TextInputEditText.OutlinedBox" parent="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textSize">@dimen/large_text_size</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="boxCornerRadiusTopStart">90dp</item>
-        <item name="boxCornerRadiusTopEnd">90dp</item>
-        <item name="boxCornerRadiusBottomStart">90dp</item>
-        <item name="boxCornerRadiusBottomEnd">90dp</item>
-        <item name="hintEnabled">false</item>
-    </style>
-
     <style name="ModalBottomSheetDialog" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="backgroundTint">@color/view_bg</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.LargeComponent</item>

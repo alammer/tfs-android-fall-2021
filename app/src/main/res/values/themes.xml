@@ -13,12 +13,7 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <!--        <item name="android:windowBackground">@android:color/darker_gray</item>-->
-        <item name="textInputStyle">@style/ThemeOverlay.App.TextInputLayout.OutlinedBox</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
-    </style>
-
-    <style name="ThemeOverlay.App.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputEditText.OutlinedBox</item>
     </style>
 
     <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">

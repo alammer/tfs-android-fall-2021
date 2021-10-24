@@ -14,5 +14,10 @@
     <color name="new_message_bg">#282828</color>
     <color name="new_message_text">#CCCCCC</color>
     <color name="date_item_text_color">#999999</color>
+    <color name="message_text_color">#FAFAFA</color>
+    <color name="message_owner_text_color">#2A9D8F</color>
+    <color name="check_emoji_view_bg_color">#3A3A3A</color>
+    <color name="emoji_text_color">#CCCCCC</color>
+    <color name="check_emoji_text_color">#EAEAEA</color>
 
 </resources>
