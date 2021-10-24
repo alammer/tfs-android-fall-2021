@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     private lateinit var sendButton: ImageView
 
     private var dataSet = TestDataGenerator.generateTestTopic()
+
+    //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
     private var currentPost = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
