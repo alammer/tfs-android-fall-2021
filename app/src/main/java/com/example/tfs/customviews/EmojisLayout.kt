@@ -3,7 +3,6 @@ package com.example.tfs.customviews
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
-import com.example.tfs.data.Reaction
 import com.example.tfs.util.dpToPixels
 
 class EmojisLayout @JvmOverloads constructor(
@@ -63,33 +62,6 @@ class EmojisLayout @JvmOverloads constructor(
 
     override fun generateLayoutParams(p: LayoutParams): LayoutParams {
         return MarginLayoutParams(p)
-    }
-
-    fun setReactionData(data: List<Reaction>) {
-        addReaction(data)
-    }
-
-    private fun addReaction(data: List<Reaction>) {
-        data.forEach {
-            val view = EmojiView(
-                context,
-                emojiCode = it.emoji,
-                count = it.count,
-                isClicked = it.isClicked
-            )
-            val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-            view.layoutParams = params
-            addView(view)
-        }
-
-        if (data.isNotEmpty()) {
-            val plusView = PlusView(context)
-            val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-            plusView.layoutParams = params
-            addView(plusView)
-        }
-
-        requestLayout()
     }
 
     companion object {

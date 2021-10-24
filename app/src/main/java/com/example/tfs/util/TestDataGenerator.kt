@@ -1,15 +1,15 @@
 package com.example.tfs.util
 
-import com.example.tfs.EMOJI_START_CODE_POINT
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
+import com.example.tfs.ui.emoji.EMOJI_FACE_START_CODE
 
 object TestDataGenerator {
 
     fun generateTestTopic(): MutableList<TopicCell> {
         val testTopic = mutableListOf<TopicCell.PostCell>()
-        val startTime = System.currentTimeMillis() - 86400L * 23 * 1000
+        val startTime = System.currentTimeMillis() - 86400L * 500 * 1000
 
         (0..30).forEach {
             testTopic.add(
@@ -61,7 +61,7 @@ I would suggest using the GONE approach...
     private fun generateTestReaction(): MutableList<Reaction> {
         val emojiSet = List((0..20).random()) {
             Reaction(
-                EMOJI_START_CODE_POINT + (0..66).random(),
+                EMOJI_FACE_START_CODE + (0..66).random(),
                 (0..100).random(),
                 null,
                 it % 3 == 0
@@ -70,3 +70,4 @@ I would suggest using the GONE approach...
         return emojiSet.toMutableList()
     }
 }
+

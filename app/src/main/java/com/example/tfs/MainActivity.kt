@@ -1,13 +1,11 @@
 package com.example.tfs
 
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +16,10 @@ import com.example.tfs.ui.topic.TopicAdapterCallback
 import com.example.tfs.ui.topic.TopicViewAdapter
 import com.example.tfs.util.*
 
-const val EMOJI_START_CODE_POINT = 0x1f600
 const val REQUEST_KEY = "emogi_key"
 const val RESULT_KEY = "emoji_id"
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     private lateinit var topicRecycler: RecyclerView
@@ -42,21 +39,10 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         showTopicList(dataSet)
 
         supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
-            val selectedEmoji = bundle.getInt(RESULT_KEY, 0)
+            val emoji = bundle.getInt(RESULT_KEY, 0)
             when (val post = dataSet[currentPost]) {
                 is TopicCell.PostCell -> {
-                    post.reaction.firstOrNull { it.emoji == selectedEmoji }?.apply {
-                        if (!isClicked) {
-                            count += 1
-                            isClicked = true
-                        } else {
-                            count -= 1
-                            isClicked = false
-                            if (count == 0) {
-                                post.reaction.remove(this)
-                            }
-                        }
-                    } ?: post.reaction.add(Reaction(selectedEmoji, 1, null, true))
+                    updateReaction(emoji, post.reaction)
                     topicListAdapter.submitList(dataSet)
                     topicListAdapter.notifyItemChanged(currentPost)
                 }
@@ -83,16 +69,10 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         }
     }
 
-    override fun onRecycleViewItemClick(position: Int, emojiPosition: Int) {
-        when (val post = dataSet[currentPost]) {
+    override fun onRecycleViewItemClick(position: Int, emojiCode: Int) {
+        when (val post = dataSet[position]) {
             is TopicCell.PostCell -> {
-                post.reaction[emojiPosition].apply {
-                    count = if (isClicked) count - 1 else count + 1
-                    isClicked = !isClicked
-                    if (count == 0) {
-                        post.reaction.remove(this)
-                    }
-                }
+                updateReaction(emojiCode, post.reaction)
                 topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemChanged(position)
             }
@@ -100,11 +80,39 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
         }
     }
 
+    private fun initSendView() {
+        textMessage = findViewById(R.id.etMessage)
+        sendButton = findViewById(R.id.imgPlus)
+    }
+
+    private fun showTopicList(postList: List<TopicCell>) {
+        topicRecycler = findViewById(R.id.rvTopic)
+        topicListAdapter = TopicViewAdapter()
+        topicRecycler.adapter = topicListAdapter
+        topicListAdapter.setOnCallbackListener(this)
+
+        topicRecycler.layoutManager = LinearLayoutManager(this).apply {
+            orientation = LinearLayoutManager.VERTICAL
+        }
+        topicRecycler.visibility = View.VISIBLE
+        topicListAdapter.submitList(postList)
+    }
+
     override fun onRecycleViewLongPress(postPosition: Int) {
         currentPost = postPosition
         EmojiDialogFragment().apply {
             show(supportFragmentManager, tag)
         }
+    }
+
+    private fun updateReaction(emoji: Int, reaction: MutableList<Reaction>) {
+        reaction.firstOrNull { it.emoji == emoji }?.apply {
+            count = if (isClicked) count - 1 else count + 1
+            isClicked = !isClicked
+            if (count == 0) {
+                reaction.remove(this)
+            }
+        } ?: reaction.add(Reaction(emoji, 1, null, true))
     }
 
     private fun onChangeMessage() {
@@ -128,24 +136,6 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
             }
         })
-    }
-
-    private fun initSendView() {
-        textMessage = findViewById(R.id.etMessageBody)
-        sendButton = findViewById(R.id.imgPlus)
-    }
-
-    private fun showTopicList(postList: List<TopicCell>) {
-        topicRecycler = findViewById(R.id.rvTopic)
-        topicListAdapter = TopicViewAdapter()
-        topicRecycler.adapter = topicListAdapter
-        topicListAdapter.setOnCallbackListener(this)
-
-        topicRecycler.layoutManager = LinearLayoutManager(this).apply {
-            orientation = LinearLayoutManager.VERTICAL
-        }
-        topicRecycler.visibility = View.VISIBLE
-        topicListAdapter.submitList(postList)
     }
 }
 

@@ -29,73 +29,56 @@
         android:id="@+id/sendBlock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/edittext_vertical_margin"
         android:background="@color/control_bg"
         android:paddingStart="@dimen/activity_main_base_padding"
         android:paddingEnd="@dimen/activity_main_base_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvTopic">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tiTopic"
-            style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etTopicName"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:boxBackgroundColor="@color/new_message_bg"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:layout_constraintBottom_toTopOf="@id/tiMessage"
+            android:layout_height="40dp"
+            android:layout_marginVertical="@dimen/edittext_vertical_margin"
+            android:background="@drawable/edittext_topic_bg"
+            android:hint="@string/channel_name_hint"
+            android:paddingHorizontal="@dimen/new_message_horizontal_padding"
+            android:textColor="@color/new_message_text"
+            android:textColorHint="@color/new_message_text"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintBottom_toTopOf="@id/etMessage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/etTopicName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/channel_name_hint"
-                android:paddingHorizontal="@dimen/new_message_horizontal_padding"
-                android:paddingVertical="12dp"
-                android:textColor="@color/new_message_text"
-                android:textColorHint="@color/new_message_text" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tiMessage"
-            style="@style/ThemeOverlay.App.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/etMessage"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            app:boxBackgroundColor="@color/new_message_bg"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="@dimen/edittext_vertical_margin"
+            android:background="@drawable/edittext_message_bg"
+            android:hint="@string/message_input_hint"
+            android:paddingHorizontal="@dimen/new_message_horizontal_padding"
+            android:textColor="@color/new_message_text"
+            android:textColorHint="@color/new_message_text"
+            android:textSize="@dimen/large_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgPlus"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tiTopic">
-
-            <EditText
-                android:id="@+id/etMessageBody"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/message_input_hint"
-                android:paddingHorizontal="@dimen/new_message_horizontal_padding"
-                android:paddingVertical="16dp"
-                android:textColor="@color/new_message_text"
-                android:textColorHint="@color/new_message_text" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toBottomOf="@+id/etTopicName" />
 
         <ImageView
             android:id="@+id/imgPlus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="6dp"
+            android:layout_marginVertical="8dp"
+            android:layout_marginStart="12dp"
             android:src="@drawable/ic_text_plus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tiMessage"
-            app:layout_constraintTop_toBottomOf="@id/tiTopic" />
+            app:layout_constraintStart_toEndOf="@id/etMessage"
+            app:layout_constraintTop_toBottomOf="@id/etTopicName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

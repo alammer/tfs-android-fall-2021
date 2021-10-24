@@ -7,4 +7,5 @@
     <dimen name="emoji_gliph_size">40sp</dimen>
     <dimen name="medium_text_size">14sp</dimen>
     <dimen name="topic_rv_item_vertical_margins">8dp</dimen>
+    <dimen name="edittext_vertical_margin">4dp</dimen>
 </resources>

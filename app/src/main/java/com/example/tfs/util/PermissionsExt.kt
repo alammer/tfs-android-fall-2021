@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 fun Context.hasPermission() =
     ContextCompat.checkSelfPermission(this, READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
 
-
-fun AppCompatActivity.requestPermission() = ActivityCompat.requestPermissions(this,
-    arrayOf(READ_CONTACTS), CONTACT_PERMISSION_CODE)
-
+fun AppCompatActivity.requestPermission() = ActivityCompat.requestPermissions(
+    this,
+    arrayOf(READ_CONTACTS), CONTACT_PERMISSION_CODE
+)
 
 const val CONTACT_PERMISSION_CODE = 1

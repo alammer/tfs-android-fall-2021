@@ -21,7 +21,7 @@ val Long.shortDate
         .format(this).replace(".", "")
 
 val Long.fullDate
-    get() = SimpleDateFormat("MMM d',' yyyy", Locale("ru", "RU"))
+    get() = SimpleDateFormat("d MMMM',' ' 'yyyy", Locale("ru", "RU"))
         .format(this).replace(".", "")
 
 val Long.year

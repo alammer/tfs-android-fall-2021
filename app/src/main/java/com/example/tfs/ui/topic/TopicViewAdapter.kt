@@ -51,7 +51,7 @@ class TopicViewAdapter :
                                 emojiGroup.getChildAt(emojiPosition).setOnClickListener {
                                     this.recyclerViewCallback?.onRecycleViewItemClick(
                                         position,
-                                        emojiPosition
+                                        item.reaction[emojiPosition].emoji
                                     )
                                 }
                             }

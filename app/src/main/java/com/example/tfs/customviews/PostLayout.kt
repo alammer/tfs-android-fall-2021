@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
 import com.example.tfs.util.dpToPixels
 import kotlin.math.max
@@ -114,19 +115,43 @@ class PostLayout @JvmOverloads constructor(
             messageChild = getChildAt(1)
         }
 
-        if (data.reaction.any { it.count > 0 }) {
-            val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
-            val emojisLayout = EmojisLayout(context)
-            emojisLayout.layoutParams = params
-            emojisLayout.setReactionData(data.reaction)
-            addView(emojisLayout)
-            emojiChild = getChildAt(childOffset + 1)
-        }
+        addView(createEmojiLayout(data.reaction, data.isOwner))
+
+        emojiChild = getChildAt(childOffset + 1)
+
         requestLayout()
     }
 
+    private fun createEmojiLayout(reactionData: List<Reaction>, isOwner: Boolean): ViewGroup {
+        val rootLayoutParams = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
+        val emojisLayout = EmojisLayout(context)
+        emojisLayout.layoutParams = rootLayoutParams
+
+        val childLayoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, CHILD_HEIGHT)
+
+        reactionData.forEach {
+            val view = EmojiView(
+                emojisLayout.context,
+                emojiCode = it.emoji,
+                count = it.count,
+                isClicked = it.isClicked
+            )
+            view.layoutParams = childLayoutParams
+            emojisLayout.addView(view)
+        }
+
+        if (reactionData.isNotEmpty() && !isOwner) {
+            val plusView = PlusView(emojisLayout.context)
+            plusView.layoutParams = childLayoutParams
+            emojisLayout.addView(plusView)
+        }
+
+        return emojisLayout
+    }
+
     companion object {
-        private var CHILD_DIVIDER = 8.dpToPixels()
+        private val CHILD_HEIGHT = 30.dpToPixels()
+        private val CHILD_DIVIDER = 8.dpToPixels()
         private val VIEW_WIDTH = 265.dpToPixels()
     }
 }

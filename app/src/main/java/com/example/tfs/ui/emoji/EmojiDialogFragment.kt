@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.REQUEST_KEY
 import com.example.tfs.RESULT_KEY
-import com.example.tfs.EMOJI_START_CODE_POINT
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EmojiDialogFragment : BottomSheetDialogFragment() {
@@ -24,7 +23,7 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-            return LayoutInflater.from(context).inflate(R.layout.bottom_sheet_layout, container, false)
+        return LayoutInflater.from(context).inflate(R.layout.bottom_sheet_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,10 +39,9 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
 
         val emojiSet = mutableListOf<Int>()
 
-        emojiSet.addAll(List(56) { EMOJI_START_CODE_POINT + it } )
-        emojiSet.addAll(List(14) { EMOJI_START_CODE_POINT + 0x41 + it } )
-        emojiSet.addAll(List(27) { 0x1f682 + it } )
-        emojiSet.addAll(List(26) { 0x1f920 + it } )
+        emojiSet.addAll((EMOJI_FACE_START_CODE..EMOJI_FACE_END_CODE))
+        emojiSet.addAll((EMOJI_GESTURE_START_CODE..EMOJI_GESTURE_END_CODE))
+        emojiSet.addAll((EMOJI_VAR_START_CODE..EMOJI_VAR_END_CODE))
 
         emojiSheetRecycler.layoutManager =
             GridLayoutManager(context, 7, GridLayoutManager.VERTICAL, false)
@@ -51,4 +49,12 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         emojiAdapter.submitList(emojiSet)
     }
 }
+
+const val EMOJI_FACE_START_CODE = 0x1f600
+const val EMOJI_FACE_END_CODE = 0x1f644
+const val EMOJI_GESTURE_START_CODE = 0x1f645
+const val EMOJI_GESTURE_END_CODE = 0x1f64f
+const val EMOJI_VAR_START_CODE = 0x1f90c
+const val EMOJI_VAR_END_CODE = 0x1f92f
+
 
