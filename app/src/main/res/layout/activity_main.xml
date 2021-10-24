@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <com.example.tfs.customviews.PostLayout
+        android:id="@+id/cvPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp">
+
+        <com.example.tfs.customviews.UserAvatarView
+            android:id="@+id/cvAvatar"
+            android:layout_width="@dimen/user_avatar_size"
+            android:layout_height="@dimen/user_avatar_size"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/bad" />
+
+    </com.example.tfs.customviews.PostLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStartActivity2"
+        android:id="@+id/btnTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_start_activity_label"/>
+        android:layout_marginTop="450dp"
+        android:layout_marginStart="100dp"
+        android:text="TEST CUSTOM VIEW"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tvEmptyResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvContacts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-</LinearLayout>
+</FrameLayout>

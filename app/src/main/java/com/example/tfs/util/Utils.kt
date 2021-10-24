@@ -1,13 +1,19 @@
 package com.example.tfs.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.widget.Toast
 
+
 fun Context?.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
+
+fun Int.dpToPixels() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+fun Int.spToPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity)
 
 fun Cursor.getContactId() =
     getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
@@ -20,3 +26,5 @@ fun Cursor.hasPhoneNumber() =
 
 fun Cursor.getPhoneNumber() =
     getString(getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+
