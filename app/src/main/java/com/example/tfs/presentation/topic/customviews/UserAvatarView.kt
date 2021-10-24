@@ -1,4 +1,4 @@
-package com.example.tfs.customviews
+package com.example.tfs.presentation.topic.customviews
 
 import android.annotation.SuppressLint
 import android.content.Context

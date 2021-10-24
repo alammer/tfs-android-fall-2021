@@ -3,7 +3,7 @@ package com.example.tfs.util
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
-import com.example.tfs.ui.emoji.EMOJI_FACE_START_CODE
+import com.example.tfs.presentation.topic.emoji.EMOJI_FACE_START_CODE
 
 object TestDataGenerator {
 
@@ -35,9 +35,9 @@ object TestDataGenerator {
             if (it.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = it.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
-                    datedPostList.add(TopicCell.DateCell(startTopicDate.fullDate))
+                    datedPostList.add(TopicCell.LocalDateCell(startTopicDate.fullDate))
                 } else {
-                    datedPostList.add(TopicCell.DateCell(startTopicDate.shortDate))
+                    datedPostList.add(TopicCell.LocalDateCell(startTopicDate.shortDate))
                 }
             }
             datedPostList.add(it)

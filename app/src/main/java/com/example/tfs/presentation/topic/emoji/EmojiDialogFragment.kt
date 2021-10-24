@@ -1,4 +1,4 @@
-package com.example.tfs.ui.emoji
+package com.example.tfs.presentation.topic.emoji
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.REQUEST_KEY
-import com.example.tfs.RESULT_KEY
+import com.example.tfs.presentation.topic.REQUEST_KEY
+import com.example.tfs.presentation.topic.RESULT_KEY
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EmojiDialogFragment : BottomSheetDialogFragment() {
@@ -23,7 +23,7 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return LayoutInflater.from(context).inflate(R.layout.bottom_sheet_layout, container, false)
+        return LayoutInflater.from(context).inflate(R.layout.bsd_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

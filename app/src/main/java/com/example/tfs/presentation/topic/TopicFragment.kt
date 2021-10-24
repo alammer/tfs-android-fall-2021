@@ -1,23 +1,25 @@
-package com.example.tfs
+package com.example.tfs.presentation.topic
 
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfs.R
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
-import com.example.tfs.ui.emoji.EmojiDialogFragment
-import com.example.tfs.ui.topic.TopicAdapterCallback
+import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicViewAdapter
-import com.example.tfs.util.*
+import com.example.tfs.util.TestDataGenerator
 
-
-class MainActivity : AppCompatActivity(), TopicAdapterCallback {
+class TopicFragment : Fragment(), TopicAdapterCallback {
 
     private lateinit var topicRecycler: RecyclerView
     private lateinit var topicListAdapter: TopicViewAdapter
@@ -25,17 +27,26 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
     private lateinit var sendButton: ImageView
 
     private var dataSet = TestDataGenerator.generateTestTopic()
+
+    //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
     private var currentPost = -1
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_topic, container, false)
+    }
 
-        initSendView()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        initSendView(view)
         onChangeMessage()
-        showTopicList(dataSet)
+        showTopicList(view, dataSet)
 
-        supportFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
+        this.childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val emoji = bundle.getInt(RESULT_KEY, 0)
             when (val post = dataSet[currentPost]) {
                 is TopicCell.PostCell -> {
@@ -43,7 +54,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                     topicListAdapter.submitList(dataSet)
                     topicListAdapter.notifyItemChanged(currentPost)
                 }
-                is TopicCell.DateCell -> return@setFragmentResultListener
+                is TopicCell.LocalDateCell -> return@setFragmentResultListener
             }
         }
 
@@ -73,22 +84,22 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                 topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemChanged(position)
             }
-            is TopicCell.DateCell -> return //TODO()
+            is TopicCell.LocalDateCell -> return //TODO()
         }
     }
 
-    private fun initSendView() {
-        textMessage = findViewById(R.id.etMessage)
-        sendButton = findViewById(R.id.imgPlus)
+    private fun initSendView(view: View) {
+        textMessage = view.findViewById(R.id.etMessage)
+        sendButton = view.findViewById(R.id.imgPlus)
     }
 
-    private fun showTopicList(postList: List<TopicCell>) {
-        topicRecycler = findViewById(R.id.rvTopic)
+    private fun showTopicList(view: View, postList: List<TopicCell>) {
+        topicRecycler = view.findViewById(R.id.rvTopic)
         topicListAdapter = TopicViewAdapter()
         topicRecycler.adapter = topicListAdapter
         topicListAdapter.setOnCallbackListener(this)
 
-        topicRecycler.layoutManager = LinearLayoutManager(this).apply {
+        topicRecycler.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
         topicRecycler.visibility = View.VISIBLE
@@ -97,9 +108,8 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
     override fun onRecycleViewLongPress(postPosition: Int) {
         currentPost = postPosition
-        EmojiDialogFragment().apply {
-            show(supportFragmentManager, tag)
-        }
+        Log.i("TopicFragment", "Function called: onRecycleViewLongPress()")
+        EmojiDialogFragment().show(this.childFragmentManager,tag)
     }
 
     private fun updateReaction(emoji: Int, reaction: MutableList<Reaction>) {
@@ -138,4 +148,3 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
 
 const val REQUEST_KEY = "emogi_key"
 const val RESULT_KEY = "emoji_id"
-
