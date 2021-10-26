@@ -18,7 +18,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/searchInput"
+                android:id="@+id/etSearchInput"
                 style="@style/SearchStyle"
                 android:hint="Search..."
                 android:layout_width="0dp"

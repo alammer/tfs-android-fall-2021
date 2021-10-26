@@ -17,7 +17,7 @@ import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
 import com.example.tfs.ui.topic.TopicViewAdapter
-import com.example.tfs.util.TestDataGenerator
+import com.example.tfs.util.TestTopicDataGenerator
 
 class TopicFragment : Fragment(), TopicAdapterCallback {
 
@@ -26,7 +26,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     private lateinit var textMessage: EditText
     private lateinit var sendButton: ImageView
 
-    private var dataSet = TestDataGenerator.generateTestTopic()
+    private var dataSet = TestTopicDataGenerator.generateTestTopic()
 
     //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
     private var currentPost = -1

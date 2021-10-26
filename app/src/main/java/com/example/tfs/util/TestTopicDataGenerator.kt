@@ -2,17 +2,18 @@ package com.example.tfs.util
 
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
+import com.example.tfs.data.StreamCell
 import com.example.tfs.data.TopicCell
 import com.example.tfs.presentation.topic.emoji.EMOJI_FACE_START_CODE
 
-object TestDataGenerator {
+object TestTopicDataGenerator {
 
     fun generateTestTopic(): MutableList<TopicCell> {
-        val testTopic = mutableListOf<TopicCell.PostCell>()
+        val testStream = mutableListOf<TopicCell.PostCell>()
         val startTime = System.currentTimeMillis() - 86400L * 500 * 1000
 
         (0..30).forEach {
-            testTopic.add(
+            testStream.add(
                 TopicCell.PostCell(
                     generateTestReaction(),
                     generateTestMessage(),
@@ -20,10 +21,10 @@ object TestDataGenerator {
                     timeStamp = startTime + (86400 * (it / 3) + 3600 * (it / 2) + 60 * it) * 1000L
                 )
             )
-            testTopic[it].avatar = R.drawable.bad
+            testStream[it].avatar = R.drawable.bad
         }
 
-        testTopic.forEach { post ->
+        testStream.forEach { post ->
             post.reaction = post.reaction.filter { it.count > 0 }.toMutableList()
         }
 
@@ -31,7 +32,7 @@ object TestDataGenerator {
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()
 
-        testTopic.forEach {
+        testStream.forEach {
             if (it.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = it.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
@@ -70,4 +71,38 @@ I would suggest using the GONE approach...
         return emojiSet.toMutableList()
     }
 }
+
+object TestStreamDataGenerator {
+
+    fun generateTestStream(): MutableList<StreamCell> {
+        val testStream = mutableListOf<StreamCell.StreamNameCell>()
+
+        (0..26).forEach {
+            testStream.add(
+                StreamCell.StreamNameCell(
+                    it,
+                    ('A' + it).toString(),
+                    generateListTopic(it),
+                    false
+
+                )
+            )
+        }
+
+        return testStream.toMutableList()
+    }
+
+    private fun generateListTopic(streamId: Int): MutableList<StreamCell.TopicNameCell> {
+        val topicSet = List((0..9).random()) {
+            StreamCell.TopicNameCell(
+                streamId * 10 + it,
+                 streamId,
+                "topic-$streamId-$it",
+                (0..2000).random()
+            )
+        }
+        return topicSet.toMutableList()
+    }
+}
+
 
