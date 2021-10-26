@@ -64,30 +64,6 @@ class EmojisLayout @JvmOverloads constructor(
         return MarginLayoutParams(p)
     }
 
-    fun setReactionData(data: List<Reaction>) {
-        addReaction(data)
-    }
-
-    private fun addReaction(data: List<Reaction>) {
-        data.forEach {
-            val view = EmojiView(
-                context,
-                emojiCode = it.emoji,
-                count = it.count
-            )
-            val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-            view.layoutParams = params
-            addView(view)
-        }
-
-        val addView = EmojiView(context)
-        val params = LayoutParams(LayoutParams.WRAP_CONTENT, 30.dpToPixels())
-        addView.layoutParams = params
-        addView(addView)
-
-        requestLayout()
-    }
-
     companion object {
         private var DIVIDER_HEIGHT = 8.dpToPixels()
         private var DIVIDER_WIDTH = 10.dpToPixels()

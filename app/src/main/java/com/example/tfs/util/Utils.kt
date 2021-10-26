@@ -5,7 +5,8 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.widget.Toast
-
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun Context?.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -14,6 +15,20 @@ fun Context?.toast(message: String) {
 fun Int.dpToPixels() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun Int.spToPixels() = (this * Resources.getSystem().displayMetrics.scaledDensity)
+
+val Long.shortDate
+    get() = SimpleDateFormat("d MMM", Locale("ru", "RU"))
+        .format(this).replace(".", "")
+
+val Long.fullDate
+    get() = SimpleDateFormat("d MMMM',' ' 'yyyy", Locale("ru", "RU"))
+        .format(this).replace(".", "")
+
+val Long.year
+    get() = SimpleDateFormat("yyyy")
+        .format(this).toInt()
+
+fun Long.startOfDay() = this - (this % 86400000L)
 
 fun Cursor.getContactId() =
     getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))

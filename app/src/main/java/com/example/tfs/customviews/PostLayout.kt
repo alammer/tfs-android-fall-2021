@@ -4,8 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import com.example.tfs.data.Reaction
+import com.example.tfs.data.TopicCell
 import com.example.tfs.util.dpToPixels
-import com.example.tfs.util.toast
 import kotlin.math.max
 
 class PostLayout @JvmOverloads constructor(
@@ -15,12 +16,10 @@ class PostLayout @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
-    private val avatarChild: View?
-        get() = if (childCount > 0) getChildAt(0) else null
-    private val messageChild: View?
-        get() = if (childCount > 1) getChildAt(1) else null
-    private val emojiChild: View?
-        get() = if (childCount > 2) getChildAt(2) else null
+    private var avatarChild: View? = null
+    private var messageChild: View? = null
+    private var emojiChild: View? = null
+    private var isOwner = false
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         checkChildCount()
@@ -33,7 +32,10 @@ class PostLayout @JvmOverloads constructor(
         val messageHeight = messageChild?.measuredHeight ?: 0
         val emojiHeight = emojiChild?.measuredHeight ?: 0
         val widthSize = MeasureSpec.getSize(widthMeasureSpec) - paddingStart - paddingEnd
-        val height = max(avatarHeight, messageHeight + emojiHeight + CHILD_DIVIDER)
+        val height = if (!isOwner) max(
+            avatarHeight,
+            messageHeight + emojiHeight + CHILD_DIVIDER
+        ) else messageHeight + emojiHeight + CHILD_DIVIDER
 
         setMeasuredDimension(
             widthSize + paddingStart + paddingEnd,
@@ -48,18 +50,29 @@ class PostLayout @JvmOverloads constructor(
             paddingStart + (avatarChild?.measuredWidth ?: 0),
             paddingTop + (avatarChild?.measuredHeight ?: 0)
         )
-        messageChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
-            paddingTop,
+
+        val startPost = if (isOwner) {
+            r - (messageChild?.measuredWidth ?: 0) - paddingEnd - CHILD_DIVIDER - paddingStart
+        } else {
+            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart
+        }
+
+        val endPost = if (isOwner) {
+            r - CHILD_DIVIDER - paddingEnd - paddingStart
+        } else {
             paddingStart + (avatarChild?.measuredWidth
-                ?: 0) + CHILD_DIVIDER + (messageChild?.measuredWidth ?: 0),
+                ?: 0) + CHILD_DIVIDER + (messageChild?.measuredWidth ?: 0)
+        }
+        messageChild?.layout(
+            startPost,
+            paddingTop,
+            endPost,
             paddingTop + (messageChild?.measuredHeight ?: 0)
         )
         emojiChild?.layout(
-            (avatarChild?.measuredWidth ?: 0) + CHILD_DIVIDER + paddingStart,
+            startPost,
             paddingTop + (messageChild?.measuredHeight ?: 0) + CHILD_DIVIDER,
-            paddingStart + (avatarChild?.measuredWidth
-                ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredWidth ?: 0),
+            endPost,
             paddingTop + (messageChild?.measuredHeight
                 ?: 0) + CHILD_DIVIDER + (emojiChild?.measuredHeight ?: 0)
         )
@@ -78,42 +91,67 @@ class PostLayout @JvmOverloads constructor(
     }
 
     private fun checkChildCount() {
-        if (childCount > 3) error("CustomViewGroup should not contain more than 2 children")
+        if (childCount > 3) error("CustomViewGroup should not contain more than 3 children")
     }
 
-    fun createLayout() {
-        if (childCount > 1) {
-            removeViewAt(2)
-            removeViewAt(1)
-            requestLayout()
-            context.toast("try to update custom group")
+    fun createLayout(data: TopicCell.PostCell) {
+        removeAllViews().also {
+            avatarChild = null
+            messageChild = null
+            emojiChild = null
         }
 
-        val dataSet = List((0..25).random()) { Reaction(START_CODE_POINT + (0..40).random(), (0..1000).random()) }
+        val childOffset = if (data.isOwner) 0 else 1
 
-        val testMessage = """
-hi if are you new in android use this way Apply your view to make it gone GONE is one way, else, get hold of the parent view, and remove the child from there..... else get the parent layout and use this method an remove all child parentView.remove(child)
+        isOwner = data.isOwner
 
-I would suggest using the GONE approach...
-"""
+        if (data.isOwner) {
+            addView(OwnerMessageLayout(context, userMessage = data.message))
+            messageChild = getChildAt(0)
+        } else {
+            addView(UserAvatarView(context, avatarUri = data.avatar))
+            avatarChild = getChildAt(0)
+            addView(UserMessageLayout(context, userMessage = data.message))
+            messageChild = getChildAt(1)
+        }
 
-        val messageView = UserMessageLayout(context, userMessage = testMessage.substring((1..testMessage.length).random()))
-        addView(messageView)
+        addView(createEmojiLayout(data.reaction, data.isOwner))
 
-        val params = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
-        val emojisLayout = EmojisLayout(context)
-        emojisLayout.layoutParams = params
-        emojisLayout.setReactionData(dataSet)
-        addView(emojisLayout)
+        emojiChild = getChildAt(childOffset + 1)
 
         requestLayout()
     }
 
-    companion object {
-        private const val START_CODE_POINT = 0x1f600
-        private var CHILD_DIVIDER = 8.dpToPixels()
-        private val VIEW_WIDTH = 265.dpToPixels()
+    private fun createEmojiLayout(reactionData: List<Reaction>, isOwner: Boolean): ViewGroup {
+        val rootLayoutParams = LayoutParams(VIEW_WIDTH, LayoutParams.WRAP_CONTENT)
+        val emojisLayout = EmojisLayout(context)
+        emojisLayout.layoutParams = rootLayoutParams
+
+        val childLayoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, CHILD_HEIGHT)
+
+        reactionData.forEach {
+            val view = EmojiView(
+                emojisLayout.context,
+                emojiCode = it.emoji,
+                count = it.count,
+                isClicked = it.isClicked
+            )
+            view.layoutParams = childLayoutParams
+            emojisLayout.addView(view)
+        }
+
+        if (reactionData.isNotEmpty() && !isOwner) {
+            val plusView = PlusView(emojisLayout.context)
+            plusView.layoutParams = childLayoutParams
+            emojisLayout.addView(plusView)
+        }
+
+        return emojisLayout
     }
 
-
+    companion object {
+        private val CHILD_HEIGHT = 30.dpToPixels()
+        private val CHILD_DIVIDER = 8.dpToPixels()
+        private val VIEW_WIDTH = 265.dpToPixels()
+    }
 }
