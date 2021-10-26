@@ -77,7 +77,7 @@ object TestStreamDataGenerator {
     fun generateTestStream(): MutableList<StreamCell> {
         val testStream = mutableListOf<StreamCell.StreamNameCell>()
 
-        (0..26).forEach {
+        (0..25).forEach {
             testStream.add(
                 StreamCell.StreamNameCell(
                     it,
@@ -93,7 +93,7 @@ object TestStreamDataGenerator {
     }
 
     private fun generateListTopic(streamId: Int): MutableList<StreamCell.TopicNameCell> {
-        val topicSet = List((0..9).random()) {
+        val topicSet = List((1..10).random()) {
             StreamCell.TopicNameCell(
                 streamId * 10 + it,
                  streamId,

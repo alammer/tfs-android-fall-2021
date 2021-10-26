@@ -16,11 +16,11 @@ import com.example.tfs.R
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicCell
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
-import com.example.tfs.ui.topic.TopicViewAdapter
 import com.example.tfs.util.TestTopicDataGenerator
 
 class TopicFragment : Fragment(), TopicAdapterCallback {
 
+    private var requestTopic = -1
     private lateinit var topicRecycler: RecyclerView
     private lateinit var topicListAdapter: TopicViewAdapter
     private lateinit var textMessage: EditText
@@ -36,7 +36,9 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_topic, container, false)
+        val view = inflater.inflate(R.layout.fragment_topic, container, false)
+        requestTopic = requireArguments().getInt(ARG_MESSAGE, -1 )
+        return view
     }
 
 
@@ -45,6 +47,8 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         initSendView(view)
         onChangeMessage()
         showTopicList(view, dataSet)
+
+        Log.i("TopicFragment", "Function called: onViewCreated() $requestTopic")
 
         this.childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val emoji = bundle.getInt(RESULT_KEY, 0)
@@ -143,6 +147,17 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
 
             }
         })
+    }
+
+    companion object {
+        private const val ARG_MESSAGE = "topic_id"
+        fun newInstance(topicId: Int): TopicFragment {
+            val fragment = TopicFragment()
+            val arguments = Bundle()
+            arguments.putInt(ARG_MESSAGE, topicId)
+            fragment.arguments = arguments
+            return fragment
+        }
     }
 }
 

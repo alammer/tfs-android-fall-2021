@@ -7,6 +7,6 @@ import com.example.tfs.R
 
 class TopicViewHolder(topicView: View) : RecyclerView.ViewHolder(topicView) {
 
-    val topicName = topicView.findViewById<TextView>(R.id.tvTopicName)
-    val topicStat = topicView.findViewById<TextView>(R.id.tvTopicStat)
+    val topicName: TextView = topicView.findViewById<TextView>(R.id.tvTopicName)
+    val topicStat: TextView = topicView.findViewById<TextView>(R.id.tvTopicStat)
 }

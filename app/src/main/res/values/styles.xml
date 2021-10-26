@@ -23,4 +23,10 @@
         <item name="android:textColorHint">@android:color/white</item>
     </style>
 
+    <style name="UserAvatarCircleOverlay" parent="">
+        <item name="cornerSize">50%</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:background">@color/view_bg</item>
+    </style>
+
 </resources>

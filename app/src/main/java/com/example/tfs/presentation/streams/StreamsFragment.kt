@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.StreamCell
+import com.example.tfs.presentation.topic.TopicFragment
 import com.example.tfs.util.TestStreamDataGenerator
 import com.google.android.material.tabs.TabLayout
 
@@ -30,6 +31,7 @@ class StreamsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_streams, container, false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,8 +43,6 @@ class StreamsFragment : Fragment() {
         streamListRecycler = view.findViewById(R.id.rvStreams)
         streamTabLayout = view.findViewById(R.id.tabLayout)
         searchInput = view.findViewById(R.id.etSearchInput)
-
-
 
         streamViewAdapter = StreamViewAdapter(ItemClickListener { item: StreamCell ->
             when (item) {
@@ -82,7 +82,7 @@ class StreamsFragment : Fragment() {
         val topicList = stream.childTopics
         if (streamIndex > -1 && topicList.isNotEmpty()) {
             streamDataSet.addAll(streamIndex + 1, stream.childTopics)
-            streamViewAdapter.notifyItemRangeInserted(streamIndex + 1, stream.childTopics.size)
+            streamViewAdapter.notifyItemRangeInserted(streamIndex, stream.childTopics.size)
         }
 
     }
@@ -91,12 +91,15 @@ class StreamsFragment : Fragment() {
         val streamIndex = streamDataSet.indexOf(stream)
         val topicList = stream.childTopics
         if (streamIndex > -1 && topicList.isNotEmpty()) {
-            streamDataSet.subList(streamIndex + 1, streamIndex + topicList.size).clear()
-            streamViewAdapter.notifyItemRangeRemoved(streamIndex + 1, stream.childTopics.size)
+            streamDataSet.subList(streamIndex + 1, streamIndex + topicList.size + 1).clear()
+            streamViewAdapter.notifyItemRangeRemoved(streamIndex, stream.childTopics.size)
         }
     }
 
     private fun moveToTopicfragment(topicId: Int) {
-        Log.i("StreamsFragment", "Get click from ${topicId}")
+        this.activity?.supportFragmentManager?.beginTransaction()
+            ?.add(R.id.fragment_container, TopicFragment.newInstance(topicId))
+            ?.addToBackStack(null)
+            ?.commit()
     }
 }

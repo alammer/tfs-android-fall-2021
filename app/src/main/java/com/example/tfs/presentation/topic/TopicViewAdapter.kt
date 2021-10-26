@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic
+package com.example.tfs.presentation.topic
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,9 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.TopicCell
-import com.example.tfs.presentation.topic.DateViewHolder
-import com.example.tfs.presentation.topic.PostViewHolder
-import com.example.tfs.presentation.topic.TopicAdapterCallback
 
 
 class TopicViewAdapter :

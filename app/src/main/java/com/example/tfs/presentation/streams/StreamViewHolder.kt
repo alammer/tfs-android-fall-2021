@@ -8,6 +8,6 @@ import com.example.tfs.R
 
 class StreamViewHolder(streamView: View) : RecyclerView.ViewHolder(streamView) {
 
-    val streamName = streamView.findViewById<TextView>(R.id.tvStreamName)
-    val btnTopicList = streamView.findViewById<ImageView>(R.id.btnShowTopic)
+    val streamName: TextView = streamView.findViewById<TextView>(R.id.tvStreamName)
+    val btnTopicList: ImageView = streamView.findViewById<ImageView>(R.id.btnShowTopic)
 }

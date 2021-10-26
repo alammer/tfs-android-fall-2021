@@ -1,4 +1,4 @@
-package com.example.tfs.presentation.streams
+package com.example.tfs.presentation.contacts
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,10 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.data.Contact
 import com.example.tfs.data.StreamCell
+import com.example.tfs.presentation.streams.StreamViewHolder
+import com.example.tfs.presentation.streams.TopicViewHolder
 
-class StreamViewAdapter(private val clickListener: ItemClickListener):
-    ListAdapter<StreamCell, RecyclerView.ViewHolder>(StreamDiffCallback()) {
+class ContactViewAdapter(private val clickListener: ItemClickListener):
+ListAdapter<ContactViewHolder, RecyclerView.ViewHolder>(StreamDiffCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is StreamCell.StreamNameCell -> R.layout.item_stream_rv_header
@@ -56,24 +59,17 @@ class StreamViewAdapter(private val clickListener: ItemClickListener):
     }
 }
 
-private class StreamDiffCallback : DiffUtil.ItemCallback<StreamCell>() {
-
-    override fun areItemsTheSame(oldItem: StreamCell, newItem: StreamCell): Boolean {
-
-        val isSameStreamItem = oldItem is StreamCell.StreamNameCell
-                && newItem is StreamCell.StreamNameCell
-                && oldItem.streamName == newItem.streamName
-
-        val isSameTopicItem = oldItem is StreamCell.TopicNameCell
-                && newItem is StreamCell.TopicNameCell
-                && oldItem.topicName== newItem.topicName
-
-        return isSameStreamItem || isSameTopicItem
+private class ContactCallback : DiffUtil.ItemCallback<ContactViewHolder>() {
+    override fun areItemsTheSame(oldItem: ContactViewHolder, newItem: ContactViewHolder): Boolean {
+        return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: StreamCell, newItem: StreamCell) = oldItem == newItem
+    override fun areContentsTheSame(oldItem: ContactViewHolder, newItem: ContactViewHolder): Boolean {
+        return oldItem.contactName == newItem.contactName
+    }
+
 }
 
-class ItemClickListener(val clickListener: (item: StreamCell) -> Unit) {
-    fun onClick(item: StreamCell) = clickListener(item)
+class ItemClickListener(val clickListener: (item: Contact) -> Unit) {
+    fun onClick(item: Contact) = clickListener(item)
 }
