@@ -2,7 +2,7 @@ package com.example.tfs.data
 
 sealed class TopicCell {
 
-    class DateCell(val postDate: String) : TopicCell()
+    class LocalDateCell(val postDate: String) : TopicCell()
     class PostCell(
         var reaction: MutableList<Reaction> = mutableListOf(),
         val message: String,

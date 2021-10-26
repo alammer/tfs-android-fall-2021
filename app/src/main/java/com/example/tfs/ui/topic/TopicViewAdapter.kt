@@ -16,7 +16,7 @@ class TopicViewAdapter :
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is TopicCell.PostCell -> R.layout.post_item
-        is TopicCell.DateCell -> R.layout.date_item
+        is TopicCell.LocalDateCell -> R.layout.date_item
         null -> throw IllegalStateException("Unknown view")
     }
 
@@ -24,15 +24,15 @@ class TopicViewAdapter :
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.post_item -> PostVH(v)
-            R.layout.date_item -> DateVH(v)
+            R.layout.post_item -> PostViewHolder(v)
+            R.layout.date_item -> DateViewHolder(v)
             else -> throw IllegalStateException("Unknown viewType")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is PostVH -> {
+            is PostViewHolder -> {
                 val item = getItem(position) as TopicCell.PostCell
 
                 holder.postView.createLayout(item)
@@ -63,8 +63,8 @@ class TopicViewAdapter :
                     }
                 }
             }
-            is DateVH -> {
-                val item = getItem(position) as TopicCell.DateCell
+            is DateViewHolder -> {
+                val item = getItem(position) as TopicCell.LocalDateCell
                 holder.dateView.text = item.postDate
 
             }
@@ -82,8 +82,8 @@ private class MessageDiffCallback : DiffUtil.ItemCallback<TopicCell>() {
 
     override fun areItemsTheSame(oldItem: TopicCell, newItem: TopicCell): Boolean {
 
-        val isSameDateItem = oldItem is TopicCell.DateCell
-                && newItem is TopicCell.DateCell
+        val isSameDateItem = oldItem is TopicCell.LocalDateCell
+                && newItem is TopicCell.LocalDateCell
                 && oldItem.postDate == newItem.postDate
 
         val isSamePostItem = oldItem is TopicCell.PostCell

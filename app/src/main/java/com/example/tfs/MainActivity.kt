@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                     topicListAdapter.submitList(dataSet)
                     topicListAdapter.notifyItemChanged(currentPost)
                 }
-                is TopicCell.DateCell -> return@setFragmentResultListener
+                is TopicCell.LocalDateCell -> return@setFragmentResultListener
             }
         }
 
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(), TopicAdapterCallback {
                 topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemChanged(position)
             }
-            is TopicCell.DateCell -> return //TODO()
+            is TopicCell.LocalDateCell -> return //TODO()
         }
     }
 

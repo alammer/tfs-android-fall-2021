@@ -35,9 +35,9 @@ object TestDataGenerator {
             if (it.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = it.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
-                    datedPostList.add(TopicCell.DateCell(startTopicDate.fullDate))
+                    datedPostList.add(TopicCell.LocalDateCell(startTopicDate.fullDate))
                 } else {
-                    datedPostList.add(TopicCell.DateCell(startTopicDate.shortDate))
+                    datedPostList.add(TopicCell.LocalDateCell(startTopicDate.shortDate))
                 }
             }
             datedPostList.add(it)
