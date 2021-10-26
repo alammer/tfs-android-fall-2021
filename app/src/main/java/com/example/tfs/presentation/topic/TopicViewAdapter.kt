@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.TopicCell
+import com.example.tfs.presentation.topic.DateViewHolder
+import com.example.tfs.presentation.topic.PostViewHolder
+import com.example.tfs.presentation.topic.TopicAdapterCallback
 
 
 class TopicViewAdapter :
@@ -15,8 +18,8 @@ class TopicViewAdapter :
     private var recyclerViewCallback: TopicAdapterCallback? = null
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is TopicCell.PostCell -> R.layout.post_item
-        is TopicCell.LocalDateCell -> R.layout.date_item
+        is TopicCell.PostCell -> R.layout.item_topic_rv_post
+        is TopicCell.LocalDateCell -> R.layout.item_topic_rv_date
         null -> throw IllegalStateException("Unknown view")
     }
 
@@ -24,8 +27,8 @@ class TopicViewAdapter :
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.post_item -> PostViewHolder(v)
-            R.layout.date_item -> DateViewHolder(v)
+            R.layout.item_topic_rv_post -> PostViewHolder(v)
+            R.layout.item_topic_rv_date -> DateViewHolder(v)
             else -> throw IllegalStateException("Unknown viewType")
         }
     }

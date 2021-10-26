@@ -1,4 +1,4 @@
-package com.example.tfs.customviews
+package com.example.tfs.presentation.topic.customviews
 
 import android.content.Context
 import android.graphics.*
@@ -12,37 +12,26 @@ import androidx.core.content.ContextCompat
 import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.spToPixels
-import kotlin.math.max
 
-class UserMessageLayout @JvmOverloads constructor(
+class OwnerMessageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
-    userName: String = "Anonimous",
     userMessage: String = "Error! Message not found!",
     timeStamp: String? = null
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-    private var name = ""
-    private var nameWidth = 0
     private var message = ""
     private var messageWidth = 0
     private val backgroundRect = RectF()
-    private val nameBounds = Rect()
     private val messageBounds = Rect()
-    private val nameCoordinate = PointF()
     private val messageCoordinate = PointF()
     private var staticLayout: StaticLayout? = null
 
     private val textColor = ContextCompat.getColor(context, R.color.message_text_color)
-
-    private val namePaint = Paint().apply {
-        isAntiAlias = true
-        color = ContextCompat.getColor(context, R.color.message_owner_text_color)
-        textSize = 14.spToPixels()
-        textAlign = Paint.Align.LEFT
-    }
+    private val gradienStartColor = ContextCompat.getColor(context, R.color.owner_message_gradient_start_color_bg)
+    private val gradienEndColor = ContextCompat.getColor(context, R.color.owner_message_gradient_end_color_bg)
 
     private val messagePaint = Paint().apply {
         isAntiAlias = true
@@ -60,13 +49,11 @@ class UserMessageLayout @JvmOverloads constructor(
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
-        color = ContextCompat.getColor(context, R.color.view_bg)
+
+
     }
 
     init {
-        name = userName
-        nameWidth = namePaint.measureText(name).toInt()
-
         message = userMessage
         messageWidth = messagePaint.measureText(message).toInt()
 
@@ -78,21 +65,13 @@ class UserMessageLayout @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (name.isNotBlank()) {
-            namePaint.getTextBounds(name, 0, name.length, nameBounds)
+        val messageHeight = staticLayout?.height ?: messageBounds.height()
 
-            val nameHeight = nameBounds.height()
-            val messageHeight = staticLayout?.height ?: messageBounds.height()
+        val totalWidth = messageWidth + END_PADDING + START_PADDING
+        val totalHeight =
+            messageHeight + TOP_PADDING + BOTTOM_PADDING
 
-            val totalWidth = max(nameWidth, messageWidth) + END_PADDING + START_PADDING
-            val totalHeight =
-                nameHeight + messageHeight + TOP_PADDING + INNER_PADDING + BOTTOM_PADDING
-
-            setMeasuredDimension(totalWidth, totalHeight)
-
-        } else {
-            setMeasuredDimension(0, 0)
-        }
+        setMeasuredDimension(totalWidth, totalHeight)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -103,16 +82,15 @@ class UserMessageLayout @JvmOverloads constructor(
             bottom = h.toFloat()
         }
 
-        nameCoordinate.x = 0f + START_PADDING
-        nameCoordinate.y = 0f + TOP_PADDING + nameBounds.height()
+        backPaint.shader = LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), gradienStartColor, gradienEndColor, Shader.TileMode.CLAMP)
 
         if (staticLayout != null) {
             messageCoordinate.x = 0f + START_PADDING
-            messageCoordinate.y = 0f + TOP_PADDING + nameBounds.height() + INNER_PADDING
+            messageCoordinate.y = 0f + TOP_PADDING
         } else {
             messageCoordinate.x = 0f + START_PADDING //+ messageBounds.width() / 2
             messageCoordinate.y =
-                0f + TOP_PADDING + nameBounds.height() + INNER_PADDING + messageBounds.height()
+                0f + TOP_PADDING + messageBounds.height()
         }
     }
 
@@ -121,17 +99,14 @@ class UserMessageLayout @JvmOverloads constructor(
             backgroundRect,
             VIEW_BG_RECT_RADIUS, VIEW_BG_RECT_RADIUS, backPaint
         )
-        if (name.isNotBlank()) {
-            canvas.drawText(name, nameCoordinate.x, nameCoordinate.y, namePaint)
 
-            if (staticLayout != null) {
-                canvas.save()
-                canvas.translate(messageCoordinate.x, messageCoordinate.y)
-                staticLayout?.draw(canvas)
-                canvas.restore()
-            } else {
-                canvas.drawText(message, messageCoordinate.x, messageCoordinate.y, messagePaint)
-            }
+        if (staticLayout != null) {
+            canvas.save()
+            canvas.translate(messageCoordinate.x, messageCoordinate.y)
+            staticLayout?.draw(canvas)
+            canvas.restore()
+        } else {
+            canvas.drawText(message, messageCoordinate.x, messageCoordinate.y, messagePaint)
         }
     }
 
@@ -165,7 +140,6 @@ class UserMessageLayout @JvmOverloads constructor(
         private val START_PADDING = 12.dpToPixels()
         private val END_PADDING = 4.dpToPixels()
         private val TOP_PADDING = 8.dpToPixels()
-        private val INNER_PADDING = 4.dpToPixels()
         private val BOTTOM_PADDING = 20.dpToPixels()
         private val MAX_WIDTH = 265.dpToPixels() - END_PADDING - START_PADDING
     }

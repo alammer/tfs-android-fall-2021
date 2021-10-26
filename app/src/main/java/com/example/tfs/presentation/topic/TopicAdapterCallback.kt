@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic
+package com.example.tfs.presentation.topic
 
 interface TopicAdapterCallback {
 
