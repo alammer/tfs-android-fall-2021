@@ -35,7 +35,7 @@ class UserMessageLayout @JvmOverloads constructor(
     private val messageCoordinate = PointF()
     private var staticLayout: StaticLayout? = null
 
-    private val textColor = ContextCompat.getColor(context, R.color.message_text_color)
+    private val textColor = ContextCompat.getColor(context, R.color.text_color)
 
     private val namePaint = Paint().apply {
         isAntiAlias = true

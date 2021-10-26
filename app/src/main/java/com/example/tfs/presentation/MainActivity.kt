@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, TopicFragment())
+                .add(R.id.main_container, StreamsFragment())
                 .commit()
         }
 

@@ -8,13 +8,19 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="deep_grey">#1E1E1E</color>
+    <color name="light_gray">#CCCCCC</color>
+    <color name="fresh_green">#219653</color>
+
+
+
     <color name="layout_bg">#121212</color>
-    <color name="control_bg">#1E1E1E</color>
+
     <color name="view_bg">#1C1C1C</color>
     <color name="new_message_bg">#282828</color>
     <color name="new_message_text">#CCCCCC</color>
     <color name="date_item_text_color">#999999</color>
-    <color name="message_text_color">#FAFAFA</color>
+    <color name="text_color">#FAFAFA</color>
     <color name="message_owner_text_color">#2A9D8F</color>
     <color name="owner_message_gradient_start_color_bg">#2A9D8F</color>
     <color name="owner_message_gradient_end_color_bg">#006153</color>

@@ -30,7 +30,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/edittext_vertical_margin"
-        android:background="@color/control_bg"
         android:paddingStart="@dimen/activity_main_base_padding"
         android:paddingEnd="@dimen/activity_main_base_padding"
         app:layout_constraintBottom_toBottomOf="parent"

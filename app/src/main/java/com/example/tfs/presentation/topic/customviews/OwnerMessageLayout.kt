@@ -29,7 +29,7 @@ class OwnerMessageLayout @JvmOverloads constructor(
     private val messageCoordinate = PointF()
     private var staticLayout: StaticLayout? = null
 
-    private val textColor = ContextCompat.getColor(context, R.color.message_text_color)
+    private val textColor = ContextCompat.getColor(context, R.color.text_color)
     private val gradienStartColor = ContextCompat.getColor(context, R.color.owner_message_gradient_start_color_bg)
     private val gradienEndColor = ContextCompat.getColor(context, R.color.owner_message_gradient_end_color_bg)
 
