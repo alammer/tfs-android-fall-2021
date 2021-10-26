@@ -4,27 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.data.TopicCell
-import com.example.tfs.presentation.topic.TopicViewAdapter
-import com.example.tfs.util.TestTopicDataGenerator
+import com.example.tfs.data.Contact
+import com.example.tfs.presentation.profile.ProfileFragment
 
-class ContactsFragment : Fragment(){
+class ContactsFragment : Fragment() {
 
-    private lateinit var topicRecycler: RecyclerView
-    private lateinit var topicListAdapter: TopicViewAdapter
-    private lateinit var textMessage: EditText
-    private lateinit var sendButton: ImageView
-
-    //private var dataSet = TestTopicDataGenerator.generateTestTopic()
-
-    //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
-    private var currentPost = -1
+    private lateinit var contactRecycler: RecyclerView
+    private lateinit var contactListAdapter: ContactViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,29 +26,27 @@ class ContactsFragment : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        //showTopicList(view, dataSet)
-
+        super.onViewCreated(view, savedInstanceState)
+        initViews(view)
     }
 
-    private fun initSendView(view: View) {
-        textMessage = view.findViewById(R.id.etMessage)
-        sendButton = view.findViewById(R.id.imgPlus)
-    }
+    private fun initViews(view: View) {
+        contactRecycler = view.findViewById(R.id.rvStreams)
 
-    private fun showTopicList(view: View, postList: List<TopicCell>) {
-        topicRecycler = view.findViewById(R.id.rvTopic)
-        topicListAdapter = TopicViewAdapter()
-        topicRecycler.adapter = topicListAdapter
+        contactListAdapter = ContactViewAdapter(ItemClickListener { item: Contact ->
+            this.activity?.supportFragmentManager?.beginTransaction()
+                ?.add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
+                ?.addToBackStack(null)
+                ?.commit()
 
-        topicRecycler.layoutManager = LinearLayoutManager(context).apply {
+        })
+
+        contactRecycler.adapter = contactListAdapter
+
+        contactRecycler.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
-        topicRecycler.visibility = View.VISIBLE
-        topicListAdapter.submitList(postList)
     }
-
-
 
     companion object {
         //private const val ARG_MESSAGE = "topic_id"
