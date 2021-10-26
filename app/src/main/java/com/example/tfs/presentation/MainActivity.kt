@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, StreamsFragment())
+                .add(R.id.fragment_container, StreamsFragment())
                 .commit()
         }
 
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment, addToBackStack: Boolean = false) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_container, fragment)
+        transaction.replace(R.id.fragment_container, fragment)
         if (addToBackStack) transaction.addToBackStack(null)
         transaction.commit()
     }
