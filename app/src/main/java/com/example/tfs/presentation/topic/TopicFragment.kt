@@ -55,7 +55,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
             when (val post = dataSet[currentPost]) {
                 is TopicCell.PostCell -> {
                     updateReaction(emoji, post.reaction)
-                    topicListAdapter.submitList(dataSet)
+                    //topicListAdapter.submitList(dataSet)
                     topicListAdapter.notifyItemChanged(currentPost)
                 }
                 is TopicCell.LocalDateCell -> return@setFragmentResultListener
@@ -71,7 +71,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
                         timeStamp = System.currentTimeMillis()
                     )
                 )
-                topicListAdapter.submitList(dataSet)
+                //topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemInserted(dataSet.size)
                 topicRecycler.scrollToPosition(dataSet.size - 1)
                 //TODO("HIDE KEYBOARD")
@@ -85,7 +85,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         when (val post = dataSet[position]) {
             is TopicCell.PostCell -> {
                 updateReaction(emojiCode, post.reaction)
-                topicListAdapter.submitList(dataSet)
+                //topicListAdapter.submitList(dataSet)
                 topicListAdapter.notifyItemChanged(position)
             }
             is TopicCell.LocalDateCell -> return //TODO()

@@ -18,7 +18,11 @@ import com.google.android.material.tabs.TabLayout
 class StreamsFragment : Fragment() {
 
     private val streamDataSet: MutableList<StreamCell> =
-        TestStreamDataGenerator.generateTestStream()
+        TestStreamDataGenerator().generateTestStream()
+
+    private val subscribedStreams = streamDataSet.filterIndexed { index, _ -> index % 3 == 0 }
+
+    private val currentStreamList = getSubcsribedStreams()
 
     private lateinit var streamListRecycler: RecyclerView
     private lateinit var streamViewAdapter: StreamViewAdapter
@@ -31,7 +35,6 @@ class StreamsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_streams, container, false)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,60 +49,104 @@ class StreamsFragment : Fragment() {
 
         streamViewAdapter = StreamViewAdapter(ItemClickListener { item: StreamCell ->
             when (item) {
-                is StreamCell.StreamNameCell -> clickStreamView(item)
-                is StreamCell.TopicNameCell -> moveToTopicfragment(item.topicId)
+                is StreamCell.StreamItemCell -> clickStreamView(item)
+                is StreamCell.TopicItemCell -> moveToTopicFragment(item.topicId)
             }
         })
-
         streamListRecycler.adapter = streamViewAdapter
 
         streamListRecycler.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
 
-        Log.i("StreamsFragment", "Function called: initViews() $streamDataSet")
-        streamViewAdapter.submitList(streamDataSet)
+        //currentStreamList = getSubcsribedStreams()
+
+        streamTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.apply {
+                    when (position) {
+                        0 -> {
+                            //currentStreamList = mutableListOf()
+                            //currentStreamList.addAll(getSubcsribedStreams())
+                            streamViewAdapter.submitList(currentStreamList.toList())
+                        }
+                        1 -> {
+                            //currentStreamList = mutableListOf()
+                            //currentStreamList.addAll(streamDataSet.toList())
+                            streamViewAdapter.submitList(streamDataSet.toList())
+                        }
+                        else -> throw IllegalArgumentException()
+                    }
+                }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Handle tab reselect
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Handle tab unselect
+            }
+        })
+
+        streamViewAdapter.submitList(currentStreamList)
     }
 
     private fun clickStreamView(item: StreamCell) {
-        Log.i("StreamsFragment", "Get click from ${item.toString()}")
-
-        when (val stream = streamDataSet[streamDataSet.indexOf(item)]) {
-            is StreamCell.StreamNameCell -> if (stream.expanded) {
-                collapseStream(stream)
+        val itemPosition = currentStreamList.indexOf(item)
+        when (val stream = currentStreamList[itemPosition]) {
+            is StreamCell.StreamItemCell -> if (stream.expanded) {
                 stream.expanded = false
+                collapseStream(stream)
             } else {
-                expandStream(stream)
+//                Log.i("StreamsFragment", "800 Test: $streamDataSet")
+//                Log.i("StreamsFragment", "900 Current: $currentStreamList")
+//                Log.i("StreamsFragment", "1000 Current: $stream")
                 stream.expanded = true
+                Log.i("StreamsFragment", "801 Test: $streamDataSet")
+                Log.i("StreamsFragment", "901 Current: $currentStreamList")
+                Log.i("StreamsFragment", "1001 Current: $stream")
+                expandStream(stream)
+//                Log.i("StreamsFragment", "802 Test: $streamDataSet")
+//                Log.i("StreamsFragment", "902 Current: $currentStreamList")
+//                Log.i("StreamsFragment", "1002 Current: $stream")
             }
             else -> return
         }
 
+        streamViewAdapter.submitList(currentStreamList.toList())
     }
 
-    private fun expandStream(stream: StreamCell.StreamNameCell) {
-        val streamIndex = streamDataSet.indexOf(stream)
-        val topicList = stream.childTopics
-        if (streamIndex > -1 && topicList.isNotEmpty()) {
-            streamDataSet.addAll(streamIndex + 1, stream.childTopics)
-            streamViewAdapter.notifyItemRangeInserted(streamIndex, stream.childTopics.size)
+    private fun expandStream(stream: StreamCell.StreamItemCell) {
+
+        val streamIndex = currentStreamList.indexOf(stream)
+        if (streamIndex > -1 && stream.childTopics.isNotEmpty()) {
+            //currentStreamList.addAll(streamIndex + 1, stream.childTopics)
+            //streamViewAdapter.notifyItemRangeInserted(streamIndex + 1, stream.childTopics.size)
         }
 
     }
 
-    private fun collapseStream(stream: StreamCell.StreamNameCell) {
-        val streamIndex = streamDataSet.indexOf(stream)
-        val topicList = stream.childTopics
-        if (streamIndex > -1 && topicList.isNotEmpty()) {
-            streamDataSet.subList(streamIndex + 1, streamIndex + topicList.size + 1).clear()
-            streamViewAdapter.notifyItemRangeRemoved(streamIndex, stream.childTopics.size)
+    private fun collapseStream(stream: StreamCell.StreamItemCell) {
+        val streamIndex = currentStreamList.indexOf(stream)
+        if (streamIndex > -1 && stream.childTopics.isNotEmpty()) {
+//            currentStreamList.subList(streamIndex + 1, streamIndex + stream.childTopics.size + 1)
+//                .clear()
+            //streamViewAdapter.notifyItemRangeRemoved(streamIndex + 1, stream.childTopics.size)
         }
     }
 
-    private fun moveToTopicfragment(topicId: Int) {
+    private fun moveToTopicFragment(topicId: Int) {
         this.activity?.supportFragmentManager?.beginTransaction()
             ?.add(R.id.fragment_container, TopicFragment.newInstance(topicId))
             ?.addToBackStack(null)
             ?.commit()
+    }
+
+    private fun getSubcsribedStreams(): List<StreamCell> {
+        val s = streamDataSet
+            .filter { it is StreamCell.StreamItemCell }
+            .filter { subscribedStreams.contains(it) }.toList()
+        return s
     }
 }

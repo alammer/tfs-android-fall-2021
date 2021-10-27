@@ -3,6 +3,7 @@ package com.example.tfs.presentation.streams
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,20 +14,18 @@ class StreamViewAdapter(private val clickListener: ItemClickListener):
     ListAdapter<StreamCell, RecyclerView.ViewHolder>(StreamDiffCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is StreamCell.StreamNameCell -> R.layout.item_stream_rv_header
-        is StreamCell.TopicNameCell -> R.layout.item_stream_rv_topic
+        is StreamCell.StreamItemCell -> R.layout.item_stream_rv_header
+        is StreamCell.TopicItemCell -> R.layout.item_stream_rv_topic
         null -> throw IllegalStateException("Unknown view")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
-        Log.i("StreamViewAdapter", "Function called: 0")
         return when (viewType) {
-            R.layout.item_stream_rv_header -> StreamViewHolder(v)
-            R.layout.item_stream_rv_topic -> TopicViewHolder(v)
+            R.layout.item_stream_rv_header -> StreamItemViewHolder(v)
+            R.layout.item_stream_rv_topic -> TopicItemViewHolder(v)
             else -> {
-                Log.i("StreamViewAdapter", "Function called: -1")
                 throw IllegalStateException("Unknown viewType")
             }
         }
@@ -34,20 +33,23 @@ class StreamViewAdapter(private val clickListener: ItemClickListener):
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is StreamViewHolder -> {
-                Log.i("StreamViewAdapter", "Function called: 1")
-                val item = getItem(position) as StreamCell.StreamNameCell
+            is StreamItemViewHolder -> {
+                val item = getItem(position) as StreamCell.StreamItemCell
                 holder.streamName.text = item.streamName
+                Log.i("StreamViewAdapter", "Function called: ${item.streamName} ${item.expanded}")
                 if (item.expanded) { holder.btnTopicList.setImageResource(R.drawable.ic_collapce) } else {
                     holder.btnTopicList.setImageResource(R.drawable.ic_expand)
                 }
                 holder.btnTopicList.setOnClickListener { clickListener.onClick(item) }
             }
-            is TopicViewHolder -> {
-                Log.i("StreamViewAdapter", "Function called: 2")
-                val item = getItem(position) as StreamCell.TopicNameCell
+            is TopicItemViewHolder -> {
+                val item = getItem(position) as StreamCell.TopicItemCell
                 holder.topicName.text = item.topicName
                 holder.topicStat.text = item.messageStat.toString()
+                when (item.messageStat) {
+                    in 0..100 -> holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.topic_bg_color))
+                    else -> holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.hot_topic_bg_color))
+                }
                 holder.itemView.setOnClickListener { clickListener.onClick(item) }
             }
             else -> throw IllegalStateException("Unknown viewHolder")
@@ -59,21 +61,31 @@ class StreamViewAdapter(private val clickListener: ItemClickListener):
 private class StreamDiffCallback : DiffUtil.ItemCallback<StreamCell>() {
 
     override fun areItemsTheSame(oldItem: StreamCell, newItem: StreamCell): Boolean {
-
-        val isSameStreamItem = oldItem is StreamCell.StreamNameCell
-                && newItem is StreamCell.StreamNameCell
+        val isSameStreamItem = oldItem is StreamCell.StreamItemCell
+                && newItem is StreamCell.StreamItemCell
                 && oldItem.streamName == newItem.streamName
 
-        val isSameTopicItem = oldItem is StreamCell.TopicNameCell
-                && newItem is StreamCell.TopicNameCell
+        val isSameTopicItem = oldItem is StreamCell.TopicItemCell
+                && newItem is StreamCell.TopicItemCell
                 && oldItem.topicName== newItem.topicName
 
         return isSameStreamItem || isSameTopicItem
     }
 
-    override fun areContentsTheSame(oldItem: StreamCell, newItem: StreamCell) = oldItem == newItem
+    override fun areContentsTheSame(oldItem: StreamCell, newItem: StreamCell): Boolean {
+        val isSameStreamContent = oldItem is StreamCell.StreamItemCell
+                && newItem is StreamCell.StreamItemCell
+                && oldItem.expanded == newItem.expanded && oldItem.streamName == newItem.streamName
+
+        val isSameTopicContent = oldItem is StreamCell.TopicItemCell
+                && newItem is StreamCell.TopicItemCell
+                && oldItem.messageStat == newItem.messageStat
+
+        return isSameStreamContent || isSameTopicContent
+    }
 }
 
 class ItemClickListener(val clickListener: (item: StreamCell) -> Unit) {
+
     fun onClick(item: StreamCell) = clickListener(item)
 }

@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 
-class StreamViewHolder(streamView: View) : RecyclerView.ViewHolder(streamView) {
+class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamView) {
 
     val streamName: TextView = streamView.findViewById<TextView>(R.id.tvStreamName)
     val btnTopicList: ImageView = streamView.findViewById<ImageView>(R.id.btnShowTopic)

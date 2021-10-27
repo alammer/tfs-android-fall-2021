@@ -27,5 +27,7 @@
     <color name="check_emoji_view_bg_color">#3A3A3A</color>
     <color name="emoji_text_color">#CCCCCC</color>
     <color name="check_emoji_text_color">#EAEAEA</color>
+    <color name="hot_topic_bg_color">#2A9D8F</color>
+    <color name="topic_bg_color">#E9C46A</color>
 
 </resources>

@@ -72,14 +72,14 @@ I would suggest using the GONE approach...
     }
 }
 
-object TestStreamDataGenerator {
+class TestStreamDataGenerator {
 
     fun generateTestStream(): MutableList<StreamCell> {
-        val testStream = mutableListOf<StreamCell.StreamNameCell>()
+        val testStream = mutableListOf<StreamCell.StreamItemCell>()
 
-        (0..25).forEach {
+        (0..3).forEach {
             testStream.add(
-                StreamCell.StreamNameCell(
+                StreamCell.StreamItemCell(
                     it,
                     ('A' + it).toString(),
                     generateListTopic(it),
@@ -92,9 +92,9 @@ object TestStreamDataGenerator {
         return testStream.toMutableList()
     }
 
-    private fun generateListTopic(streamId: Int): MutableList<StreamCell.TopicNameCell> {
-        val topicSet = List((1..10).random()) {
-            StreamCell.TopicNameCell(
+    private fun generateListTopic(streamId: Int): MutableList<StreamCell.TopicItemCell> {
+        val topicSet = List(/*(1..10).random()*/2) {
+            StreamCell.TopicItemCell(
                 streamId * 10 + it,
                  streamId,
                 "topic-$streamId-$it",

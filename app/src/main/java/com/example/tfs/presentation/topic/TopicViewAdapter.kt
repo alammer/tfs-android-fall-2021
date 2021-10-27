@@ -88,10 +88,19 @@ private class MessageDiffCallback : DiffUtil.ItemCallback<TopicCell>() {
 
         val isSamePostItem = oldItem is TopicCell.PostCell
                 && newItem is TopicCell.PostCell
-                && oldItem.message == newItem.message
 
         return isSameDateItem || isSamePostItem
     }
 
-    override fun areContentsTheSame(oldItem: TopicCell, newItem: TopicCell) = oldItem == newItem
+    override fun areContentsTheSame(oldItem: TopicCell, newItem: TopicCell): Boolean {
+        val isSamePostContent = oldItem is TopicCell.PostCell
+                && newItem is TopicCell.PostCell
+                && oldItem.message == newItem.message && oldItem.reaction == newItem.reaction
+
+        val isSameDateContent = oldItem is TopicCell.LocalDateCell
+                && newItem is TopicCell.LocalDateCell
+                && oldItem.postDate == newItem.postDate
+
+        return isSamePostContent || isSameDateContent
+    }
 }

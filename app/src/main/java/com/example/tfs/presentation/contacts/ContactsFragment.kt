@@ -31,7 +31,7 @@ class ContactsFragment : Fragment() {
     }
 
     private fun initViews(view: View) {
-        contactRecycler = view.findViewById(R.id.rvStreams)
+        contactRecycler = view.findViewById(R.id.rvContacts)
 
         contactListAdapter = ContactViewAdapter(ItemClickListener { item: Contact ->
             this.activity?.supportFragmentManager?.beginTransaction()
