@@ -1,15 +1,15 @@
 package com.example.tfs.data
 
-sealed class TopicCell {
+sealed class TopicItem {
 
-    class LocalDateCell(val postDate: String) : TopicCell()
-    class PostCell(
+    class LocalDateItem(val postDate: String) : TopicItem()
+    class PostItem(
         var reaction: MutableList<Reaction> = mutableListOf(),
         val message: String,
         val isOwner: Boolean = false,
         var avatar: Int? = null,
         var timeStamp: Long,
-    ) : TopicCell()
+    ) : TopicItem()
 }
 
 class Reaction(

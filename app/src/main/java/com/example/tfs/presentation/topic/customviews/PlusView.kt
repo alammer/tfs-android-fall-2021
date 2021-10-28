@@ -73,5 +73,4 @@ class PlusView @JvmOverloads constructor(
         private val DEFAULT_WIDTH = 45.dpToPixels()
         private val DEFAULT_HEGHT = 30.dpToPixels()
     }
-
 }

@@ -49,8 +49,7 @@ class ContactsFragment : Fragment() {
     }
 
     companion object {
-        //private const val ARG_MESSAGE = "topic_id"
-        fun newInstance(topicId: Int): ContactsFragment {
+        fun newInstance(): ContactsFragment {
             val fragment = ContactsFragment()
             val arguments = Bundle()
             //arguments.putInt(ARG_MESSAGE, topicId)

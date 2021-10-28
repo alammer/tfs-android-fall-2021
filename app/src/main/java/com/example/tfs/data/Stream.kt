@@ -1,18 +1,18 @@
 package com.example.tfs.data
 
-sealed class StreamCell {
+sealed class StreamListItem {
 
-    data class StreamItemCell(
+    data class StreamItem(
         val streamId: Int,
         val streamName: String,
-        val childTopics: MutableList<TopicItemCell> = mutableListOf(),
+        val childTopics: MutableList<TopicItem> = mutableListOf(),
         var expanded: Boolean = false
-    ) : StreamCell()
+    ) : StreamListItem()
 
-    data class TopicItemCell(
+    data class TopicItem(
         val topicId: Int,
         val parentStreamId: Int,
         val topicName: String,
         val messageStat: Int
-    ) : StreamCell()
+    ) : StreamListItem()
 }

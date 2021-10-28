@@ -2,22 +2,21 @@ package com.example.tfs.presentation.topic
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.data.TopicCell
+import com.example.tfs.data.TopicItem
 
 
 class TopicViewAdapter :
-    ListAdapter<TopicCell, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+    ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private var recyclerViewCallback: TopicAdapterCallback? = null
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is TopicCell.PostCell -> R.layout.item_topic_rv_post
-        is TopicCell.LocalDateCell -> R.layout.item_topic_rv_date
+        is TopicItem.PostItem -> R.layout.item_topic_rv_post
+        is TopicItem.LocalDateItem -> R.layout.item_topic_rv_date
         null -> throw IllegalStateException("Unknown view")
     }
 
@@ -34,7 +33,7 @@ class TopicViewAdapter :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is PostViewHolder -> {
-                val item = getItem(position) as TopicCell.PostCell
+                val item = getItem(position) as TopicItem.PostItem
 
                 holder.postView.createLayout(item)
 
@@ -65,7 +64,7 @@ class TopicViewAdapter :
                 }
             }
             is DateViewHolder -> {
-                val item = getItem(position) as TopicCell.LocalDateCell
+                val item = getItem(position) as TopicItem.LocalDateItem
                 holder.dateView.text = item.postDate
 
             }
@@ -79,27 +78,27 @@ class TopicViewAdapter :
     }
 }
 
-private class MessageDiffCallback : DiffUtil.ItemCallback<TopicCell>() {
+private class MessageDiffCallback : DiffUtil.ItemCallback<TopicItem>() {
 
-    override fun areItemsTheSame(oldItem: TopicCell, newItem: TopicCell): Boolean {
+    override fun areItemsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
 
-        val isSameDateItem = oldItem is TopicCell.LocalDateCell
-                && newItem is TopicCell.LocalDateCell
+        val isSameDateItem = oldItem is TopicItem.LocalDateItem
+                && newItem is TopicItem.LocalDateItem
                 && oldItem.postDate == newItem.postDate
 
-        val isSamePostItem = oldItem is TopicCell.PostCell
-                && newItem is TopicCell.PostCell
+        val isSamePostItem = oldItem is TopicItem.PostItem
+                && newItem is TopicItem.PostItem
 
         return isSameDateItem || isSamePostItem
     }
 
-    override fun areContentsTheSame(oldItem: TopicCell, newItem: TopicCell): Boolean {
-        val isSamePostContent = oldItem is TopicCell.PostCell
-                && newItem is TopicCell.PostCell
+    override fun areContentsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
+        val isSamePostContent = oldItem is TopicItem.PostItem
+                && newItem is TopicItem.PostItem
                 && oldItem.message == newItem.message && oldItem.reaction == newItem.reaction
 
-        val isSameDateContent = oldItem is TopicCell.LocalDateCell
-                && newItem is TopicCell.LocalDateCell
+        val isSameDateContent = oldItem is TopicItem.LocalDateItem
+                && newItem is TopicItem.LocalDateItem
                 && oldItem.postDate == newItem.postDate
 
         return isSamePostContent || isSameDateContent

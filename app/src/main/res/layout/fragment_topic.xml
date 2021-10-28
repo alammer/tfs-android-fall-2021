@@ -6,6 +6,40 @@
     android:layout_height="match_parent"
     android:background="@color/layout_bg">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/btnTopicNavBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|left"
+                android:layout_marginVertical="20dp"
+                android:src="@drawable/ic_nav_back_arrow" />
+
+            <TextView
+                android:id="@+id/tvTopicTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="#general"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+
+        </FrameLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <TextView
         android:id="@+id/tvTopic"
         android:layout_width="match_parent"
@@ -15,7 +49,7 @@
         android:text="@string/test_topic_name"
         android:textColor="@color/new_message_text"
         android:textSize="@dimen/large_text_size"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTopic"

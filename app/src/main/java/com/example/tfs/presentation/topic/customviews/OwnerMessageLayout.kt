@@ -30,8 +30,10 @@ class OwnerMessageLayout @JvmOverloads constructor(
     private var staticLayout: StaticLayout? = null
 
     private val textColor = ContextCompat.getColor(context, R.color.text_color)
-    private val gradienStartColor = ContextCompat.getColor(context, R.color.owner_message_gradient_start_color_bg)
-    private val gradienEndColor = ContextCompat.getColor(context, R.color.owner_message_gradient_end_color_bg)
+    private val gradienStartColor =
+        ContextCompat.getColor(context, R.color.owner_message_gradient_start_color_bg)
+    private val gradienEndColor =
+        ContextCompat.getColor(context, R.color.owner_message_gradient_end_color_bg)
 
     private val messagePaint = Paint().apply {
         isAntiAlias = true
@@ -82,7 +84,15 @@ class OwnerMessageLayout @JvmOverloads constructor(
             bottom = h.toFloat()
         }
 
-        backPaint.shader = LinearGradient(0f, 0f, w.toFloat(), h.toFloat(), gradienStartColor, gradienEndColor, Shader.TileMode.CLAMP)
+        backPaint.shader = LinearGradient(
+            0f,
+            0f,
+            w.toFloat(),
+            h.toFloat(),
+            gradienStartColor,
+            gradienEndColor,
+            Shader.TileMode.CLAMP
+        )
 
         if (staticLayout != null) {
             messageCoordinate.x = 0f + START_PADDING

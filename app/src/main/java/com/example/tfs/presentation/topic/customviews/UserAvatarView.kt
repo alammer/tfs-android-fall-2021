@@ -38,7 +38,10 @@ class UserAvatarView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec))
+        setMeasuredDimension(
+            MeasureSpec.getSize(widthMeasureSpec),
+            MeasureSpec.getSize(heightMeasureSpec)
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -64,8 +67,18 @@ class UserAvatarView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         canvas?.drawOval(viewRect.toRectF(), paint)
         onlineState?.let {
-            canvas?.drawCircle(stateRect.exactCenterX(), stateRect.exactCenterY(), stateRect.width() / 2f, statePaint)
-            canvas?.drawCircle(stateRect.exactCenterX(), stateRect.exactCenterY(), stateRect.width() / 2f, borderStatePaint)
+            canvas?.drawCircle(
+                stateRect.exactCenterX(),
+                stateRect.exactCenterY(),
+                stateRect.width() / 2f,
+                statePaint
+            )
+            canvas?.drawCircle(
+                stateRect.exactCenterX(),
+                stateRect.exactCenterY(),
+                stateRect.width() / 2f,
+                borderStatePaint
+            )
         }
     }
 
@@ -102,6 +115,8 @@ class UserAvatarView @JvmOverloads constructor(
         userAvatarUri?.let {
             userImage = it
         }
+
+        requestLayout()
     }
 
     companion object {

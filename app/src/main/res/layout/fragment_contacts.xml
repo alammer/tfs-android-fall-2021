@@ -21,8 +21,8 @@
 
             <EditText
                 android:id="@+id/etSearchInput"
-                android:background="@null"
                 style="@style/SearchInputStyle"
+                android:background="@null"
                 android:hint="Users..." />
 
             <ImageView
@@ -34,7 +34,6 @@
                 android:src="@drawable/ic_loupe" />
 
         </LinearLayout>
-
 
     </com.google.android.material.appbar.AppBarLayout>
 
