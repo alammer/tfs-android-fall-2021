@@ -21,7 +21,7 @@
 
             <EditText
                 android:id="@+id/etSearchInput"
-                style="@style/SearchStyle"
+                style="@style/SearchInputStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"

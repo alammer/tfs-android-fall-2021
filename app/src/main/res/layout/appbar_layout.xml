@@ -18,7 +18,7 @@
 
             <EditText
                 android:id="@+id/etSearchInput"
-                style="@style/SearchStyle"
+                style="@style/SearchInputStyle"
                 android:hint="Search..."
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

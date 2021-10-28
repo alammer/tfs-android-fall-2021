@@ -18,7 +18,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
-        requestContact = requireArguments().getInt(ARG_MESSAGE, -1)
+        //requestContact = requireArguments().getInt(ARG_MESSAGE, -1)
         return view
     }
 

@@ -77,7 +77,7 @@ class TestStreamDataGenerator {
     fun generateTestStream(): MutableList<StreamCell> {
         val testStream = mutableListOf<StreamCell.StreamItemCell>()
 
-        (0..3).forEach {
+        (0..20).forEach {
             testStream.add(
                 StreamCell.StreamItemCell(
                     it,

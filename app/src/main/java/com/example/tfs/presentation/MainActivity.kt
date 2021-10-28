@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.example.tfs.presentation.contacts.ContactsFragment
+import com.example.tfs.presentation.profile.ProfileFragment
 import com.example.tfs.presentation.streams.StreamsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -20,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, StreamsFragment())
+                .add(R.id.fragment_container, ProfileFragment())
                 .commit()
         }
 

@@ -6,7 +6,7 @@ sealed class StreamCell {
         val streamId: Int,
         val streamName: String,
         val childTopics: MutableList<TopicItemCell> = mutableListOf(),
-        var expanded: Boolean = true
+        var expanded: Boolean = false
     ) : StreamCell()
 
     data class TopicItemCell(

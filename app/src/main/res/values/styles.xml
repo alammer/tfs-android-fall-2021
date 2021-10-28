@@ -11,7 +11,7 @@
         <item name="cornerSize">24dp</item>
     </style>
 
-    <style name="SearchStyle">
+    <style name="SearchInputStyle">
 <!--        <item name="android:background">@drawable/bg_search</item>-->
         <item name="android:maxLines">1</item>
 <!--        <item name="android:paddingStart">@dimen/space_big</item>-->
@@ -25,8 +25,11 @@
 
     <style name="UserAvatarCircleOverlay" parent="">
         <item name="cornerSize">50%</item>
-        <item name="android:scaleType">center</item>
-        <item name="android:background">@color/view_bg</item>
+    </style>
+
+    <style name="ProfileAvatarBoxOverlay">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">15dp</item>
     </style>
 
 </resources>

@@ -36,7 +36,6 @@ class StreamViewAdapter(private val clickListener: ItemClickListener):
             is StreamItemViewHolder -> {
                 val item = getItem(position) as StreamCell.StreamItemCell
                 holder.streamName.text = item.streamName
-                Log.i("StreamViewAdapter", "Function called: ${item.streamName} ${item.expanded}")
                 if (item.expanded) { holder.btnTopicList.setImageResource(R.drawable.ic_collapce) } else {
                     holder.btnTopicList.setImageResource(R.drawable.ic_expand)
                 }
@@ -63,7 +62,7 @@ private class StreamDiffCallback : DiffUtil.ItemCallback<StreamCell>() {
     override fun areItemsTheSame(oldItem: StreamCell, newItem: StreamCell): Boolean {
         val isSameStreamItem = oldItem is StreamCell.StreamItemCell
                 && newItem is StreamCell.StreamItemCell
-                && oldItem.streamName == newItem.streamName
+                && oldItem == newItem
 
         val isSameTopicItem = oldItem is StreamCell.TopicItemCell
                 && newItem is StreamCell.TopicItemCell
