@@ -33,10 +33,7 @@
                 android:layout_gravity="center"
                 android:text="Profile"
                 android:textColor="@color/white"
-                android:textSize="24sp"
-                app:layout_constraintBottom_toTopOf="@+id/tvContactEmail"
-                app:layout_constraintStart_toEndOf="@id/frameContactAvatar"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="24sp" />
 
         </FrameLayout>
 
@@ -93,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:text="Online"
-            android:textColor="#4AB54D"
+            android:textColor="@color/state_color_green"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvStatus"

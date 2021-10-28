@@ -21,8 +21,8 @@ class ContactViewAdapter(private val clickListener: ItemClickListener) :
         val item = getItem(position)
         holder.contactName.text = item.userName
         holder.contactEmail.text = item.userEmail
-        holder.contactStatus.setImageResource(R.drawable.ic_status)
         holder.contactAvatar.setImageResource(R.drawable.bad)
+        holder.contactAvatar.getItemData(userName = "Ivan Ivanov")
         holder.itemView.setOnClickListener { clickListener.onClick(item) }
     }
 }
@@ -33,7 +33,7 @@ private class ContactDiffCallback : DiffUtil.ItemCallback<Contact>() {
         oldItem.userId == newItem.userId
 
     override fun areContentsTheSame(oldItem: Contact, newItem: Contact) =
-        oldItem.userName == newItem.userName
+        oldItem.userStatus == newItem.userStatus && oldItem.userImage == newItem.userImage
 }
 
 class ItemClickListener(val clickListener: (item: Contact) -> Unit) {

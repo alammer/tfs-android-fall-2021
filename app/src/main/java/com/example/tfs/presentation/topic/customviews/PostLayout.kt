@@ -109,7 +109,10 @@ class PostLayout @JvmOverloads constructor(
             addView(OwnerMessageLayout(context, userMessage = data.message))
             messageChild = getChildAt(0)
         } else {
-            addView(UserAvatarView(context, avatarUri = data.avatar))
+            val avatarView = UserAvatarView(context)
+            avatarView.layoutParams =  LayoutParams(AVATAR_VIEW_WIDTH, AVARTAR_VIEW_HEIGHT)
+            avatarView.getItemData(1, data.avatar, userName = "Ivan Ivanov")
+            addView(avatarView)
             avatarChild = getChildAt(0)
             addView(UserMessageLayout(context, userMessage = data.message))
             messageChild = getChildAt(1)
@@ -153,5 +156,7 @@ class PostLayout @JvmOverloads constructor(
         private val CHILD_HEIGHT = 30.dpToPixels()
         private val CHILD_DIVIDER = 8.dpToPixels()
         private val VIEW_WIDTH = 265.dpToPixels()
+        private val AVATAR_VIEW_WIDTH = 37.dpToPixels()
+        private val AVARTAR_VIEW_HEIGHT = 37.dpToPixels()
     }
 }

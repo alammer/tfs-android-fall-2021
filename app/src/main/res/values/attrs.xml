@@ -3,5 +3,6 @@
 
     <declare-styleable name="UserAvatarView">
         <attr name="uav_initials" format="string"/>
+        <attr name="uav_online_state" format="integer" />
     </declare-styleable>
 </resources>

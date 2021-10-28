@@ -37,7 +37,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_topic, container, false)
-        requestTopic = requireArguments().getInt(ARG_MESSAGE, -1 )
+        //requestTopic = requireArguments().getInt(ARG_MESSAGE, -1 )
         return view
     }
 

@@ -6,31 +6,13 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="8dp">
 
-    <FrameLayout
-        android:id="@+id/frameContactAvatar"
+    <com.example.tfs.presentation.topic.customviews.UserAvatarView
+        android:id="@+id/cvAvatar1"
         android:layout_width="64dp"
         android:layout_height="64dp"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgContactAvatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:shapeAppearanceOverlay="@style/UserAvatarCircleOverlay"
-            android:scaleType="centerCrop"
-            android:src="@drawable/bad"/>
-
-        <ImageView
-            android:id="@+id/imgContactStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"
-            android:src="@drawable/ic_status"/>
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvContactName"
@@ -38,8 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textSize="22sp"
+        android:textColor="#FAFAFA"
         android:text="Ivan"
-        app:layout_constraintStart_toEndOf="@id/frameContactAvatar"
+        app:layout_constraintStart_toEndOf="@id/cvAvatar1"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tvContactEmail"/>
 
@@ -49,8 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textSize="16sp"
+        android:textColor="#A1A1A1"
         android:text="email"
-        app:layout_constraintStart_toEndOf="@id/frameContactAvatar"
+        app:layout_constraintStart_toEndOf="@id/cvAvatar1"
         app:layout_constraintTop_toBottomOf="@id/tvContactName"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

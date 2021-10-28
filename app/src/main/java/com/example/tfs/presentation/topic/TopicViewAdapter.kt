@@ -2,6 +2,7 @@ package com.example.tfs.presentation.topic
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.get
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView

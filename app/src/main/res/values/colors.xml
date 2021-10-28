@@ -29,5 +29,6 @@
     <color name="check_emoji_text_color">#EAEAEA</color>
     <color name="hot_topic_bg_color">#2A9D8F</color>
     <color name="topic_bg_color">#E9C46A</color>
+    <color name="state_color_green">#4AB54D</color>
 
 </resources>

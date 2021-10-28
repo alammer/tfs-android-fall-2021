@@ -18,15 +18,9 @@
 
             <EditText
                 android:id="@+id/etSearchInput"
-                style="@style/SearchInputStyle"
-                android:hint="Search..."
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:padding="0dp"
-                android:layout_weight="1"
                 android:background="@null"
-                android:layout_gravity="center_vertical|start"/>
+                style="@style/SearchInputStyle"
+                android:hint="Search..." />
 
             <ImageView
                 android:id="@+id/ic_loupe"
