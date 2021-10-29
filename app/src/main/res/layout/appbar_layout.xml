@@ -8,26 +8,26 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="@dimen/appbar_base_margin">
 
         <LinearLayout
             android:id="@+id/toolbar_container"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/appbar_layout_height"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/etSearchInput"
                 android:background="@null"
                 style="@style/SearchInputStyle"
-                android:hint="Search..." />
+                android:hint="@string/search_input_hint" />
 
             <ImageView
                 android:id="@+id/ic_loupe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:layout_marginVertical="20dp"
+                android:layout_marginVertical="@dimen/appbar_base_margin"
                 android:src="@drawable/ic_loupe" />
 
         </LinearLayout>
@@ -50,12 +50,12 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Subscribed" />
+                android:text="@string/subscribed_tab_title" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All streams" />
+                android:text="@string/all_streams_tab_title" />
 
         </com.google.android.material.tabs.TabLayout>
 

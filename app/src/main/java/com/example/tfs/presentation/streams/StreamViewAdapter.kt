@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.StreamListItem
 
-class StreamViewAdapter(private val clickListener: ItemClickListener) :
+class StreamViewAdapter(private val onItemClicked: (StreamListItem) -> Unit) :
     ListAdapter<StreamListItem, RecyclerView.ViewHolder>(StreamDiffCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -40,7 +40,7 @@ class StreamViewAdapter(private val clickListener: ItemClickListener) :
                 } else {
                     holder.btnTopicList.setImageResource(R.drawable.ic_expand)
                 }
-                holder.btnTopicList.setOnClickListener { clickListener.onClick(item) }
+                holder.btnTopicList.setOnClickListener { onItemClicked(item) }
             }
             is TopicItemViewHolder -> {
                 val item = getItem(position) as StreamListItem.TopicItem
@@ -60,7 +60,7 @@ class StreamViewAdapter(private val clickListener: ItemClickListener) :
                         )
                     )
                 }
-                holder.itemView.setOnClickListener { clickListener.onClick(item) }
+                holder.itemView.setOnClickListener { onItemClicked(item) }
             }
             else -> throw IllegalStateException("Unknown viewHolder")
         }
@@ -71,31 +71,12 @@ class StreamViewAdapter(private val clickListener: ItemClickListener) :
 private class StreamDiffCallback : DiffUtil.ItemCallback<StreamListItem>() {
 
     override fun areItemsTheSame(oldItem: StreamListItem, newItem: StreamListItem): Boolean {
-        val isSameStreamItem = oldItem is StreamListItem.StreamItem
-                && newItem is StreamListItem.StreamItem
-                && oldItem == newItem
-
-        val isSameTopicItem = oldItem is StreamListItem.TopicItem
-                && newItem is StreamListItem.TopicItem
-                && oldItem.topicName == newItem.topicName
-
-        return isSameStreamItem || isSameTopicItem
+        return (oldItem as? StreamListItem.StreamItem)?.streamId == (newItem as? StreamListItem.StreamItem)?.streamId
+                || (oldItem as? StreamListItem.TopicItem)?.topicId == (newItem as? StreamListItem.TopicItem)?.topicId
     }
 
     override fun areContentsTheSame(oldItem: StreamListItem, newItem: StreamListItem): Boolean {
-        val isSameStreamContent = oldItem is StreamListItem.StreamItem
-                && newItem is StreamListItem.StreamItem
-                && oldItem.expanded == newItem.expanded && oldItem.streamName == newItem.streamName
-
-        val isSameTopicContent = oldItem is StreamListItem.TopicItem
-                && newItem is StreamListItem.TopicItem
-                && oldItem.messageStat == newItem.messageStat
-
-        return isSameStreamContent || isSameTopicContent
+        return (oldItem as? StreamListItem.StreamItem) == (newItem as? StreamListItem.StreamItem)
+                || (oldItem as? StreamListItem.TopicItem) == (newItem as? StreamListItem.TopicItem)
     }
-}
-
-class ItemClickListener(val clickListener: (item: StreamListItem) -> Unit) {
-
-    fun onClick(item: StreamListItem) = clickListener(item)
 }

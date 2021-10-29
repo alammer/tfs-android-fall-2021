@@ -72,7 +72,7 @@ I would suggest using the GONE approach...
     }
 }
 
-class TestStreamDataGenerator {
+object TestStreamDataGenerator {
 
     fun generateTestStream(): MutableList<StreamListItem> {
         val testStream = mutableListOf<StreamListItem.StreamItem>()

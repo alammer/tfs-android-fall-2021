@@ -9,27 +9,27 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="@dimen/appbar_base_margin"
         app:layout_constraintBottom_toTopOf="@id/rvContacts"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/toolbar_container"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/appbar_layout_height"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/etSearchInput"
                 style="@style/SearchInputStyle"
                 android:background="@null"
-                android:hint="Users..." />
+                android:hint="@string/users_search_input_hint" />
 
             <ImageView
                 android:id="@+id/ic_loupe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="20dp"
+                android:layout_marginVertical="@dimen/appbar_base_margin"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_loupe" />
 

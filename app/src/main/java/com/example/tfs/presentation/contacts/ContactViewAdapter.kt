@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.tfs.R
 import com.example.tfs.data.Contact
 
-class ContactViewAdapter(private val clickListener: ItemClickListener) :
+class ContactViewAdapter(private val onItemClick: (Contact) -> Unit) :
     ListAdapter<Contact, ContactViewHolder>(ContactDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -23,7 +23,7 @@ class ContactViewAdapter(private val clickListener: ItemClickListener) :
         holder.contactEmail.text = item.userEmail
         //holder.contactAvatar.setImageResource(R.drawable.bad)
         holder.contactAvatar.getItemData(1, item.userImage, userName = "Ivan Ivanov")
-        holder.itemView.setOnClickListener { clickListener.onClick(item) }
+        holder.itemView.setOnClickListener { onItemClick(item) }
     }
 }
 
@@ -33,9 +33,5 @@ private class ContactDiffCallback : DiffUtil.ItemCallback<Contact>() {
         oldItem.userId == newItem.userId
 
     override fun areContentsTheSame(oldItem: Contact, newItem: Contact) =
-        oldItem.userStatus == newItem.userStatus && oldItem.userImage == newItem.userImage
-}
-
-class ItemClickListener(val clickListener: (item: Contact) -> Unit) {
-    fun onClick(item: Contact) = clickListener(item)
+        oldItem == newItem
 }

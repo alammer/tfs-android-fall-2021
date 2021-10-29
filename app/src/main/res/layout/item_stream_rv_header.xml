@@ -6,13 +6,12 @@
 
     <TextView
         android:id="@+id/tvStreamName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="@dimen/text_base_margin_start"
         android:layout_gravity="center_vertical|start"
         android:layout_weight="1"
-        android:textSize="18sp"
-        android:text="#Test_name_stream"
+        android:textSize="@dimen/channel_name_text_size"
         android:textColor="@color/text_color" />
 
     <ImageView

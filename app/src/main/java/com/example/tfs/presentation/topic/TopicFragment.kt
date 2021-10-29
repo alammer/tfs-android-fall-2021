@@ -3,6 +3,7 @@ package com.example.tfs.presentation.topic
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
+import com.example.tfs.data.StreamListItem
 import com.example.tfs.data.TopicItem
 import com.example.tfs.presentation.MainActivity
-import com.example.tfs.presentation.streams.StreamsFragment
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
+import com.example.tfs.util.TestStreamDataGenerator
 import com.example.tfs.util.TestTopicDataGenerator
+import com.example.tfs.util.toast
 
 class TopicFragment : Fragment(), TopicAdapterCallback {
 
@@ -28,7 +31,11 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     private lateinit var sendButton: ImageView
     private lateinit var btnTopicNavBack: ImageView
 
+    private val streamDataSet: List<StreamListItem> =
+        TestStreamDataGenerator.generateTestStream()
+
     private var dataSet = TestTopicDataGenerator.generateTestTopic()
+
 
     //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
     private var currentPost = -1
@@ -38,20 +45,19 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_topic, container, false)
-        requestTopic = requireArguments().getInt(ARG_MESSAGE, -1)
-        return view
+        return inflater.inflate(R.layout.fragment_topic, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).hideBottomNav()
         initViews(view)
-        onChangeMessage()dataSet.getOrNull(requestTopic)?.let {
-           showTopicList(view, it)
-        } ?: TODO("make mock list with topics")
+        onChangeMessage()
 
-        this.childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
+        Log.i("TopicFragment", "Requested Stream ID is: ${requireArguments().getInt(STREAM_KEY, -1)}")
+        Log.i("TopicFragment", "Requested Topic ID is: ${requireArguments().getInt(TOPIC_KEY, -1)}")
+
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val emoji = bundle.getInt(RESULT_KEY, 0)
             when (val post = dataSet[currentPost]) {
                 is TopicItem.PostItem -> {
@@ -79,7 +85,6 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
             }
         }
     }
-
     override fun onDetach() {
         super.onDetach()
         (activity as MainActivity).showBottomNav()
@@ -118,7 +123,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
 
     override fun onRecycleViewLongPress(postPosition: Int) {
         currentPost = postPosition
-        EmojiDialogFragment().show(this.childFragmentManager, tag)
+        EmojiDialogFragment().show(childFragmentManager, tag)
     }
 
     private fun updateReaction(emoji: Int, reaction: MutableList<Reaction>) {
@@ -154,12 +159,21 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         })
     }
 
+    private fun uknownTopicRequest() {
+        requireActivity().apply {
+            toast("Topic not exist or removed!")
+            supportFragmentManager.popBackStack()
+        }
+    }
+
     companion object {
-        private const val ARG_MESSAGE = "topic_id"
-        fun newInstance(topicId: Int): TopicFragment {
+        private const val STREAM_KEY = "stream_id"
+        private const val TOPIC_KEY = "topic_id"
+        fun newInstance(streamId: Int, topicId: Int): TopicFragment {
             val fragment = TopicFragment()
             val arguments = Bundle()
-            arguments.putInt(ARG_MESSAGE, topicId)
+            arguments.putInt(STREAM_KEY, streamId)
+            arguments.putInt(TOPIC_KEY, topicId)
             fragment.arguments = arguments
             return fragment
         }

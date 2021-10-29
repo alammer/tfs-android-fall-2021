@@ -3,7 +3,7 @@ package com.example.tfs.data
 sealed class TopicItem {
 
     class LocalDateItem(val postDate: String) : TopicItem()
-    class PostItem(
+    data class PostItem(
         var reaction: MutableList<Reaction> = mutableListOf(),
         val message: String,
         val isOwner: Boolean = false,
@@ -12,7 +12,7 @@ sealed class TopicItem {
     ) : TopicItem()
 }
 
-class Reaction(
+data class Reaction(
     val emoji: Int,
     var count: Int,
     val userId: List<Int>? = null,

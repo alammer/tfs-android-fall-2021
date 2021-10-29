@@ -1,6 +1,6 @@
 package com.example.tfs.data
 
-class Contact(
+data class Contact(
     val userId: Int,
     val userName: String,
     val userEmail: String,

@@ -10,17 +10,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:text="#Test_name_topic"
         android:textColor="@color/text_color"
-        android:textSize="18sp" />
+        android:textSize="@dimen/channel_name_text_size" />
 
     <TextView
         android:id="@+id/tvTopicStat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="#Test_name_topic"
         android:textColor="@color/text_color"
-        android:textSize="16sp" />
+        android:textSize="@dimen/info_text_size" />
 
 </LinearLayout>

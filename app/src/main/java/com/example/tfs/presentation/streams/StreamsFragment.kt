@@ -17,7 +17,7 @@ import com.google.android.material.tabs.TabLayout
 class StreamsFragment : Fragment() {
 
     private val streamDataSet: List<StreamListItem> =
-        TestStreamDataGenerator().generateTestStream()
+        TestStreamDataGenerator.generateTestStream()
 
     private val subscribedStreams = streamDataSet.filterIndexed { index, _ -> index % 3 == 0 }
 
@@ -46,12 +46,12 @@ class StreamsFragment : Fragment() {
         streamTabLayout = view.findViewById(R.id.tabLayout)
         searchInput = view.findViewById(R.id.etSearchInput)
 
-        streamViewAdapter = StreamViewAdapter(ItemClickListener { item: StreamListItem ->
+        streamViewAdapter = StreamViewAdapter { item: StreamListItem ->
             when (item) {
                 is StreamListItem.StreamItem -> clickStreamView(item)
-                is StreamListItem.TopicItem -> moveToTopicFragment(item.topicId)
+                is StreamListItem.TopicItem -> moveToTopicFragment(item.parentStreamId, item.topicId)
             }
-        })
+        }
         streamListRecycler.adapter = streamViewAdapter
 
         streamListRecycler.layoutManager = LinearLayoutManager(context).apply {
@@ -123,9 +123,9 @@ class StreamsFragment : Fragment() {
         }
     }
 
-    private fun moveToTopicFragment(topicId: Int) {
+    private fun moveToTopicFragment(parentStreamId: Int, topicId: Int) {
         requireActivity().supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, TopicFragment.newInstance(topicId))
+            .add(R.id.fragment_container, TopicFragment.newInstance(parentStreamId, topicId))
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -135,14 +135,4 @@ class StreamsFragment : Fragment() {
             .filterIsInstance<StreamListItem.StreamItem>()
             .filter { subscribedStreams.contains(it) }.toMutableList()
 
-    companion object {
-        private const val ARG_MESSAGE = "topic_id"
-        fun newInstance(topicId: Int): StreamsFragment {
-            val fragment = StreamsFragment()
-            val arguments = Bundle()
-            arguments.putInt(ARG_MESSAGE, topicId)
-            fragment.arguments = arguments
-            return fragment
-        }
-    }
 }

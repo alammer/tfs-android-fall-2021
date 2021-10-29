@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.TopicItem
 
-
 class TopicViewAdapter :
     ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
@@ -81,26 +80,12 @@ class TopicViewAdapter :
 private class MessageDiffCallback : DiffUtil.ItemCallback<TopicItem>() {
 
     override fun areItemsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
-
-        val isSameDateItem = oldItem is TopicItem.LocalDateItem
-                && newItem is TopicItem.LocalDateItem
-                && oldItem.postDate == newItem.postDate
-
-        val isSamePostItem = oldItem is TopicItem.PostItem
-                && newItem is TopicItem.PostItem
-
-        return isSameDateItem || isSamePostItem
+        return (oldItem as? TopicItem.LocalDateItem)?.postDate == (newItem as? TopicItem.LocalDateItem)?.postDate
+                || (oldItem as? TopicItem.PostItem)?.timeStamp == (newItem as? TopicItem.PostItem)?.timeStamp
     }
 
     override fun areContentsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
-        val isSamePostContent = oldItem is TopicItem.PostItem
-                && newItem is TopicItem.PostItem
-                && oldItem.message == newItem.message && oldItem.reaction == newItem.reaction
-
-        val isSameDateContent = oldItem is TopicItem.LocalDateItem
-                && newItem is TopicItem.LocalDateItem
-                && oldItem.postDate == newItem.postDate
-
-        return isSamePostContent || isSameDateContent
+        return oldItem is TopicItem.LocalDateItem == newItem is TopicItem.LocalDateItem
+                || (oldItem as? TopicItem.PostItem) == (newItem as? TopicItem.PostItem)
     }
 }

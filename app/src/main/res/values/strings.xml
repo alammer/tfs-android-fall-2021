@@ -3,4 +3,9 @@
     <string name="test_topic_name">Topic: #testing</string>
     <string name="channel_name_hint">#testing</string>
     <string name="message_input_hint">Написать…</string>
+    <string name="search_input_hint">Search...</string>
+    <string name="subscribed_tab_title">Subscribed</string>
+    <string name="all_streams_tab_title">All streams</string>
+    <string name="users_search_input_hint">Users...</string>
+    <string name="profile_appbar_title">Profile</string>
 </resources>

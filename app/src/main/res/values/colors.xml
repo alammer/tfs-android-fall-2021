@@ -28,5 +28,7 @@
     <color name="hot_topic_bg_color">#2A9D8F</color>
     <color name="topic_bg_color">#E9C46A</color>
     <color name="state_color_green">#4AB54D</color>
+    <color name="user_status_text_color">#BCBCBC</color>
+    <color name="user_contact_email_text_color">#A1A1A1</color>
 
 </resources>

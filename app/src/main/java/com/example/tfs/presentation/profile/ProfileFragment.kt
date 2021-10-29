@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
-import com.example.tfs.presentation.topic.TopicFragment
 import com.google.android.material.imageview.ShapeableImageView
 
 class ProfileFragment : Fragment() {

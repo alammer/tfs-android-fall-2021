@@ -28,13 +28,13 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         emojiSheetRecycler = view.findViewById(R.id.rvEmoji)
-        emojiAdapter = EmojiRecyclerAdapter(EmojiClickListener { emojiCode: Int ->
+        emojiAdapter = EmojiRecyclerAdapter{ emojiCode: Int ->
             setFragmentResult(
                 REQUEST_KEY,
                 bundleOf(RESULT_KEY to emojiCode)
             )
             dismiss()
-        })
+        }
         emojiSheetRecycler.adapter = emojiAdapter
 
         val emojiSet = mutableListOf<Int>()
