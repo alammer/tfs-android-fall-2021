@@ -37,7 +37,7 @@ class ContactsFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
                 .addToBackStack(null)
-                .commit()
+                .commitAllowingStateLoss()
 
         })
 
@@ -45,16 +45,6 @@ class ContactsFragment : Fragment() {
 
         contactRecycler.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
-        }
-    }
-
-    companion object {
-        fun newInstance(): ContactsFragment {
-            val fragment = ContactsFragment()
-            val arguments = Bundle()
-            //arguments.putInt(ARG_MESSAGE, topicId)
-            fragment.arguments = arguments
-            return fragment
         }
     }
 }

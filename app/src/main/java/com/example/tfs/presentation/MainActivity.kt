@@ -1,9 +1,12 @@
 package com.example.tfs.presentation
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
+import com.example.tfs.presentation.contacts.ContactsFragment
+import com.example.tfs.presentation.profile.ProfileFragment
 import com.example.tfs.presentation.streams.StreamsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -14,63 +17,58 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, StreamsFragment())
-                .commit()
+                .commitAllowingStateLoss()
         }
 
-        //bottomNavigationView = findViewById(R.id.bottomNavView)
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
 
-//        supportFragmentManager.addOnBackStackChangedListener {
-//            when (supportFragmentManager.findFragmentById(R.id.main_container)) {
-//                is DetailFragment -> bottomNavigationView.menu.setGroupCheckable(0, false, true)
-//                is MainScreenFragment -> {
-//                    bottomNavigationView.menu.setGroupCheckable(0, true, true)
-//                    bottomNavigationView.menu.findItem(R.id.home)?.run { isChecked = true }
-//                }
-//                is ProfileFragment -> {
-//                    bottomNavigationView.menu.setGroupCheckable(0, true, true)
-//                    bottomNavigationView.menu.findItem(R.id.profile)?.run { isChecked = true }
-//                }
-//            }
-//        }
+        bottomNavigationView.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_to_streams -> {
+                    loadFragment(StreamsFragment())
+                    return@setOnItemSelectedListener true
+                }
 
-//        bottomNavigationView.setOnItemSelectedListener {
-//            val fromDetailFragment =
-//                supportFragmentManager.findFragmentById(R.id.main_container) is DetailFragment
-//            when (it.itemId) {
-//                R.id.home -> {
-//                    if (fromDetailFragment) {
-//                        supportFragmentManager.popBackStack()
-//                        loadFragment(MainScreenFragment())
-//                    } else {
-//                        if (!it.isChecked) {
-//                            loadFragment(MainScreenFragment())
-//                        }
-//                    }
-//                    return@setOnItemSelectedListener true
-//                }
-//
-//                R.id.profile -> {
-//                    if (!it.isChecked) {
-//                        loadFragment(ProfileFragment(), fromDetailFragment)
-//                    }
-//                    return@setOnItemSelectedListener true
-//                }
-//            }
-//            return@setOnItemSelectedListener false
-//        }
+                R.id.nav_to_contacts -> {
+                    loadFragment(ContactsFragment())
+                    return@setOnItemSelectedListener true
+                }
+                R.id.nav_to_profile -> {
+                    loadFragment(ProfileFragment.newInstance())
+                    return@setOnItemSelectedListener true
+                }
+            }
+            return@setOnItemSelectedListener false
+        }
     }
 
-    private fun loadFragment(fragment: Fragment, addToBackStack: Boolean = false) {
+    override fun onBackPressed() {
+        super.onBackPressed()
+        when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
+            is StreamsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked = true
+            is ContactsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked = true
+            is ProfileFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked = true
+        }
+    }
+
+    fun hideBottomNav() {
+        bottomNavigationView.visibility = View.GONE
+    }
+
+    fun showBottomNav() {
+        bottomNavigationView.visibility = View.VISIBLE
+    }
+
+    private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment)
-        if (addToBackStack) transaction.addToBackStack(null)
-        transaction.commit()
+        transaction.add(R.id.fragment_container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commitAllowingStateLoss()
     }
 }
 

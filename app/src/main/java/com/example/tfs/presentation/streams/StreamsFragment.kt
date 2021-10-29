@@ -127,7 +127,7 @@ class StreamsFragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, TopicFragment.newInstance(topicId))
             .addToBackStack(null)
-            .commit()
+            .commitAllowingStateLoss()
     }
 
     private fun getSubcsribedStreams(): MutableList<StreamListItem> =

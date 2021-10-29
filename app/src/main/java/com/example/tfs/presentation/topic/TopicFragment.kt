@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicItem
+import com.example.tfs.presentation.MainActivity
 import com.example.tfs.presentation.streams.StreamsFragment
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
 import com.example.tfs.util.TestTopicDataGenerator
@@ -43,11 +44,12 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).hideBottomNav()
         initViews(view)
-        onChangeMessage()
-//        dataSet.getOrNull(requestTopic)?.let {
-//            showTopicList(view, it)
-//        } ?: TODO("make mock list with topics")
+        onChangeMessage()dataSet.getOrNull(requestTopic)?.let {
+           showTopicList(view, it)
+        } ?: TODO("make mock list with topics")
 
         this.childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val emoji = bundle.getInt(RESULT_KEY, 0)
@@ -78,6 +80,11 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        (activity as MainActivity).showBottomNav()
+    }
+
     override fun onRecycleViewItemClick(position: Int, emojiCode: Int) {
         when (val post = dataSet[position]) {
             is TopicItem.PostItem -> {
@@ -105,10 +112,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         topicListAdapter.submitList(dataSet)
 
         btnTopicNavBack.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, StreamsFragment.newInstance(requestTopic))
-                .addToBackStack(null)
-                .commit()
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
