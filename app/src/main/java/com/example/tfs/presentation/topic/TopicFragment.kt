@@ -105,10 +105,10 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         topicListAdapter.submitList(dataSet)
 
         btnTopicNavBack.setOnClickListener {
-            this.activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.fragment_container, StreamsFragment.newInstance(requestTopic))
-                ?.addToBackStack(null)
-                ?.commit()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, StreamsFragment.newInstance(requestTopic))
+                .addToBackStack(null)
+                .commit()
         }
     }
 

@@ -34,10 +34,10 @@ class ContactsFragment : Fragment() {
         contactRecycler = view.findViewById(R.id.rvContacts)
 
         contactListAdapter = ContactViewAdapter(ItemClickListener { item: Contact ->
-            this.activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
-                ?.addToBackStack(null)
-                ?.commit()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
+                .addToBackStack(null)
+                .commit()
 
         })
 

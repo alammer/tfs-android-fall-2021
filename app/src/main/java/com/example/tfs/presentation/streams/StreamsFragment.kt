@@ -124,10 +124,10 @@ class StreamsFragment : Fragment() {
     }
 
     private fun moveToTopicFragment(topicId: Int) {
-        this.activity?.supportFragmentManager?.beginTransaction()
-            ?.add(R.id.fragment_container, TopicFragment.newInstance(topicId))
-            ?.addToBackStack(null)
-            ?.commit()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, TopicFragment.newInstance(topicId))
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun getSubcsribedStreams(): MutableList<StreamListItem> =
