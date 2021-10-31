@@ -9,19 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.data.StreamListItem
+import com.example.tfs.data.StreamItemList
 import com.example.tfs.presentation.topic.TopicFragment
 import com.example.tfs.util.TestStreamDataGenerator
 import com.google.android.material.tabs.TabLayout
 
 class StreamsFragment : Fragment() {
 
-    private val streamDataSet: List<StreamListItem> =
+    private val streamDataSet: List<StreamItemList> =
         TestStreamDataGenerator.generateTestStream()
 
     private val subscribedStreams = streamDataSet.filterIndexed { index, _ -> index % 3 == 0 }
 
-    private var currentStreamList = mutableListOf<StreamListItem>()
+    private var currentStreamList = mutableListOf<StreamItemList>()
 
     private lateinit var streamListRecycler: RecyclerView
     private lateinit var streamViewAdapter: StreamViewAdapter
@@ -46,10 +46,10 @@ class StreamsFragment : Fragment() {
         streamTabLayout = view.findViewById(R.id.tabLayout)
         searchInput = view.findViewById(R.id.etSearchInput)
 
-        streamViewAdapter = StreamViewAdapter { item: StreamListItem ->
+        streamViewAdapter = StreamViewAdapter { item: StreamItemList ->
             when (item) {
-                is StreamListItem.StreamItem -> clickStreamView(item)
-                is StreamListItem.TopicItem -> moveToTopicFragment(item.parentStreamId, item.topicId)
+                is StreamItemList.StreamItem -> clickStreamView(item)
+                is StreamItemList.TopicItem -> moveToTopicFragment(item.parentStreamId, item.topicId)
             }
         }
         streamListRecycler.adapter = streamViewAdapter
@@ -90,10 +90,10 @@ class StreamsFragment : Fragment() {
         streamViewAdapter.submitList(currentStreamList)
     }
 
-    private fun clickStreamView(item: StreamListItem) {
+    private fun clickStreamView(item: StreamItemList) {
         val itemPosition = currentStreamList.indexOf(item)
         when (val stream = currentStreamList[itemPosition]) {
-            is StreamListItem.StreamItem -> if (stream.expanded) {
+            is StreamItemList.StreamItem -> if (stream.expanded) {
                 stream.expanded = false
                 streamViewAdapter.notifyItemChanged(itemPosition)
                 collapseStream(stream)
@@ -106,7 +106,7 @@ class StreamsFragment : Fragment() {
         }
     }
 
-    private fun expandStream(stream: StreamListItem.StreamItem) {
+    private fun expandStream(stream: StreamItemList.StreamItem) {
         val streamIndex = currentStreamList.indexOf(stream)
         if (streamIndex > -1 && stream.childTopics.isNotEmpty()) {
             currentStreamList.addAll(streamIndex + 1, stream.childTopics)
@@ -114,7 +114,7 @@ class StreamsFragment : Fragment() {
         }
     }
 
-    private fun collapseStream(stream: StreamListItem.StreamItem) {
+    private fun collapseStream(stream: StreamItemList.StreamItem) {
         val streamIndex = currentStreamList.indexOf(stream)
         if (streamIndex > -1 && stream.childTopics.isNotEmpty()) {
             currentStreamList.subList(streamIndex + 1, streamIndex + stream.childTopics.size + 1)
@@ -130,9 +130,9 @@ class StreamsFragment : Fragment() {
             .commitAllowingStateLoss()
     }
 
-    private fun getSubcsribedStreams(): MutableList<StreamListItem> =
+    private fun getSubcsribedStreams(): MutableList<StreamItemList> =
         streamDataSet
-            .filterIsInstance<StreamListItem.StreamItem>()
+            .filterIsInstance<StreamItemList.StreamItem>()
             .filter { subscribedStreams.contains(it) }.toMutableList()
 
 }

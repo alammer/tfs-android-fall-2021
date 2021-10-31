@@ -91,7 +91,7 @@ class UserAvatarView @JvmOverloads constructor(
         }
     }
 
-    fun getItemData(userState: Int? = null, userAvatarUri: Int? = null, userName: String) {
+    fun setAvatar(userAvatarUri: Int? = null, userState: Int? = null, userName: String) {
         onlineState = userState
         onlineState?.let {
             statePaint = Paint().apply {

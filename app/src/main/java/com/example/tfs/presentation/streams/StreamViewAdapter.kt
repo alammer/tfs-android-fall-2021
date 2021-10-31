@@ -2,19 +2,24 @@ package com.example.tfs.presentation.streams
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.data.StreamListItem
+import com.example.tfs.data.StreamItemList
 
-class StreamViewAdapter(private val onItemClicked: (StreamListItem) -> Unit) :
-    ListAdapter<StreamListItem, RecyclerView.ViewHolder>(StreamDiffCallback()) {
+class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
+    ListAdapter<StreamItemList, RecyclerView.ViewHolder>(StreamDiffCallback()) {
+
+    private val streamItemBinder =
+        StreamItemViewHolderBinder(onItemClicked)
+
+    private val topicItemBinder =
+        TopicItemViewHolderBinder(onItemClicked)
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is StreamListItem.StreamItem -> R.layout.item_stream_rv_header
-        is StreamListItem.TopicItem -> R.layout.item_stream_rv_topic
+        is StreamItemList.StreamItem -> R.layout.item_stream_rv_header
+        is StreamItemList.TopicItem -> R.layout.item_stream_rv_topic
         null -> throw IllegalStateException("Unknown view")
     }
 
@@ -33,34 +38,12 @@ class StreamViewAdapter(private val onItemClicked: (StreamListItem) -> Unit) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is StreamItemViewHolder -> {
-                val item = getItem(position) as StreamListItem.StreamItem
-                holder.streamName.text = item.streamName
-                if (item.expanded) {
-                    holder.btnTopicList.setImageResource(R.drawable.ic_collapce)
-                } else {
-                    holder.btnTopicList.setImageResource(R.drawable.ic_expand)
-                }
-                holder.btnTopicList.setOnClickListener { onItemClicked(item) }
+                val item = getItem(position) as StreamItemList.StreamItem
+                streamItemBinder.bind(holder, item)
             }
             is TopicItemViewHolder -> {
-                val item = getItem(position) as StreamListItem.TopicItem
-                holder.topicName.text = item.topicName
-                holder.topicStat.text = item.messageStat.toString()
-                when (item.messageStat) {
-                    in 0..100 -> holder.itemView.setBackgroundColor(
-                        ContextCompat.getColor(
-                            holder.itemView.context,
-                            R.color.topic_bg_color
-                        )
-                    )
-                    else -> holder.itemView.setBackgroundColor(
-                        ContextCompat.getColor(
-                            holder.itemView.context,
-                            R.color.hot_topic_bg_color
-                        )
-                    )
-                }
-                holder.itemView.setOnClickListener { onItemClicked(item) }
+                val item = getItem(position) as StreamItemList.TopicItem
+                topicItemBinder.bind(holder, item)
             }
             else -> throw IllegalStateException("Unknown viewHolder")
         }
@@ -68,15 +51,15 @@ class StreamViewAdapter(private val onItemClicked: (StreamListItem) -> Unit) :
     }
 }
 
-private class StreamDiffCallback : DiffUtil.ItemCallback<StreamListItem>() {
+private class StreamDiffCallback : DiffUtil.ItemCallback<StreamItemList>() {
 
-    override fun areItemsTheSame(oldItem: StreamListItem, newItem: StreamListItem): Boolean {
-        return (oldItem as? StreamListItem.StreamItem)?.streamId == (newItem as? StreamListItem.StreamItem)?.streamId
-                || (oldItem as? StreamListItem.TopicItem)?.topicId == (newItem as? StreamListItem.TopicItem)?.topicId
+    override fun areItemsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
+        return (oldItem as? StreamItemList.StreamItem)?.streamId == (newItem as? StreamItemList.StreamItem)?.streamId
+                || (oldItem as? StreamItemList.TopicItem)?.topicId == (newItem as? StreamItemList.TopicItem)?.topicId
     }
 
-    override fun areContentsTheSame(oldItem: StreamListItem, newItem: StreamListItem): Boolean {
-        return (oldItem as? StreamListItem.StreamItem) == (newItem as? StreamListItem.StreamItem)
-                || (oldItem as? StreamListItem.TopicItem) == (newItem as? StreamListItem.TopicItem)
+    override fun areContentsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
+        return (oldItem as? StreamItemList.StreamItem) == (newItem as? StreamItemList.StreamItem)
+                || (oldItem as? StreamItemList.TopicItem) == (newItem as? StreamItemList.TopicItem)
     }
 }

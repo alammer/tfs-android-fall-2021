@@ -5,9 +5,22 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.data.StreamItemList
 
 class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamView) {
 
-    val streamName: TextView = streamView.findViewById<TextView>(R.id.tvStreamName)
-    val btnTopicList: ImageView = streamView.findViewById<ImageView>(R.id.btnShowTopic)
+    private val streamName: TextView = streamView.findViewById<TextView>(R.id.tvStreamName)
+    private val btnTopicList: ImageView = streamView.findViewById<ImageView>(R.id.btnShowTopic)
+
+    fun setStreamName(name: String) {
+        streamName.text = name
+    }
+
+    fun setStreamExpandIcon(icon: Int) {
+        btnTopicList.setImageResource(icon)
+    }
+
+    fun setStreamExpandClickListener(changeExpandState: (StreamItemList) -> Unit) {
+        btnTopicList.setOnClickListener { changeExpandState }
+    }
 }

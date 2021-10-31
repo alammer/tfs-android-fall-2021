@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
-import com.example.tfs.data.StreamListItem
+import com.example.tfs.data.StreamItemList
 import com.example.tfs.data.TopicItem
 import com.example.tfs.presentation.MainActivity
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
@@ -31,7 +31,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     private lateinit var sendButton: ImageView
     private lateinit var btnTopicNavBack: ImageView
 
-    private val streamDataSet: List<StreamListItem> =
+    private val streamDataSet: List<StreamItemList> =
         TestStreamDataGenerator.generateTestStream()
 
     private var dataSet = TestTopicDataGenerator.generateTestTopic()
@@ -57,23 +57,11 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         Log.i("TopicFragment", "Requested Stream ID is: ${requireArguments().getInt(STREAM_KEY, -1)}")
         Log.i("TopicFragment", "Requested Topic ID is: ${requireArguments().getInt(TOPIC_KEY, -1)}")
 
-        childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
-            val emoji = bundle.getInt(RESULT_KEY, 0)
-            when (val post = dataSet[currentPost]) {
-                is TopicItem.PostItem -> {
-                    updateReaction(emoji, post.reaction)
-                    topicListAdapter.notifyItemChanged(currentPost)
-                }
-                is TopicItem.LocalDateItem -> return@setFragmentResultListener
-            }
-        }
-
         sendButton.setOnClickListener {
             if (textMessage.text.isNotBlank()) {
                 dataSet.add(
-                    TopicItem.PostItem(
+                    TopicItem.OwnerPostItem(
                         message = textMessage.text.toString(),
-                        isOwner = true,
                         timeStamp = System.currentTimeMillis()
                     )
                 )
@@ -85,6 +73,22 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
             }
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
+            val emoji = bundle.getInt(RESULT_KEY, 0)
+            when (val post = dataSet[currentPost]) {
+                is TopicItem.UserPostItem -> {
+                    updateReaction(emoji, post.reaction)
+                    topicListAdapter.notifyItemChanged(currentPost)
+                }
+                is TopicItem.LocalDateItem -> return@setFragmentResultListener
+            }
+        }
+    }
+
     override fun onDetach() {
         super.onDetach()
         (activity as MainActivity).showBottomNav()
@@ -92,7 +96,7 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
 
     override fun onRecycleViewItemClick(position: Int, emojiCode: Int) {
         when (val post = dataSet[position]) {
-            is TopicItem.PostItem -> {
+            is TopicItem.UserPostItem -> {
                 updateReaction(emojiCode, post.reaction)
                 topicListAdapter.notifyItemChanged(position)
             }

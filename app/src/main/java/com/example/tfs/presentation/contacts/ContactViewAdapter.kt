@@ -19,10 +19,9 @@ class ContactViewAdapter(private val onItemClick: (Contact) -> Unit) :
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         val item = getItem(position)
-        holder.contactName.text = item.userName
-        holder.contactEmail.text = item.userEmail
-        //holder.contactAvatar.setImageResource(R.drawable.bad)
-        holder.contactAvatar.getItemData(1, item.userImage, userName = "Ivan Ivanov")
+        holder.setContactName(item.userName)
+        holder.setContactEmail(item.userEmail)
+        holder.setContactAvatar(item.userImage, item.userState, item.userName)
         holder.itemView.setOnClickListener { onItemClick(item) }
     }
 }

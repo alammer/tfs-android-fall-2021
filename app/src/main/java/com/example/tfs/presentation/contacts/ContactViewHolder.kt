@@ -8,7 +8,19 @@ import com.example.tfs.presentation.topic.customviews.UserAvatarView
 
 class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    val contactAvatar: UserAvatarView = itemView.findViewById(R.id.cvAvatar1)
-    val contactName: TextView = itemView.findViewById<TextView>(R.id.tvContactName)
-    val contactEmail: TextView = itemView.findViewById<TextView>(R.id.tvContactEmail)
+    private val contactAvatar: UserAvatarView = itemView.findViewById(R.id.cvAvatar1)
+    private val contactName: TextView = itemView.findViewById<TextView>(R.id.tvContactName)
+    private val contactEmail: TextView = itemView.findViewById<TextView>(R.id.tvContactEmail)
+
+    fun setContactAvatar (userAvatarUri: Int, userState: Int, userName: String) {
+        contactAvatar.setAvatar(userAvatarUri, userState, userName)
+    }
+
+    fun setContactName (userName: String) {
+        contactName.text = userName
+    }
+
+    fun setContactEmail (userEmail: String) {
+        contactEmail.text = userEmail
+    }
 }

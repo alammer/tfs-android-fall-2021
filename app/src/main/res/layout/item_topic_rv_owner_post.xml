@@ -4,11 +4,11 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/topic_rv_item_vertical_margins">
 
-    <com.example.tfs.presentation.topic.customviews.PostLayout
-        android:id="@+id/cvPost"
+    <com.example.tfs.presentation.topic.customviews.OwnerPostLayout
+        android:id="@+id/cvOwnerPost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    </com.example.tfs.presentation.topic.customviews.PostLayout>
+    </com.example.tfs.presentation.topic.customviews.OwnerPostLayout>
 
 </FrameLayout>

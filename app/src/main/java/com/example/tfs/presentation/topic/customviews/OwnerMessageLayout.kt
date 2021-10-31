@@ -51,8 +51,6 @@ class OwnerMessageLayout @JvmOverloads constructor(
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
-
-
     }
 
     init {
