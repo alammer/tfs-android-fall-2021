@@ -45,7 +45,6 @@
         android:layout_height="40dp"
         android:background="@color/view_bg"
         android:gravity="center"
-        android:text="@string/test_topic_name"
         android:textColor="@color/new_message_text"
         android:textSize="@dimen/large_text_size"
         app:layout_constraintTop_toBottomOf="@id/appbar" />

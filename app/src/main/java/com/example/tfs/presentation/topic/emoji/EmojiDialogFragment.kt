@@ -9,8 +9,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.presentation.topic.REQUEST_KEY
-import com.example.tfs.presentation.topic.RESULT_KEY
+import com.example.tfs.presentation.topic.TOPIC_REQUEST_KEY
+import com.example.tfs.presentation.topic.TOPIC_RESULT_KEY
 import com.example.tfs.util.CreateEmojiSet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -31,8 +31,8 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         emojiSheetRecycler = view.findViewById(R.id.rvEmoji)
         emojiAdapter = EmojiRecyclerAdapter{ emojiCode: Int ->
             setFragmentResult(
-                REQUEST_KEY,
-                bundleOf(RESULT_KEY to emojiCode)
+                TOPIC_REQUEST_KEY,
+                bundleOf(TOPIC_RESULT_KEY to emojiCode)
             )
             dismiss()
         }

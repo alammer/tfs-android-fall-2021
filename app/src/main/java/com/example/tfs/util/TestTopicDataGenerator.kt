@@ -1,8 +1,7 @@
 package com.example.tfs.util
 
-
+import android.util.Log
 import com.example.tfs.data.*
-
 
 const val EMOJI_FACE_START_CODE = 0x1f600
 const val EMOJI_FACE_END_CODE = 0x1f644
@@ -11,8 +10,9 @@ const val EMOJI_GESTURE_END_CODE = 0x1f64f
 const val EMOJI_VAR_START_CODE = 0x1f90c
 const val EMOJI_VAR_END_CODE = 0x1f92f
 
-val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
-val surnames = listOf("Ivanov", "Smith", "Petrov", "Johnson", "Putin", "Obama")
+private val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
+private val surnames = listOf("Ivanov", "Smith", "Petrov", "Johnson", "Putin", "Obama")
+private val expandedStream = mutableListOf<Int>()
 
 object CreateEmojiSet {
 
@@ -27,8 +27,9 @@ object CreateEmojiSet {
     }
 }
 
+object TestMockDataGenerator {
 
-object TestRemoteDataStreamGenerator {
+    var subscribed = true
 
     private val mockStreamList = listOf(
         "general",
@@ -45,14 +46,117 @@ object TestRemoteDataStreamGenerator {
     private val mockSubcribedList =
         mockStreamList.shuffled().slice(0..(mockStreamList.indices).random())
 
-    val mockTopicList = List<String>(30) { "topicName $it" }
+    private val originalStreamList = getMockRemoteStreams()
+
+    private fun getMockRemoteStreams(): List<RemoteStream> {
+
+        val mockStream = mutableListOf<RemoteStream>()
+
+        mockStreamList.forEachIndexed { index, streamName ->
+            mockStream.add(
+                RemoteStream(
+                    index,
+                    streamName,
+                    getMockRemoteTopic(streamName, index),
+                )
+            )
+        }
+        return mockStream.toList()
+    }
+
+    private fun getMockRemoteTopic(streamName: String, parentId: Int): List<RemoteTopic> {
+        val testTopic = mutableListOf<RemoteTopic>()
+
+        (1..(1..30).random()).forEach {
+
+            testTopic.add(
+                RemoteTopic(
+                    parentId * 100 + it,
+                    "$streamName-topic$it",
+                    parentId,
+                    streamName,
+                    topic_stat = (0..1000).random(),
+                    getMockPostList()
+                )
+            )
+        }
+        return testTopic.toList()
+    }
+
+    private fun getMockPostList(): List<Post> {
+        val testPost = mutableListOf<Post>()
+        val startTime = System.currentTimeMillis() - 86400L * 7 * 1000
+        (0..(0..30).random()).forEach {
+            testPost.add(
+                Post(
+                    it,
+                    it,
+                    names.shuffled().zip(surnames.shuffled()) { name, surname -> "$name $surname" }
+                        .first(),
+                    getMockReaction(),
+                    getMockMessage(),
+                    null,
+                    timeStamp = startTime + (86400 * (it / 3) + 3600 * (it / 2) + 60 * it) * 1000L
+                )
+            )
+        }
+        return testPost.toList()
+    }
+
+    fun addPostToTopic(streamId: Int, topicId: Int, message: String): List<TopicItem> {
+        val currentTopic = originalStreamList
+            .firstOrNull { it.streamId == streamId }
+            ?.childTopics
+            ?.firstOrNull { it.topicId == topicId }
+            ?.postList
+            ?.toMutableList()
+            ?: return emptyList()
+
+        Log.i("TestTopicDataGenerator", "Function called: $currentTopic")
+
+        currentTopic.add(
+            Post(
+                100,
+                200,
+                "Alex Obama",
+                emptyList(),
+                message,
+                null,
+                timeStamp = System.currentTimeMillis()
+            )
+        )
+
+        val datedPostList = mutableListOf<TopicItem>()
+        var startTopicDate = 0L
+        val currentDate = System.currentTimeMillis()
+
+        Log.i("TestTopicDataGenerator", "Function called: $currentTopic")
+
+        currentTopic.forEach {
+            if (it.timeStamp.startOfDay() > startTopicDate) {
+                startTopicDate = it.timeStamp.startOfDay()
+                if (startTopicDate.year < currentDate.year) {
+                    datedPostList.add(TopicItem.LocalDateItem(startTopicDate.fullDate))
+                } else {
+                    datedPostList.add(TopicItem.LocalDateItem(startTopicDate.shortDate))
+                }
+            }
+            if (it.userName.contains("Alex")) {
+                datedPostList.add(it.toDomainOwnerPost())
+            } else {
+                datedPostList.add(it.toDomainUserPost())
+            }
+        }
+        Log.i("TestTopicDataGenerator", "Function called: $datedPostList")
+        return datedPostList.toList()
+    }
 
     private fun getMockReaction(): List<Reaction> {
         val reaction = List((0..20).random()) {
             Reaction(
                 EMOJI_FACE_START_CODE + (0..66).random(),
                 (0..100).random(),
-                null,
+                emptyList(),
                 it % 3 == 0
             )
         }
@@ -74,68 +178,23 @@ object TestRemoteDataStreamGenerator {
         )
     }
 
-    fun getMockRemoteStreams: List<RemoteStream> {
-
-        val mockStream = mutableListOf<RemoteStream>()
-
-        mockStreamList.forEachIndexed { index, streamName ->
-            mockStream.add(
-                RemoteStream(
-                    index,
-                    streamName,
-                    getMockRemoteTopic(streamName, index),
-                )
-            )
-        }
-
-        return mockStream.toList()
+    fun getMockDomainStreamList(): MutableList<StreamItemList> {
+        val domainStreamList = mutableListOf<StreamItemList>()
+        if (subscribed) {
+            domainStreamList.addAll(originalStreamList.filter { mockSubcribedList.contains(it.streamName) }
+                .map { it.copy().toDomainStream() })
+        } else
+            domainStreamList.addAll(originalStreamList.map { it.copy().toDomainStream() })
+        return domainStreamList
     }
 
-    private fun getMockRemoteTopic(streamName: String, parentId: Int): List<RemoteTopic> {
-        val testTopic = mutableListOf<RemoteTopic>()
+    fun getMockDomainTopic(streamId: Int, topicId: Int): List<TopicItem> {
 
-        (0..(0..30).random()).forEach {
-
-            testTopic.add(
-                RemoteTopic(
-                    it,
-                    "$streamName-topic$it",
-                    parentId,
-                    topic_stat = (0..1000).random(),
-                    getMockPostList()
-                )
-            )
-        }
-
-        return testTopic.toList()
-    }
-
-    private fun getMockPostList(): List<Post> {
-        val testPost = mutableListOf<Post>()
-        val startTime = System.currentTimeMillis() - 86400L * 7 * 1000
-        (0..(0..20).random()).forEach {
-            testPost.add(
-                Post(
-                    it,
-                    names.shuffled().zip(surnames.shuffled()) { name, surname -> "$name $surname" }
-                        .first(),
-                    getMockReaction(),
-                    getMockMessage(),
-                    null,
-                    timeStamp = startTime + (86400 * (it / 3) + 3600 * (it / 2) + 60 * it) * 1000L
-                )
-            )
-        }
-        return testPost.toList()
-    }
-
-    fun getMockDomainTopic(topicId: Int, streamId: Int): MutableList<TopicItem>? {
-
-        val remoteTopic = getMockRemoteStreams()
+        val remoteTopic = originalStreamList
             .firstOrNull { it.streamId == streamId }
             ?.childTopics
             ?.firstOrNull { it.topicId == topicId }
-            ?: return null
+            ?: return emptyList()
 
         val datedPostList = mutableListOf<TopicItem>()
         var startTopicDate = 0L
@@ -150,6 +209,7 @@ object TestRemoteDataStreamGenerator {
                     datedPostList.add(TopicItem.LocalDateItem(startTopicDate.shortDate))
                 }
             }
+
             if (it.userName.contains("Alex")) {
                 datedPostList.add(it.toDomainOwnerPost())
             } else {
@@ -159,30 +219,32 @@ object TestRemoteDataStreamGenerator {
         return datedPostList
     }
 
-    fun getMockDomainStreamList(): List<StreamItemList> {
-        val remoteStream = getMockRemoteStreams()
-        val domainStreamList = mutableListOf<StreamItemList>()
-        domainStreamList.addAll(remoteStream.map { it.toDomainStream() })
-        return domainStreamList.toList()
+
+    fun updateStreamMode(streamId: Int = -1): List<StreamItemList> {
+        expandedStream.apply {
+            if (contains(streamId)) remove(streamId) else add(streamId)
+        }
+
+        return updateMockDomainStreamList()
     }
 
-    fun updateMockDomainStreamList(currentStreamItemList: MutableList<StreamItemList>, item: StreamItemList.StreamItem): List<StreamItemList> {
-        currentStreamItemList
-            .asSequence()
-            .mapIndexed { index, stream -> if(stream == item ) currentStreamItemList.addAll(index + 1, item.childTopics) }
-    }
+    private fun updateMockDomainStreamList(): List<StreamItemList> {
+        val updatedList = mutableListOf<StreamItemList>()
 
-    fun updateStreamList(currentStreamList: List<StreamItemList>, item: StreamItemList.StreamItem): List<StreamItemList> {
-        val domainStreamList = mutableListOf<StreamItemList>()
-        domainStreamList.addAll(currentStreamList)
-        domainStreamList.firstOrNull { it == item }?.let {
-                (it as? StreamItemList.StreamItem)?.expanded = !item.expanded
-            }
+        if (expandedStream.isNotEmpty()) {
+            getMockDomainStreamList()
+                .map {
+                    if ((it is StreamItemList.StreamItem && expandedStream.contains(
+                            it.streamId
+                        ))
+                    ) {
+                        updatedList.add(it.copy(expanded = true))
+                        updatedList.addAll(it.childTopics)
+                    } else updatedList.add(it)
+                }
+        } else updatedList.addAll(getMockDomainStreamList())
 
-        returm domainStreamList
-            .asSequence()
-            .mapIndexed { index, it -> if (it is StreamItemList.StreamItem && it.expanded) domainStreamList.addAll(index + 1, it.childTopics) }.toList()
-
+        return updatedList.toList()
     }
 }
 

@@ -11,6 +11,6 @@ class StreamItemViewHolderBinder(private val onClickItem: (StreamItemList) -> Un
 
         streamItemViewHolder.setStreamExpandIcon(if(item.expanded) R.drawable.ic_collapce else R.drawable.ic_expand)
 
-        streamItemViewHolder.setStreamExpandClickListener(onClickItem)
+        streamItemViewHolder.setStreamExpandClickListener(onClickItem, item)
     }
 }

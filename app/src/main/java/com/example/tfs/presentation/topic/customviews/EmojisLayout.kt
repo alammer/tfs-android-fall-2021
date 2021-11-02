@@ -1,8 +1,10 @@
 package com.example.tfs.presentation.topic.customviews
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.ViewGroup
+import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
 
 class EmojisLayout @JvmOverloads constructor(
@@ -11,6 +13,19 @@ class EmojisLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
+
+    private var isOwner = false
+
+    init {
+        val typedArray: TypedArray = context.obtainStyledAttributes(
+            attrs,
+            R.styleable.EmojisLayout,
+            defStyleAttr,
+            defStyleRes
+        )
+        isOwner = typedArray.getBoolean(R.styleable.EmojisLayout_el_owner, false)
+        typedArray.recycle()
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var rowWidth = 0
@@ -33,22 +48,39 @@ class EmojisLayout @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var currentBottom = 0
-        var currentWidth = 0
+        var currentWidth = if (isOwner) width else 0
         val maxWidth = width
 
-        for (i in 0 until childCount) {
-            val child = getChildAt(i)
-            if (currentWidth + child.measuredWidth > maxWidth) {
-                currentWidth = 0
-                currentBottom += (child.measuredHeight + DIVIDER_HEIGHT)
+        if (isOwner) {
+            for (i in 0 until childCount) {
+                val child = getChildAt(i)
+                if (currentWidth - child.measuredWidth < 0) {
+                    currentWidth = width
+                    currentBottom += (child.measuredHeight + DIVIDER_HEIGHT)
+                }
+                child.layout(
+                    currentWidth - child.measuredWidth,
+                    currentBottom,
+                    currentWidth,
+                    currentBottom + child.measuredHeight
+                )
+                currentWidth -= (child.measuredWidth + DIVIDER_WIDTH)
             }
-            child.layout(
-                currentWidth,
-                currentBottom,
-                currentWidth + child.measuredWidth,
-                currentBottom + child.measuredHeight
-            )
-            currentWidth += (child.measuredWidth + DIVIDER_WIDTH)
+        } else {
+            for (i in 0 until childCount) {
+                val child = getChildAt(i)
+                if (currentWidth + child.measuredWidth > maxWidth) {
+                    currentWidth = 0
+                    currentBottom += (child.measuredHeight + DIVIDER_HEIGHT)
+                }
+                child.layout(
+                    currentWidth,
+                    currentBottom,
+                    currentWidth + child.measuredWidth,
+                    currentBottom + child.measuredHeight
+                )
+                currentWidth += (child.measuredWidth + DIVIDER_WIDTH)
+            }
         }
     }
 

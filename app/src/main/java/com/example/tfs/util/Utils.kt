@@ -7,6 +7,39 @@ import android.provider.ContactsContract
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import com.google.android.material.imageview.ShapeableImageView
+
+
+fun ShapeableImageView.drawUserInitals(name: String, size: Int) {
+
+    val config = Bitmap.Config.ARGB_8888 // see other conf types
+    val bitmap = Bitmap.createBitmap(size, size, config) // this creates a MUTABLE bitmap
+    val canvas = Canvas(bitmap)
+
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    paint.apply {
+        color = Color.BLUE
+        style = Paint.Style.FILL
+    }
+
+    canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+    paint.apply {
+        textAlign = Paint.Align.CENTER
+        textSize = size / 2f
+        color = Color.WHITE
+    }
+
+    val offset = paint.descent() + paint.ascent() / 2
+    val userInitials = name.split(' ')
+        .mapNotNull { it.firstOrNull()?.toString() }
+        .reduce { acc, s -> acc + s }
+    canvas.drawText(userInitials, size / 2f, size / 2f - offset, paint)
+    setImageBitmap(bitmap)
+}
 
 fun Context?.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

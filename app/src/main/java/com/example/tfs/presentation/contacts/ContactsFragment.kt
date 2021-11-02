@@ -33,7 +33,7 @@ class ContactsFragment : Fragment() {
     private fun initViews(view: View) {
         contactRecycler = view.findViewById(R.id.rvContacts)
 
-        contactListAdapter = ContactViewAdapter{ item: Contact ->
+        contactListAdapter = ContactViewAdapter { item: Contact ->
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
                 .addToBackStack(null)

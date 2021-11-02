@@ -2,20 +2,21 @@ package com.example.tfs.data
 
 sealed class TopicItem {
 
-    class LocalDateItem(val postDate: String) : TopicItem()
+    data class LocalDateItem(val postDate: String) : TopicItem()
     data class UserPostItem(
+        val messageId: Int,
         val userId: Int,
         val userName: String,
-        var reaction: List<Reaction>? = null,
+        val reaction: List<Reaction> = emptyList(),
         val message: String,
-        var avatar: Int? = null,
-        var timeStamp: Long,
+        val avatar: Int? = null,
+        val timeStamp: Long,
     ) : TopicItem()
 
     data class OwnerPostItem(
-        var reaction: List<Reaction>? = null,
+        val reaction: List<Reaction> = emptyList(),
         val message: String,
-        var timeStamp: Long,
+        val timeStamp: Long,
     ) : TopicItem()
 }
 

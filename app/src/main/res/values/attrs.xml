@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="UserAvatarView">
-        <attr name="uav_initials" format="string"/>
-        <attr name="uav_online_state" format="integer" />
+    <declare-styleable name="EmojisLayout">
+        <attr name="el_owner" format="boolean"/>
     </declare-styleable>
 </resources>

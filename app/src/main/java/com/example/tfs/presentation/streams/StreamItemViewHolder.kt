@@ -20,7 +20,7 @@ class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamVie
         btnTopicList.setImageResource(icon)
     }
 
-    fun setStreamExpandClickListener(changeExpandState: (StreamItemList) -> Unit) {
-        btnTopicList.setOnClickListener { changeExpandState }
+    fun setStreamExpandClickListener(changeExpandState: (StreamItemList.StreamItem) -> Unit, item: StreamItemList.StreamItem) {
+        btnTopicList.setOnClickListener { changeExpandState(item) }
     }
 }

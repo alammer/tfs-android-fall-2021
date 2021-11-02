@@ -9,36 +9,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.data.Reaction
-import com.example.tfs.data.StreamItemList
 import com.example.tfs.data.TopicItem
 import com.example.tfs.presentation.MainActivity
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
-import com.example.tfs.util.TestStreamDataGenerator
-import com.example.tfs.util.TestTopicDataGenerator
+import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.toast
 
-class TopicFragment : Fragment(), TopicAdapterCallback {
+class TopicFragment : Fragment() {
 
-    private var requestTopic = -1
+    private var topicId = -1
+    private var streamId = -1
     private lateinit var topicRecycler: RecyclerView
     private lateinit var topicListAdapter: TopicViewAdapter
     private lateinit var textMessage: EditText
+    private lateinit var topicName: TextView
+    private lateinit var parentStreamName: TextView
     private lateinit var sendButton: ImageView
     private lateinit var btnTopicNavBack: ImageView
-
-    private val streamDataSet: List<StreamItemList> =
-        TestStreamDataGenerator.generateTestStream()
-
-    private var dataSet = TestTopicDataGenerator.generateTestTopic()
-
-
-    //TODO("remove in future - introduce post_id, pass it to BSD fragment and get back along with emoji code")
-    private var currentPost = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,22 +44,23 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).hideBottomNav()
+
+        streamId = requireArguments().getInt(STREAM_KEY, -1)
+        topicId = requireArguments().getInt(TOPIC_KEY, -1)
+
+        Log.i("StreamToTopic", "Function called: $streamId $topicId")
         initViews(view)
         onChangeMessage()
 
-        Log.i("TopicFragment", "Requested Stream ID is: ${requireArguments().getInt(STREAM_KEY, -1)}")
-        Log.i("TopicFragment", "Requested Topic ID is: ${requireArguments().getInt(TOPIC_KEY, -1)}")
-
         sendButton.setOnClickListener {
             if (textMessage.text.isNotBlank()) {
-                dataSet.add(
-                    TopicItem.OwnerPostItem(
-                        message = textMessage.text.toString(),
-                        timeStamp = System.currentTimeMillis()
-                    )
+                val newTopic = TestMockDataGenerator.addPostToTopic(
+                    streamId,
+                    topicId,
+                    textMessage.text.toString()
                 )
-                topicListAdapter.notifyItemInserted(dataSet.size)
-                topicRecycler.scrollToPosition(dataSet.size - 1)
+                topicListAdapter.submitList(newTopic)
+                topicRecycler.scrollToPosition(topicListAdapter.itemCount - 1)
                 //TODO("HIDE KEYBOARD")
                 textMessage.text.clear()
                 sendButton.setImageResource(R.drawable.ic_text_plus)
@@ -77,16 +71,16 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        childFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
-            val emoji = bundle.getInt(RESULT_KEY, 0)
-            when (val post = dataSet[currentPost]) {
-                is TopicItem.UserPostItem -> {
-                    updateReaction(emoji, post.reaction)
-                    topicListAdapter.notifyItemChanged(currentPost)
-                }
-                is TopicItem.LocalDateItem -> return@setFragmentResultListener
-            }
-        }
+//        childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
+//            val emoji = bundle.getInt(TOPIC_RESULT_KEY, 0)
+//            when (val post = currentTopic[currentPost]) {
+//                is TopicItem.UserPostItem -> {
+//                    updateReaction(emoji, post.reaction)
+//                    topicListAdapter.notifyItemChanged(currentPost)
+//                }
+//                is TopicItem.LocalDateItem -> return@setFragmentResultListener
+//            }
+//        }
     }
 
     override fun onDetach() {
@@ -94,50 +88,55 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
         (activity as MainActivity).showBottomNav()
     }
 
-    override fun onRecycleViewItemClick(position: Int, emojiCode: Int) {
-        when (val post = dataSet[position]) {
-            is TopicItem.UserPostItem -> {
-                updateReaction(emojiCode, post.reaction)
-                topicListAdapter.notifyItemChanged(position)
-            }
-            is TopicItem.LocalDateItem -> return //TODO()
-        }
-    }
-
     private fun initViews(view: View) {
+
+        Log.i("StreamToTopic2", "Function called: $streamId $topicId")
+        val currentTopic = TestMockDataGenerator.getMockDomainTopic(streamId, topicId)
+
+        if (currentTopic.isEmpty()) {
+            requireActivity().toast("Can't find request topic!")
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+
+        topicName = view.findViewById(R.id.tvTopic)
+        topicName.text = "Topic: ${requireArguments().getString(TOPIC_NAME, "Uknown")}"
+        parentStreamName = view.findViewById(R.id.tvTopicTitle)
+        parentStreamName.text = "${requireArguments().getString(STREAM_NAME, "Uknown")}"
+
         textMessage = view.findViewById(R.id.etMessage)
         sendButton = view.findViewById(R.id.imgPlus)
         btnTopicNavBack = view.findViewById(R.id.btnTopicNavBack)
 
         topicRecycler = view.findViewById(R.id.rvTopic)
-        topicListAdapter = TopicViewAdapter()
+        topicListAdapter = TopicViewAdapter(
+            { topicItem: TopicItem, i: Int -> updateReaction(topicItem, i) },
+            { messageId -> onRecycleViewLongPress(messageId) }
+        )
         topicRecycler.adapter = topicListAdapter
-        topicListAdapter.setOnCallbackListener(this)
 
         topicRecycler.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
-        topicRecycler.visibility = View.VISIBLE
-        topicListAdapter.submitList(dataSet)
+
+        topicListAdapter.submitList(currentTopic)
 
         btnTopicNavBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
-    override fun onRecycleViewLongPress(postPosition: Int) {
-        currentPost = postPosition
+    private fun onRecycleViewLongPress(messageId: Int) {
         EmojiDialogFragment().show(childFragmentManager, tag)
     }
 
-    private fun updateReaction(emoji: Int, reaction: MutableList<Reaction>) {
-        reaction.firstOrNull { it.emoji == emoji }?.apply {
-            count = if (isClicked) count - 1 else count + 1
-            isClicked = !isClicked
-            if (count == 0) {
-                reaction.remove(this)
-            }
-        } ?: reaction.add(Reaction(emoji, 1, null, true))
+    private fun updateReaction(post: TopicItem, emojiCode: Int) {
+//        reaction.firstOrNull { it.emoji == emoji }?.apply {
+//            count = if (isClicked) count - 1 else count + 1
+//            isClicked = !isClicked
+//            if (count == 0) {
+//                reaction.remove(this)
+//            }
+//        } ?: reaction.add(Reaction(emoji, 1, null, true))
     }
 
     private fun onChangeMessage() {
@@ -173,16 +172,25 @@ class TopicFragment : Fragment(), TopicAdapterCallback {
     companion object {
         private const val STREAM_KEY = "stream_id"
         private const val TOPIC_KEY = "topic_id"
-        fun newInstance(streamId: Int, topicId: Int): TopicFragment {
+        private const val TOPIC_NAME = "topic_name"
+        private const val STREAM_NAME = "stream_name"
+        fun newInstance(
+            streamId: Int,
+            topicId: Int,
+            streamName: String,
+            topicName: String
+        ): TopicFragment {
             val fragment = TopicFragment()
             val arguments = Bundle()
             arguments.putInt(STREAM_KEY, streamId)
             arguments.putInt(TOPIC_KEY, topicId)
+            arguments.putString(TOPIC_NAME, topicName)
+            arguments.putString(STREAM_NAME, streamName)
             fragment.arguments = arguments
             return fragment
         }
     }
 }
 
-const val REQUEST_KEY = "emogi_key"
-const val RESULT_KEY = "emoji_id"
+const val TOPIC_REQUEST_KEY = "emogi_key"
+const val TOPIC_RESULT_KEY = "emoji_id"

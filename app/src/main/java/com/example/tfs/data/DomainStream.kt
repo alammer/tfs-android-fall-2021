@@ -5,14 +5,15 @@ sealed class StreamItemList {
     data class StreamItem(
         val streamId: Int,
         val streamName: String,
-        val childTopics: MutableList<TopicItem> = mutableListOf(),
-        var expanded: Boolean = false
+        val childTopics: List<TopicItem> = emptyList(),
+        val expanded: Boolean = false,
     ) : StreamItemList()
 
     data class TopicItem(
         val topicId: Int,
-        val parentStreamId: Int,
         val topicName: String,
+        val parentStreamId: Int,
+        val parentStreamName: String,
         val messageStat: Int
     ) : StreamItemList()
 }

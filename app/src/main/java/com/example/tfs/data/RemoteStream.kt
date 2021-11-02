@@ -10,21 +10,25 @@ data class RemoteTopic(
     val topicId: Int,
     val topicName: String,
     val parentStreamId: Int,
+    val parentStreamName: String,
     val topic_stat: Int,
     val postList: List<Post>,
 )
 
 data class Post(
+    val messageId: Int,
     val userId: Int,
     val userName: String,
-    var reaction: List<Reaction>? = null,
+    val reaction: List<Reaction> = emptyList(),
     val message: String,
-    var avatar: Int? = null,
-    var timeStamp: Long,
+    val avatar: Int? = null,
+    val timeStamp: Long,
 )
 
-fun RemoteStream.toDomainStream() = StreamItemList.StreamItem(streamId, streamName, expanded = false)
+fun RemoteTopic.toDomainTopic() = StreamItemList.TopicItem(topicId, topicName, parentStreamId, parentStreamName, topic_stat)
+
+fun RemoteStream.toDomainStream() = StreamItemList.StreamItem(streamId, streamName, childTopics.map { it.toDomainTopic()})
 
 fun Post.toDomainOwnerPost() = TopicItem.OwnerPostItem(reaction = reaction, message = message, timeStamp = timeStamp)
 
-fun Post.toDomainUserPost() = TopicItem.UserPostItem(userId, userName, reaction, message, avatar, timeStamp)
+fun Post.toDomainUserPost() = TopicItem.UserPostItem(messageId, userId, userName, reaction, message, avatar, timeStamp)

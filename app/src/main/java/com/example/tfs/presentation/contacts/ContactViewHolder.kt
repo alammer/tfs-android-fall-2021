@@ -1,26 +1,41 @@
 package com.example.tfs.presentation.contacts
 
+import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.presentation.topic.customviews.UserAvatarView
+import com.example.tfs.util.dpToPixels
+import com.example.tfs.util.drawUserInitals
+import com.google.android.material.imageview.ShapeableImageView
 
 class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val contactAvatar: UserAvatarView = itemView.findViewById(R.id.cvAvatar1)
+    private val contactAvatar: ShapeableImageView = itemView.findViewById(R.id.imgContactAvatar)
+    private val contactState: ImageView = itemView.findViewById(R.id.imgContactState)
     private val contactName: TextView = itemView.findViewById<TextView>(R.id.tvContactName)
     private val contactEmail: TextView = itemView.findViewById<TextView>(R.id.tvContactEmail)
 
-    fun setContactAvatar (userAvatarUri: Int, userState: Int, userName: String) {
-        contactAvatar.setAvatar(userAvatarUri, userState, userName)
+    fun setContactAvatar(userAvatarUri: Int) {
+        contactAvatar.setImageResource(userAvatarUri)
     }
 
-    fun setContactName (userName: String) {
+    fun setContactState(userState: Int) {
+        contactState.setImageResource(userState)
+    }
+
+    fun setContactInitials (userName: String) {
+        contactAvatar.drawUserInitals(userName, CONTACT_AVATAR_WIDTH.dpToPixels())
+    }
+
+    fun setContactName(userName: String) {
         contactName.text = userName
     }
 
-    fun setContactEmail (userEmail: String) {
+    fun setContactEmail(userEmail: String) {
         contactEmail.text = userEmail
     }
 }
+
+private const val CONTACT_AVATAR_WIDTH = 64

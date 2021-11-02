@@ -6,13 +6,28 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="8dp">
 
-    <com.example.tfs.presentation.topic.customviews.UserAvatarView
-        android:id="@+id/cvAvatar1"
-        android:layout_width="@dimen/contact_avatar_width"
-        android:layout_height="@dimen/contact_avatar_width"
+    <FrameLayout
+        android:id="@+id/frameContactAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgContactAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:shapeAppearanceOverlay="@style/UserAvatarCircleOverlay" />
+
+        <ImageView
+            android:id="@+id/imgContactState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_online"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvContactName"
@@ -21,7 +36,7 @@
         android:layout_marginStart="12dp"
         android:textSize="22sp"
         android:textColor="#FAFAFA"
-        app:layout_constraintStart_toEndOf="@id/cvAvatar1"
+        app:layout_constraintStart_toEndOf="@id/frameContactAvatar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tvContactEmail"/>
 
@@ -32,7 +47,7 @@
         android:layout_marginStart="12dp"
         android:textSize="@dimen/info_text_size"
         android:textColor="@color/user_contact_email_text_color"
-        app:layout_constraintStart_toEndOf="@id/cvAvatar1"
+        app:layout_constraintStart_toEndOf="@id/frameContactAvatar"
         app:layout_constraintTop_toBottomOf="@id/tvContactName"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

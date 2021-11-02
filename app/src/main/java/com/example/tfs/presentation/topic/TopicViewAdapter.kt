@@ -10,7 +10,7 @@ import com.example.tfs.data.TopicItem
 
 class TopicViewAdapter(
     onChangeReactionClick: (TopicItem, Int) -> Unit,
-    onAddReactionClick: (TopicItem) -> Unit
+    onAddReactionClick: (postId: Int) -> Unit
 ) : ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private val userPostItemBinder =
@@ -18,11 +18,9 @@ class TopicViewAdapter(
     private val ownerPostItemBinder =
         OwnerPostViewHolderBinder()
 
-    private var recyclerViewCallback: TopicAdapterCallback? = null
-
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is TopicItem.UserPostItem -> R.layout.item_topic_rv_user_post
-        is TopicItem.OwnerPostItem -> R.layout.item_topic_rv_owner_post
+        is TopicItem.UserPostItem -> R.layout.item_user_message
+        is TopicItem.OwnerPostItem -> R.layout.item_owner_message
         is TopicItem.LocalDateItem -> R.layout.item_topic_rv_date
         null -> throw IllegalStateException("Unknown view")
     }
@@ -31,8 +29,8 @@ class TopicViewAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.item_topic_rv_user_post -> UserPostViewHolder(v)
-            R.layout.item_topic_rv_owner_post -> OwnerPostViewHolder(v)
+            R.layout.item_user_message -> UserPostViewHolder(v)
+            R.layout.item_owner_message -> OwnerPostViewHolder(v)
             R.layout.item_topic_rv_date -> DateViewHolder(v)
             else -> throw IllegalStateException("Unknown viewType")
         }
@@ -57,10 +55,6 @@ class TopicViewAdapter(
             }
             else -> throw IllegalStateException("Unknown viewHolder")
         }
-    }
-
-    fun setOnCallbackListener(recyclerViewCallback: TopicAdapterCallback) {
-        this.recyclerViewCallback = recyclerViewCallback
     }
 }
 

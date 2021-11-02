@@ -23,7 +23,7 @@ class TopicItemViewHolder(private val topicView: View) : RecyclerView.ViewHolder
         topicView.setBackgroundColor(colorIndicator)
     }
 
-    fun setTopicClickListener (selectTopic: (StreamItemList) -> Unit) {
-        topicView.setOnClickListener { selectTopic }
+    fun setTopicClickListener (selectTopic: (StreamItemList) -> Unit, item: StreamItemList.TopicItem) {
+        topicView.setOnClickListener { selectTopic(item) }
     }
 }

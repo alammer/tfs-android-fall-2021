@@ -35,6 +35,7 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
         }
     }
 
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is StreamItemViewHolder -> {
@@ -59,7 +60,7 @@ private class StreamDiffCallback : DiffUtil.ItemCallback<StreamItemList>() {
     }
 
     override fun areContentsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
-        return (oldItem as? StreamItemList.StreamItem) == (newItem as? StreamItemList.StreamItem)
+        return (oldItem as? StreamItemList.StreamItem)?.expanded == (newItem as? StreamItemList.StreamItem)?.expanded
                 || (oldItem as? StreamItemList.TopicItem) == (newItem as? StreamItemList.TopicItem)
     }
 }

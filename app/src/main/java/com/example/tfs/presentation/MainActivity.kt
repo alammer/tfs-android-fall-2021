@@ -8,6 +8,7 @@ import com.example.tfs.R
 import com.example.tfs.presentation.contacts.ContactsFragment
 import com.example.tfs.presentation.profile.ProfileFragment
 import com.example.tfs.presentation.streams.StreamsFragment
+import com.example.tfs.presentation.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -50,9 +51,12 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
-            is StreamsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked = true
-            is ContactsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked = true
-            is ProfileFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked = true
+            is StreamsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked =
+                true
+            is ContactsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked =
+                true
+            is ProfileFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked =
+                true
         }
     }
 
