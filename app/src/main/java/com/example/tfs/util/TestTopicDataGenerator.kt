@@ -1,7 +1,8 @@
 package com.example.tfs.util
 
 import android.util.Log
-import com.example.tfs.data.*
+import com.example.tfs.domain.*
+import com.example.tfs.domain.topic.Reaction
 
 const val EMOJI_FACE_START_CODE = 0x1f600
 const val EMOJI_FACE_END_CODE = 0x1f644
@@ -103,7 +104,12 @@ object TestMockDataGenerator {
         return testPost.toList()
     }
 
-    fun addPostToTopic(streamId: Int, topicId: Int, message: String): List<TopicItem> {
+    fun updateReaction(
+        streamId: Int,
+        topicId: Int,
+        messageId: Int,
+        emojiCode: Int
+    ): List<TopicItem> {
         val currentTopic = originalStreamList
             .firstOrNull { it.streamId == streamId }
             ?.childTopics
@@ -112,7 +118,69 @@ object TestMockDataGenerator {
             ?.toMutableList()
             ?: return emptyList()
 
-        Log.i("TestTopicDataGenerator", "Function called: $currentTopic")
+        var newReaction = mutableListOf<Reaction>()
+
+        currentTopic.firstOrNull { it.messageId == messageId }?.let {
+            Log.i("TestTopicDataGenerator", "Orig: ${it.reaction}")
+            newReaction = it.reaction.toMutableList()
+            it.reaction.firstOrNull { it.emoji == emojiCode }?.let {
+                val index = newReaction.indexOf(it)
+                if (it.isClicked) {
+                    val newCount = it.count - 1
+                    if (newCount == 0) {
+                        newReaction.remove(it)
+                    } else {
+                        newReaction[index] = it.copy(count = it.count - 1, isClicked = false)
+                    }
+                } else {
+                    newReaction[index] = it.copy(count = it.count + 1, isClicked = true)
+                }
+            } ?: newReaction.add(
+                Reaction(
+                    emojiCode,
+                    1,
+                    emptyList(),
+                    true
+                )
+            )
+        } ?: return emptyList()
+
+        Log.i("TestTopicDataGenerator", "New: $newReaction")
+
+        currentTopic.firstOrNull { it.messageId == messageId }?.reaction = newReaction
+
+        Log.i("TestTopicDataGenerator", "New: ${currentTopic[0].reaction}")
+
+        val datedPostList = mutableListOf<TopicItem>()
+        var startTopicDate = 0L
+        val currentDate = System.currentTimeMillis()
+
+        currentTopic.forEach {
+            if (it.timeStamp.startOfDay() > startTopicDate) {
+                startTopicDate = it.timeStamp.startOfDay()
+                if (startTopicDate.year < currentDate.year) {
+                    datedPostList.add(TopicItem.LocalDateItem(startTopicDate.fullDate))
+                } else {
+                    datedPostList.add(TopicItem.LocalDateItem(startTopicDate.shortDate))
+                }
+            }
+            if (it.userName.contains("Alex")) {
+                datedPostList.add(it.toDomainOwnerPost())
+            } else {
+                datedPostList.add(it.toDomainUserPost())
+            }
+        }
+        return datedPostList.toList()
+    }
+
+    fun addPostToTopic(streamId: Int, topicId: Int, message: String): List<TopicItem> {
+        val currentTopic = originalStreamList
+            .firstOrNull { it.streamId == streamId }
+            ?.childTopics
+            ?.firstOrNull { it.topicId == topicId }
+            ?.postList
+            ?.toMutableList()
+            ?: return emptyList()
 
         currentTopic.add(
             Post(
@@ -130,8 +198,6 @@ object TestMockDataGenerator {
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()
 
-        Log.i("TestTopicDataGenerator", "Function called: $currentTopic")
-
         currentTopic.forEach {
             if (it.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = it.timeStamp.startOfDay()
@@ -147,7 +213,6 @@ object TestMockDataGenerator {
                 datedPostList.add(it.toDomainUserPost())
             }
         }
-        Log.i("TestTopicDataGenerator", "Function called: $datedPostList")
         return datedPostList.toList()
     }
 
