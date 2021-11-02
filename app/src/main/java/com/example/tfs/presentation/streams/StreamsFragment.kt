@@ -1,9 +1,7 @@
 package com.example.tfs.presentation.streams
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +12,7 @@ import com.example.tfs.presentation.topic.TopicFragment
 import com.example.tfs.util.TestMockDataGenerator
 import com.google.android.material.tabs.TabLayout
 
-class StreamsFragment : Fragment() {
+class StreamsFragment : Fragment(R.layout.fragment_streams) {
 
     private lateinit var currentStreamList: List<StreamItemList>
 
@@ -22,14 +20,6 @@ class StreamsFragment : Fragment() {
     private lateinit var streamViewAdapter: StreamViewAdapter
     private lateinit var streamTabLayout: TabLayout
     private lateinit var searchInput: EditText
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_streams, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

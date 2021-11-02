@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,14 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.data.Reaction
 import com.example.tfs.data.TopicItem
 import com.example.tfs.presentation.MainActivity
 import com.example.tfs.presentation.topic.emoji.EmojiDialogFragment
 import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.toast
 
-class TopicFragment : Fragment() {
+class TopicFragment : Fragment(R.layout.fragment_topic) {
 
     private var topicId = -1
     private var streamId = -1
@@ -32,14 +29,6 @@ class TopicFragment : Fragment() {
     private lateinit var parentStreamName: TextView
     private lateinit var sendButton: ImageView
     private lateinit var btnTopicNavBack: ImageView
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_topic, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

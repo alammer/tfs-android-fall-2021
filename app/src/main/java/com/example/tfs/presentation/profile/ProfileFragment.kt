@@ -10,28 +10,18 @@ import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.google.android.material.imageview.ShapeableImageView
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var userAvatarView: ShapeableImageView
     private lateinit var userName: TextView
     private lateinit var userStatus: TextView
     private lateinit var userState: TextView
     private lateinit var btnNavBack: ImageView
-
     private var requestContact = -1
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
-        requestContact = requireArguments().getInt(ARG_MESSAGE, -1)
-        return view
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requestContact = requireArguments().getInt(ARG_MESSAGE, -1)
         initViews(view)
     }
 
