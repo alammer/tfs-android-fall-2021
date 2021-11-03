@@ -4,10 +4,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.StreamItemList
 import com.example.tfs.ui.topic.customviews.EmojisLayout
 import com.example.tfs.util.dpToPixels
-import com.example.tfs.util.drawUserInitals
+import com.example.tfs.util.drawUserInitials
 import com.google.android.material.imageview.ShapeableImageView
 
 class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,7 +36,7 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setUserInitilas(userName: String) {
-        userAvatar.drawUserInitals(userName, USER_AVATAR_WIDTH.dpToPixels())
+        userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.dpToPixels())
     }
 
     fun getEmojilayout(): EmojisLayout = emojiGroup

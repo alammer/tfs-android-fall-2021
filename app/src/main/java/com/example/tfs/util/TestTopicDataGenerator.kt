@@ -2,6 +2,7 @@ package com.example.tfs.util
 
 import android.util.Log
 import com.example.tfs.domain.*
+import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.domain.topic.Reaction
 
 const val EMOJI_FACE_START_CODE = 0x1f600
@@ -13,6 +14,8 @@ const val EMOJI_VAR_END_CODE = 0x1f92f
 
 private val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
 private val surnames = listOf("Ivanov", "Smith", "Petrov", "Johnson", "Putin", "Obama")
+private val providers = listOf("@mail.ru", "@gmail.com", "@yandex.ru", "@hotmail.com", "@yahoo.com")
+private val status = listOf("In a meeting", "Away", "Don't disturb", "Comeback soon", "Very busy", "I'm hungry")
 private val expandedStream = mutableListOf<Int>()
 
 object CreateEmojiSet {
@@ -31,6 +34,25 @@ object CreateEmojiSet {
 object TestMockDataGenerator {
 
     var subscribed = true
+
+    val mockContactList = getMockContacts()
+
+    private fun getMockContacts(): List<Contact> {
+        val contacts = mutableListOf<Contact>()
+
+        (0..(0..50).random()).forEach {
+            contacts.add(Contact(
+                it,
+                names.shuffled().zip(surnames.shuffled()) { name, surname -> "$name $surname" }
+                    .first(),
+                providers.shuffled().first().run { "mail$it$this" },
+                it % 2,
+                if (it % 3 == 0) null else status.shuffled().first(),
+                null
+            ))
+        }
+        return contacts.toList()
+    }
 
     private val mockStreamList = listOf(
         "general",

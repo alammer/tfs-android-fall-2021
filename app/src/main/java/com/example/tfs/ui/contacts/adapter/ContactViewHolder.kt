@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.util.dpToPixels
-import com.example.tfs.util.drawUserInitals
+import com.example.tfs.util.drawUserInitials
 import com.google.android.material.imageview.ShapeableImageView
 
 class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,7 +25,7 @@ class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setContactInitials (userName: String) {
-        contactAvatar.drawUserInitals(userName, CONTACT_AVATAR_WIDTH.dpToPixels())
+        contactAvatar.drawUserInitials(userName, CONTACT_AVATAR_WIDTH.dpToPixels())
     }
 
     fun setContactName(userName: String) {

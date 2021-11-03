@@ -11,17 +11,21 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.example.tfs.R
 import com.google.android.material.imageview.ShapeableImageView
 
 
-fun ShapeableImageView.drawUserInitals(name: String, size: Int) {
-
+fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
     val config = Bitmap.Config.ARGB_8888 // see other conf types
     val bitmap = Bitmap.createBitmap(size, size, config) // this creates a MUTABLE bitmap
     val canvas = Canvas(bitmap)
 
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     paint.apply {
+        isAntiAlias = true
         color = Color.BLUE
         style = Paint.Style.FILL
     }
@@ -33,12 +37,22 @@ fun ShapeableImageView.drawUserInitals(name: String, size: Int) {
         color = Color.WHITE
     }
 
-    val offset = paint.descent() + paint.ascent() / 2
+    val offset = (paint.descent() + paint.ascent()) / 2
     val userInitials = name.split(' ')
         .mapNotNull { it.firstOrNull()?.toString() }
         .reduce { acc, s -> acc + s }
     canvas.drawText(userInitials, size / 2f, size / 2f - offset, paint)
     setImageBitmap(bitmap)
+}
+
+fun TextView.setUserState(userState: Int) {
+    text = if (userState == 1) {
+        setTextColor(ContextCompat.getColor(context, R.color.state_color_green))
+        context.getString(R.string.profile_user_online_state)
+    } else {
+        setTextColor(ContextCompat.getColor(context, R.color.user_status_text_color))
+        context.getString(R.string.profile_user_offline_state)
+    }
 }
 
 fun Context?.toast(message: String) {

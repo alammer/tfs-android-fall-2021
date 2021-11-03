@@ -5,5 +5,6 @@ data class Contact(
     val userName: String,
     val userEmail: String,
     val userState: Int,
+    val userStatus: String?,
     val userImage: Int?
 )

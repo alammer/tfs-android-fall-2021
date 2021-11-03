@@ -8,4 +8,6 @@
     <string name="all_streams_tab_title">All streams</string>
     <string name="users_search_input_hint">Users...</string>
     <string name="profile_appbar_title">Profile</string>
+    <string name="profile_user_online_state">online</string>
+    <string name="profile_user_offline_state">offline</string>
 </resources>

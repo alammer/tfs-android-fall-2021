@@ -11,6 +11,7 @@ import com.example.tfs.databinding.FragmentProfileBinding
 import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.ui.contacts.adapter.ContactViewAdapter
 import com.example.tfs.ui.profile.ProfileFragment
+import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.viewbinding.viewBinding
 
 class ContactsFragment : Fragment(R.layout.fragment_contacts) {
@@ -31,10 +32,14 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts) {
                 .commitAllowingStateLoss()
         }
 
+        val contactList = TestMockDataGenerator.mockContactList
+
         with(viewBinding) {
             rvContacts.adapter = contactListAdapter
 
             rvContacts.layoutManager = LinearLayoutManager(context)
         }
+
+        contactListAdapter.submitList(contactList)
     }
 }
