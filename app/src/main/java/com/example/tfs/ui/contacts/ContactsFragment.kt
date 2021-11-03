@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentContactsBinding
-import com.example.tfs.databinding.FragmentProfileBinding
 import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.ui.contacts.adapter.ContactViewAdapter
 import com.example.tfs.ui.profile.ProfileFragment

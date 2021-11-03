@@ -3,19 +3,18 @@ package com.example.tfs.util
 import android.content.Context
 import android.content.res.Resources
 import android.database.Cursor
-import android.provider.ContactsContract
-import android.widget.Toast
-import java.text.SimpleDateFormat
-import java.util.*
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.util.Log
+import android.provider.ContactsContract
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
 import com.google.android.material.imageview.ShapeableImageView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
@@ -33,7 +32,7 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
     canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
     paint.apply {
         textAlign = Paint.Align.CENTER
-        textSize = size / 2f
+        textSize = size / 2.5f
         color = Color.WHITE
     }
 

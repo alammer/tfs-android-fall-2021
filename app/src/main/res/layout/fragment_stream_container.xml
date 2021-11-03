@@ -7,11 +7,11 @@
 
     <include layout="@layout/appbar_layout"
         android:id="@+id/appbar"
-        app:layout_constraintBottom_toTopOf="@+id/rvStreams"
+        app:layout_constraintBottom_toTopOf="@+id/view_pager"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvStreams"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.example.tfs.ui.contacts.ContactsFragment
 import com.example.tfs.ui.profile.ProfileFragment
-import com.example.tfs.ui.streams.StreamsFragment
+import com.example.tfs.ui.streams.viewpager.StreamContainer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, StreamsFragment())
+                .add(R.id.fragment_container, StreamContainer())
                 .commitAllowingStateLoss()
         }
 
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_to_streams -> {
-                    loadFragment(StreamsFragment())
+                    loadFragment(StreamContainer())
                     return@setOnItemSelectedListener true
                 }
 
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
-            is StreamsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked =
+            is StreamContainer -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked =
                 true
             is ContactsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked =
                 true

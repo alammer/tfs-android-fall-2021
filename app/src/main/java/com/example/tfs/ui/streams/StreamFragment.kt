@@ -2,23 +2,19 @@ package com.example.tfs.ui.streams
 
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.databinding.FragmentStreamsBinding
-import com.example.tfs.databinding.FragmentTopicBinding
+import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.domain.StreamItemList
 import com.example.tfs.ui.streams.adapter.StreamViewAdapter
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.viewbinding.viewBinding
-import com.google.android.material.tabs.TabLayout
 
-class StreamsFragment : Fragment(R.layout.fragment_streams) {
+class StreamFragment : Fragment(R.layout.fragment_stream) {
 
-    private val viewBinding by viewBinding(FragmentStreamsBinding::bind)
+    private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 
     private lateinit var currentStreamList: List<StreamItemList>
     private lateinit var streamViewAdapter: StreamViewAdapter
@@ -29,8 +25,10 @@ class StreamsFragment : Fragment(R.layout.fragment_streams) {
     }
 
     private fun initViews() {
-        TestMockDataGenerator.subscribed = true
 
+        TestMockDataGenerator.subscribed = requireArguments().getBoolean(SUBSCRIBED_KEY, true)
+
+        currentStreamList = TestMockDataGenerator.getMockDomainStreamList()
         streamViewAdapter = StreamViewAdapter { item: StreamItemList ->
             when (item) {
                 is StreamItemList.StreamItem -> clickStreamView(item.streamId)
@@ -49,36 +47,6 @@ class StreamsFragment : Fragment(R.layout.fragment_streams) {
             rvStreams.adapter = streamViewAdapter
 
             rvStreams.layoutManager = LinearLayoutManager(context)
-
-            currentStreamList = TestMockDataGenerator.getMockDomainStreamList()
-
-            appbar.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    tab?.apply {
-                        when (position) {
-                            0 -> {
-                                TestMockDataGenerator.subscribed = true
-                                currentStreamList = TestMockDataGenerator.updateStreamMode()
-                                streamViewAdapter.submitList(currentStreamList)
-                            }
-                            1 -> {
-                                TestMockDataGenerator.subscribed = false
-                                currentStreamList = TestMockDataGenerator.updateStreamMode()
-                                streamViewAdapter.submitList(currentStreamList)
-                            }
-                            else -> throw IllegalArgumentException()
-                        }
-                    }
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                    // Handle tab reselect
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
-                    // Handle tab unselect
-                }
-            })
         }
         streamViewAdapter.submitList(currentStreamList)
     }
@@ -101,5 +69,16 @@ class StreamsFragment : Fragment(R.layout.fragment_streams) {
             )
             .addToBackStack(null)
             .commitAllowingStateLoss()
+    }
+
+    companion object {
+        private const val SUBSCRIBED_KEY = "is_sucsribed"
+        fun newInstance(isSubcribed: Boolean = true): StreamFragment {
+            val fragment = StreamFragment()
+            val arguments = Bundle()
+            arguments.putBoolean(SUBSCRIBED_KEY, isSubcribed)
+            fragment.arguments = arguments
+            return fragment
+        }
     }
 }
