@@ -4,10 +4,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.ui.topic.customviews.EmojisLayout
+import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.drawUserInitials
 import com.google.android.material.imageview.ShapeableImageView
+
 
 class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

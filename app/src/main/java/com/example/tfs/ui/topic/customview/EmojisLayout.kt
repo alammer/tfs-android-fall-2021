@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic.customviews
+package com.example.tfs.ui.topic.customview
 
 import android.content.Context
 import android.content.res.TypedArray

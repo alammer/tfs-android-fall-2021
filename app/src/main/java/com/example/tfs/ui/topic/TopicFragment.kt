@@ -4,49 +4,43 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.ui.main.MainActivity
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
-import com.example.tfs.ui.topic.emoji.EmojiDialogFragment
+import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
 
 class TopicFragment : Fragment(R.layout.fragment_topic) {
 
-    private var topicId = -1
-    private var streamId = -1
+    private val topicId by lazy {
+        requireArguments().getInt(TOPIC_KEY, -1)
+    }
 
+    private val streamId by lazy {
+        requireArguments().getInt(STREAM_KEY, -1)
+    }
     private val viewBinding by viewBinding(FragmentTopicBinding::bind)
     private lateinit var topicListAdapter: TopicViewAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).hideBottomNav()
-
-        streamId = requireArguments().getInt(STREAM_KEY, -1)
-        topicId = requireArguments().getInt(TOPIC_KEY, -1)
-
         initViews()
         onChangeMessage()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
             bundle.getIntArray(TOPIC_RESULT_KEY)?.let {
                 updateReaction(it[0], it[1])
             }
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        (activity as MainActivity).showBottomNav()
     }
 
     private fun initViews() {
@@ -59,19 +53,15 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         }
 
         with(viewBinding) {
-
-            tvTopic.text = "Topic: ${requireArguments().getString(TOPIC_NAME, "Uknown")}"
-
-            tvTopicTitle.text = "${requireArguments().getString(STREAM_NAME, "Uknown")}"
+            tvTopic.text = root.context.getString(R.string.topic_name_template, requireArguments().getString(TOPIC_NAME, "Unknown"))
+            tvTopicTitle.text = requireArguments().getString(STREAM_NAME, "Unknown")
 
             topicListAdapter = TopicViewAdapter(
                 { messageId: Int, i: Int -> updateReaction(messageId, i) },
                 { messageId -> onRecycleViewLongPress(messageId) }
             )
             rvTopic.adapter = topicListAdapter
-
             rvTopic.layoutManager = LinearLayoutManager(context)
-
             topicListAdapter.submitList(currentTopic)
 
             btnSendPost.setOnClickListener {

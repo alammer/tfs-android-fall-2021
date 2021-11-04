@@ -8,6 +8,7 @@ import com.example.tfs.R
 import com.example.tfs.ui.contacts.ContactsFragment
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.ui.streams.viewpager.StreamContainer
+import com.example.tfs.ui.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -45,33 +46,35 @@ class MainActivity : AppCompatActivity() {
             }
             return@setOnItemSelectedListener false
         }
-    }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
-            is StreamContainer -> bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked =
-                true
-            is ContactsFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked =
-                true
-            is ProfileFragment -> bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked =
-                true
+        bottomNavigationView.setOnItemReselectedListener {
+
         }
-    }
 
-    fun hideBottomNav() {
-        bottomNavigationView.visibility = View.GONE
-    }
-
-    fun showBottomNav() {
-        bottomNavigationView.visibility = View.VISIBLE
+        supportFragmentManager.addOnBackStackChangedListener {
+            when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
+                is TopicFragment -> bottomNavigationView.visibility = View.GONE
+                is StreamContainer -> {
+                    bottomNavigationView.visibility = View.VISIBLE
+                    bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked = true
+                }
+                is ContactsFragment -> {
+                    bottomNavigationView.visibility = View.VISIBLE
+                    bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked = true
+                }
+                is ProfileFragment -> {
+                    bottomNavigationView.visibility = View.VISIBLE
+                    bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked = true
+                }
+            }
+        }
     }
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-        .add(R.id.fragment_container, fragment)
-        .addToBackStack(null)
-        .commitAllowingStateLoss()
+            .add(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 }
 

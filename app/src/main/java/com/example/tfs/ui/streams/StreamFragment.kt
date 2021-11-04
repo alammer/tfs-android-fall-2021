@@ -43,9 +43,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         }
 
         with(viewBinding) {
-
             rvStreams.adapter = streamViewAdapter
-
             rvStreams.layoutManager = LinearLayoutManager(context)
         }
         streamViewAdapter.submitList(currentStreamList)
@@ -63,7 +61,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         topicName: String
     ) {
         requireActivity().supportFragmentManager.beginTransaction()
-            .add(
+            .replace(
                 R.id.fragment_container,
                 TopicFragment.newInstance(parentStreamId, topicId, streamName, topicName)
             )

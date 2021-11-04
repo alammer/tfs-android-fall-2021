@@ -3,8 +3,9 @@ package com.example.tfs.ui.topic.adapter
 import android.view.ViewGroup
 import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.domain.TopicItem
-import com.example.tfs.ui.topic.customviews.EmojiView
-import com.example.tfs.ui.topic.customviews.PlusView
+import com.example.tfs.ui.topic.customview.EmojiView
+import com.example.tfs.ui.topic.customview.PlusView
+import com.example.tfs.util.OWNER_ID
 import com.example.tfs.util.dpToPixels
 
 class UserPostViewHolderBinder(
@@ -53,7 +54,7 @@ class UserPostViewHolderBinder(
                 emojiGroup.context,
                 emojiCode = it.emoji,
                 count = it.count,
-                isClicked = it.isClicked
+                isClicked = it.userId.contains(OWNER_ID)
             )
             view.tag = it.emoji
             view.layoutParams = childLayoutParams

@@ -5,13 +5,6 @@ import com.example.tfs.domain.*
 import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.domain.topic.Reaction
 
-const val EMOJI_FACE_START_CODE = 0x1f600
-const val EMOJI_FACE_END_CODE = 0x1f644
-const val EMOJI_GESTURE_START_CODE = 0x1f645
-const val EMOJI_GESTURE_END_CODE = 0x1f64f
-const val EMOJI_VAR_START_CODE = 0x1f90c
-const val EMOJI_VAR_END_CODE = 0x1f92f
-
 private val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
 private val surnames = listOf("Ivanov", "Smith", "Petrov", "Johnson", "Putin", "Obama")
 private val providers = listOf("@mail.ru", "@gmail.com", "@yandex.ru", "@hotmail.com", "@yahoo.com")
@@ -147,22 +140,22 @@ object TestMockDataGenerator {
             newReaction = it.reaction.toMutableList()
             it.reaction.firstOrNull { it.emoji == emojiCode }?.let {
                 val index = newReaction.indexOf(it)
-                if (it.isClicked) {
+                if (it.userId.contains(OWNER_ID)) {
+                    //it.userId.remove(OWNER_ID)
                     val newCount = it.count - 1
                     if (newCount == 0) {
                         newReaction.remove(it)
                     } else {
-                        newReaction[index] = it.copy(count = it.count - 1, isClicked = false)
+                        newReaction[index] = it.copy(count = it.count - 1)
                     }
                 } else {
-                    newReaction[index] = it.copy(count = it.count + 1, isClicked = true)
+                    newReaction[index] = it.copy(count = it.count + 1)
                 }
             } ?: newReaction.add(
                 Reaction(
                     emojiCode,
                     1,
-                    emptyList(),
-                    true
+                    listOf(OWNER_ID),
                 )
             )
         } ?: return emptyList()
@@ -243,8 +236,7 @@ object TestMockDataGenerator {
             Reaction(
                 EMOJI_FACE_START_CODE + (0..66).random(),
                 (0..100).random(),
-                emptyList(),
-                it % 3 == 0
+                if(it % 3 == 0) listOf(OWNER_ID) else emptyList(),
             )
         }
         return reaction
@@ -334,6 +326,14 @@ object TestMockDataGenerator {
         return updatedList.toList()
     }
 }
+const val OWNER_ID = 100
+
+const val EMOJI_FACE_START_CODE = 0x1f600
+const val EMOJI_FACE_END_CODE = 0x1f644
+const val EMOJI_GESTURE_START_CODE = 0x1f645
+const val EMOJI_GESTURE_END_CODE = 0x1f64f
+const val EMOJI_VAR_START_CODE = 0x1f90c
+const val EMOJI_VAR_END_CODE = 0x1f92f
 
 
 

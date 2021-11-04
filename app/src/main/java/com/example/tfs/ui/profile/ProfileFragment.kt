@@ -38,10 +38,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     userName,
                     PROFILE_USER_IMAGE_WIDTH.dpToPixels()
                 )  //быдловатый вариант с размером
-                btnProfileNavBack.setOnClickListener {
-                    requireActivity().supportFragmentManager.popBackStack()
-                }
             }
+        }
+
+        viewBinding.btnProfileNavBack.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 

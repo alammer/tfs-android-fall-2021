@@ -3,7 +3,7 @@ package com.example.tfs.ui.topic.adapter
 import android.view.ViewGroup
 import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.domain.TopicItem
-import com.example.tfs.ui.topic.customviews.EmojiView
+import com.example.tfs.ui.topic.customview.EmojiView
 import com.example.tfs.util.dpToPixels
 
 class OwnerPostViewHolderBinder() {

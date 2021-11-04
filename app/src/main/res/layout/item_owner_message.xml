@@ -21,7 +21,7 @@
         android:paddingVertical="10dp"
         tools:text="Sdsahjjdsahsa jdhjasdhkjsa  sdsdsdsdsd" />
 
-    <com.example.tfs.ui.topic.customviews.EmojisLayout
+    <com.example.tfs.ui.topic.customview.EmojisLayout
         android:id="@+id/lEmojis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

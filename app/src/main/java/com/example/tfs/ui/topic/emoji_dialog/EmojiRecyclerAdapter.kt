@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic.emoji
+package com.example.tfs.ui.topic.emoji_dialog
 
 import android.view.LayoutInflater
 import android.view.View

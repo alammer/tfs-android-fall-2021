@@ -10,4 +10,5 @@
     <string name="profile_appbar_title">Profile</string>
     <string name="profile_user_online_state">online</string>
     <string name="profile_user_offline_state">offline</string>
+    <string name="topic_name_template">Topic: %s</string>
 </resources>

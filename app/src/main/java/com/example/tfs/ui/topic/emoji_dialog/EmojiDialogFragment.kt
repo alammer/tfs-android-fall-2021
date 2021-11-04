@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic.emoji
+package com.example.tfs.ui.topic.emoji_dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.ui.topic.TOPIC_REQUEST_KEY
 import com.example.tfs.ui.topic.TOPIC_RESULT_KEY
-import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.CreateEmojiSet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 

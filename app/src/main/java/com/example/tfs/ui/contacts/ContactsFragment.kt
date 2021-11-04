@@ -25,7 +25,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts) {
     private fun initViews() {
         contactListAdapter = ContactViewAdapter { item: Contact ->
             requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
+                .replace(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
@@ -34,10 +34,8 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts) {
 
         with(viewBinding) {
             rvContacts.adapter = contactListAdapter
-
             rvContacts.layoutManager = LinearLayoutManager(context)
         }
-
         contactListAdapter.submitList(contactList)
     }
 }
