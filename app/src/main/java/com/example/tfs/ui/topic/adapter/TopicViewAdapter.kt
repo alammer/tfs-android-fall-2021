@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.TopicItem
+import com.example.tfs.domain.topic.TopicItem
 
 class TopicViewAdapter(
     onChangeReactionClick: (messageId: Int, emojiCode: Int) -> Unit,
@@ -14,9 +14,9 @@ class TopicViewAdapter(
 ) : ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private val userPostItemBinder =
-        UserPostViewHolderBinder(onChangeReactionClick, onAddReactionClick)
+        UserPostItemBinder(onChangeReactionClick, onAddReactionClick)
     private val ownerPostItemBinder =
-        OwnerPostViewHolderBinder()
+        OwnerPostItemBinder()
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is TopicItem.UserPostItem -> R.layout.item_user_message

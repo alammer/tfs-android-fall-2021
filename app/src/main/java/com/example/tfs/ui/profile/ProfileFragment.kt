@@ -2,9 +2,11 @@ package com.example.tfs.ui.profile
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentProfileBinding
+import com.example.tfs.ui.streams.StreamFragment
 import com.example.tfs.util.TestMockDataGenerator
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.drawUserInitials
@@ -23,19 +25,19 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun initViews() {
 
         val requestContact = TestMockDataGenerator.mockContactList
-            .firstOrNull { it.userId == requireArguments().getInt(CONTACT_ID, -1) }
+            .firstOrNull { it.id == requireArguments().getInt(CONTACT_ID, -1) }
 
         requestContact?.apply {
             with(viewBinding) {
-                tvProfileName.text = userName
-                userStatus?.let {
+                tvProfileName.text = name
+                status?.let {
                     tvProfileStatus.text = it
                 } ?: tvProfileStatus.apply { visibility = View.GONE }
-                tvProfileState.setUserState(userState)
-                userImage?.let {
+                tvProfileState.setUserState(state)
+                avatar?.let {
                     imgProfileUser.setImageResource(it)
                 } ?: imgProfileUser.drawUserInitials(
-                    userName,
+                    name,
                     PROFILE_USER_IMAGE_WIDTH.dpToPixels()
                 )  //быдловатый вариант с размером
             }
@@ -47,14 +49,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     companion object {
+
         private const val CONTACT_ID = "contact_id"
         private const val PROFILE_USER_IMAGE_WIDTH = 185
+
         fun newInstance(contactId: Int = -1): ProfileFragment {
-            val fragment = ProfileFragment()
-            val arguments = Bundle()
-            arguments.putInt(CONTACT_ID, contactId)
-            fragment.arguments = arguments
-            return fragment
+            return ProfileFragment().apply {
+                arguments = bundleOf(
+                    CONTACT_ID to contactId,
+                )
+            }
         }
     }
 }

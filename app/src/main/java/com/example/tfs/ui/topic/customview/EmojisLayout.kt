@@ -5,7 +5,10 @@ import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.ViewGroup
 import com.example.tfs.R
+import com.example.tfs.domain.topic.Reaction
+import com.example.tfs.util.OWNER_ID
 import com.example.tfs.util.dpToPixels
+
 
 class EmojisLayout @JvmOverloads constructor(
     context: Context,
@@ -97,7 +100,38 @@ class EmojisLayout @JvmOverloads constructor(
     }
 
     companion object {
-        private var DIVIDER_HEIGHT = 8.dpToPixels()
-        private var DIVIDER_WIDTH = 10.dpToPixels()
+
+        private val DIVIDER_HEIGHT = 8.dpToPixels()
+        private val DIVIDER_WIDTH = 10.dpToPixels()
+        val CHILD_HEIGHT = 30.dpToPixels()
     }
 }
+
+fun EmojisLayout.addReaction(reaction: List<Reaction>, isOwner: Boolean = false) {
+    val childLayoutParams = ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        EmojisLayout.CHILD_HEIGHT
+    )
+
+    reaction.forEach {
+        val view = EmojiView(
+            context,
+            emojiCode = it.emoji,
+            count = it.count,
+            isClicked = it.userList.contains(OWNER_ID)
+        )
+        view.tag = it.emoji
+        view.layoutParams = childLayoutParams
+        addView(view)
+    }
+
+    if (!isOwner && reaction.isNotEmpty()) {
+        val plusView = PlusView(context)
+        plusView.layoutParams = childLayoutParams
+        addView(plusView)
+    }
+}
+
+
+
+

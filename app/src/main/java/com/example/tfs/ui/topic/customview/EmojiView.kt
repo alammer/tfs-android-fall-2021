@@ -24,10 +24,8 @@ class EmojiView @JvmOverloads constructor(
     private val backgroundRect = RectF()
     private val textBounds = Rect()
     private val textCoordinate = PointF()
-
     private var currentCount = 0
     private var emojiGliph = ""
-
     private val backColor = ContextCompat.getColor(context, R.color.view_bg)
     private val checkBackColor = ContextCompat.getColor(context, R.color.check_emoji_view_bg_color)
     private val textColor = ContextCompat.getColor(context, R.color.emoji_text_color)
@@ -43,6 +41,7 @@ class EmojiView @JvmOverloads constructor(
         textSize = 14.spToPixels()
         textAlign = Paint.Align.CENTER
     }
+
     private val backPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
@@ -108,6 +107,7 @@ class EmojiView @JvmOverloads constructor(
     }
 
     companion object {
+
         private val VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
         private val HORIZONTAL_PADDING = 8.dpToPixels()
         private val VERTICAL_PADDING = 4.dpToPixels()

@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
@@ -120,24 +121,26 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     }
 
     companion object {
+
         private const val STREAM_KEY = "stream_id"
         private const val TOPIC_KEY = "topic_id"
         private const val TOPIC_NAME = "topic_name"
         private const val STREAM_NAME = "stream_name"
+
         fun newInstance(
             streamId: Int,
             topicId: Int,
             streamName: String,
             topicName: String
         ): TopicFragment {
-            val fragment = TopicFragment()
-            val arguments = Bundle()
-            arguments.putInt(STREAM_KEY, streamId)
-            arguments.putInt(TOPIC_KEY, topicId)
-            arguments.putString(TOPIC_NAME, topicName)
-            arguments.putString(STREAM_NAME, streamName)
-            fragment.arguments = arguments
-            return fragment
+            return TopicFragment().apply {
+                arguments = bundleOf(
+                    STREAM_KEY to streamId,
+                    TOPIC_KEY to topicId,
+                    TOPIC_NAME to topicName,
+                    STREAM_NAME to streamName,
+                )
+            }
         }
     }
 }

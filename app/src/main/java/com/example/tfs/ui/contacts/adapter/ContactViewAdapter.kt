@@ -11,7 +11,7 @@ class ContactViewAdapter(onContactClick: (Contact) -> Unit) :
     ListAdapter<Contact, ContactViewHolder>(ContactDiffCallback()) {
 
     private val contactItemBinder =
-       ContactViewHolderBinder(onContactClick)
+       ContactItemBinder(onContactClick)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
         val view =
@@ -29,7 +29,7 @@ class ContactViewAdapter(onContactClick: (Contact) -> Unit) :
 private class ContactDiffCallback : DiffUtil.ItemCallback<Contact>() {
 
     override fun areItemsTheSame(oldItem: Contact, newItem: Contact) =
-        oldItem.userId == newItem.userId
+        oldItem.id == newItem.id
 
     override fun areContentsTheSame(oldItem: Contact, newItem: Contact) =
         oldItem == newItem

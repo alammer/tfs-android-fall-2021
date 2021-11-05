@@ -21,8 +21,8 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
     val config = Bitmap.Config.ARGB_8888 // see other conf types
     val bitmap = Bitmap.createBitmap(size, size, config) // this creates a MUTABLE bitmap
     val canvas = Canvas(bitmap)
-
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     paint.apply {
         isAntiAlias = true
         color = Color.BLUE
@@ -30,6 +30,7 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
     }
 
     canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+
     paint.apply {
         textAlign = Paint.Align.CENTER
         textSize = size / 2.5f
@@ -40,6 +41,7 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
     val userInitials = name.split(' ')
         .mapNotNull { it.firstOrNull()?.toString() }
         .reduce { acc, s -> acc + s }
+
     canvas.drawText(userInitials, size / 2f, size / 2f - offset, paint)
     setImageBitmap(bitmap)
 }

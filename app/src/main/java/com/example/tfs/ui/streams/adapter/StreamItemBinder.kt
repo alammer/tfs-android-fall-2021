@@ -1,13 +1,13 @@
 package com.example.tfs.ui.streams.adapter
 
 import com.example.tfs.R
-import com.example.tfs.domain.StreamItemList
+import com.example.tfs.domain.streams.StreamItemList
 
-class StreamItemViewHolderBinder(private val onClickItem: (StreamItemList) -> Unit) {
+class StreamItemBinder(private val onClickItem: (StreamItemList) -> Unit) {
 
     fun bind(streamItemViewHolder: StreamItemViewHolder, item: StreamItemList.StreamItem) {
 
-        streamItemViewHolder.setStreamName(item.streamName)
+        streamItemViewHolder.setStreamName(item.name)
 
         streamItemViewHolder.setStreamExpandIcon(if(item.expanded) R.drawable.ic_collapce else R.drawable.ic_expand)
 

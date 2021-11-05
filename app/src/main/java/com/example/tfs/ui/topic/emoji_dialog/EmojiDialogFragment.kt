@@ -48,7 +48,9 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
+
         private const val MESSAGE_KEY = "message_id"
+
         fun newInstance(
             messageId: Int,
         ): EmojiDialogFragment {

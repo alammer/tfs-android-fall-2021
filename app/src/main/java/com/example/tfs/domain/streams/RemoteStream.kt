@@ -1,16 +1,17 @@
-package com.example.tfs.domain
+package com.example.tfs.domain.streams
 
+import com.example.tfs.domain.topic.TopicItem
 import com.example.tfs.domain.topic.Reaction
 
 data class RemoteStream(
-    val streamId: Int,
-    val streamName: String,
+    val id: Int,
+    val name: String,
     val childTopics: List<RemoteTopic>,
 )
 
 data class RemoteTopic(
-    val topicId: Int,
-    val topicName: String,
+    val id: Int,
+    val name: String,
     val parentStreamId: Int,
     val parentStreamName: String,
     val topic_stat: Int,
@@ -18,7 +19,7 @@ data class RemoteTopic(
 )
 
 data class Post(
-    val messageId: Int,
+    val id: Int,
     val userId: Int,
     val userName: String,
     var reaction: List<Reaction> = emptyList(),
@@ -27,10 +28,14 @@ data class Post(
     val timeStamp: Long,
 )
 
-fun RemoteTopic.toDomainTopic() = StreamItemList.TopicItem(topicId, topicName, parentStreamId, parentStreamName, topic_stat)
+fun RemoteTopic.toDomainTopic() =
+    StreamItemList.TopicItem(id, name, parentStreamId, parentStreamName, topic_stat)
 
-fun RemoteStream.toDomainStream() = StreamItemList.StreamItem(streamId, streamName, childTopics.map { it.toDomainTopic()})
+fun RemoteStream.toDomainStream() =
+    StreamItemList.StreamItem(id, name, childTopics.map { it.toDomainTopic() })
 
-fun Post.toDomainOwnerPost() = TopicItem.OwnerPostItem(reaction = reaction, message = message, timeStamp = timeStamp)
+fun Post.toDomainOwnerPost() =
+    TopicItem.OwnerPostItem(id  = id, reaction = reaction, message = message, timeStamp = timeStamp)
 
-fun Post.toDomainUserPost() = TopicItem.UserPostItem(messageId, userId, userName, reaction, message, avatar, timeStamp)
+fun Post.toDomainUserPost() =
+    TopicItem.UserPostItem(id, userId, userName, reaction, message, avatar, timeStamp)

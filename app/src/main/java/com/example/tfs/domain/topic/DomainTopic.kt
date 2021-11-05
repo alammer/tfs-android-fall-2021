@@ -1,12 +1,11 @@
-package com.example.tfs.domain
-
-import com.example.tfs.domain.topic.Reaction
+package com.example.tfs.domain.topic
 
 sealed class TopicItem {
 
     data class LocalDateItem(val postDate: String) : TopicItem()
+
     data class UserPostItem(
-        val messageId: Int,
+        val id: Int,
         val userId: Int,
         val userName: String,
         val reaction: List<Reaction> = emptyList(),
@@ -16,6 +15,7 @@ sealed class TopicItem {
     ) : TopicItem()
 
     data class OwnerPostItem(
+        val id: Int,
         val reaction: List<Reaction> = emptyList(),
         val message: String,
         val timeStamp: Long,

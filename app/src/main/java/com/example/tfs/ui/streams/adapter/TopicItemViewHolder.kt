@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.StreamItemList
+import com.example.tfs.domain.streams.StreamItemList
 
 class TopicItemViewHolder(private val topicView: View) : RecyclerView.ViewHolder(topicView) {
 

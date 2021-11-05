@@ -1,9 +1,10 @@
 package com.example.tfs.util
 
 import android.util.Log
-import com.example.tfs.domain.*
 import com.example.tfs.domain.contacts.Contact
+import com.example.tfs.domain.streams.*
 import com.example.tfs.domain.topic.Reaction
+import com.example.tfs.domain.topic.TopicItem
 
 private val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
 private val surnames = listOf("Ivanov", "Smith", "Petrov", "Johnson", "Putin", "Obama")
@@ -126,21 +127,21 @@ object TestMockDataGenerator {
         emojiCode: Int
     ): List<TopicItem> {
         val currentTopic = originalStreamList
-            .firstOrNull { it.streamId == streamId }
+            .firstOrNull { it.id == streamId }
             ?.childTopics
-            ?.firstOrNull { it.topicId == topicId }
+            ?.firstOrNull { it.id == topicId }
             ?.postList
             ?.toMutableList()
             ?: return emptyList()
 
         var newReaction = mutableListOf<Reaction>()
 
-        currentTopic.firstOrNull { it.messageId == messageId }?.let {
+        currentTopic.firstOrNull { it.id == messageId }?.let {
             Log.i("TestTopicDataGenerator", "Orig: ${it.reaction}")
             newReaction = it.reaction.toMutableList()
             it.reaction.firstOrNull { it.emoji == emojiCode }?.let {
                 val index = newReaction.indexOf(it)
-                if (it.userId.contains(OWNER_ID)) {
+                if (it.userList.contains(OWNER_ID)) {
                     //it.userId.remove(OWNER_ID)
                     val newCount = it.count - 1
                     if (newCount == 0) {
@@ -162,7 +163,7 @@ object TestMockDataGenerator {
 
         Log.i("TestTopicDataGenerator", "New: $newReaction")
 
-        currentTopic.firstOrNull { it.messageId == messageId }?.reaction = newReaction
+        currentTopic.firstOrNull { it.id == messageId }?.reaction = newReaction
 
         Log.i("TestTopicDataGenerator", "New: ${currentTopic[0].reaction}")
 
@@ -190,9 +191,9 @@ object TestMockDataGenerator {
 
     fun addPostToTopic(streamId: Int, topicId: Int, message: String): List<TopicItem> {
         val currentTopic = originalStreamList
-            .firstOrNull { it.streamId == streamId }
+            .firstOrNull { it.id == streamId }
             ?.childTopics
-            ?.firstOrNull { it.topicId == topicId }
+            ?.firstOrNull { it.id == topicId }
             ?.postList
             ?.toMutableList()
             ?: return emptyList()
@@ -260,7 +261,7 @@ object TestMockDataGenerator {
     fun getMockDomainStreamList(): MutableList<StreamItemList> {
         val domainStreamList = mutableListOf<StreamItemList>()
         if (subscribed) {
-            domainStreamList.addAll(originalStreamList.filter { mockSubcribedList.contains(it.streamName) }
+            domainStreamList.addAll(originalStreamList.filter { mockSubcribedList.contains(it.name) }
                 .map { it.copy().toDomainStream() })
         } else
             domainStreamList.addAll(originalStreamList.map { it.copy().toDomainStream() })
@@ -270,9 +271,9 @@ object TestMockDataGenerator {
     fun getMockDomainTopic(streamId: Int, topicId: Int): List<TopicItem> {
 
         val remoteTopic = originalStreamList
-            .firstOrNull { it.streamId == streamId }
+            .firstOrNull { it.id == streamId }
             ?.childTopics
-            ?.firstOrNull { it.topicId == topicId }
+            ?.firstOrNull { it.id == topicId }
             ?: return emptyList()
 
         val datedPostList = mutableListOf<TopicItem>()
@@ -314,7 +315,7 @@ object TestMockDataGenerator {
             getMockDomainStreamList()
                 .map {
                     if ((it is StreamItemList.StreamItem && expandedStream.contains(
-                            it.streamId
+                            it.id
                         ))
                     ) {
                         updatedList.add(it.copy(expanded = true))

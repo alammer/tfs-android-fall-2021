@@ -1,17 +1,17 @@
-package com.example.tfs.domain
+package com.example.tfs.domain.streams
 
 sealed class StreamItemList {
 
     data class StreamItem(
-        val streamId: Int,
-        val streamName: String,
+        val id: Int,
+        val name: String,
         val childTopics: List<TopicItem> = emptyList(),
         val expanded: Boolean = false,
     ) : StreamItemList()
 
     data class TopicItem(
-        val topicId: Int,
-        val topicName: String,
+        val id: Int,
+        val name: String,
         val parentStreamId: Int,
         val parentStreamName: String,
         val messageStat: Int

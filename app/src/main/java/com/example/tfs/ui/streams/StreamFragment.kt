@@ -2,11 +2,12 @@ package com.example.tfs.ui.streams
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamBinding
-import com.example.tfs.domain.StreamItemList
+import com.example.tfs.domain.streams.StreamItemList
 import com.example.tfs.ui.streams.adapter.StreamViewAdapter
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.TestMockDataGenerator
@@ -31,12 +32,12 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         currentStreamList = TestMockDataGenerator.getMockDomainStreamList()
         streamViewAdapter = StreamViewAdapter { item: StreamItemList ->
             when (item) {
-                is StreamItemList.StreamItem -> clickStreamView(item.streamId)
+                is StreamItemList.StreamItem -> clickStreamView(item.id)
                 is StreamItemList.TopicItem -> moveToTopicFragment(
                     item.parentStreamId,
-                    item.topicId,
+                    item.id,
                     item.parentStreamName,
-                    item.topicName
+                    item.name
                 )
                 else -> throw IllegalStateException("Unknown viewType")
             }
@@ -70,13 +71,15 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     }
 
     companion object {
+
         private const val SUBSCRIBED_KEY = "is_sucsribed"
+
         fun newInstance(isSubcribed: Boolean = true): StreamFragment {
-            val fragment = StreamFragment()
-            val arguments = Bundle()
-            arguments.putBoolean(SUBSCRIBED_KEY, isSubcribed)
-            fragment.arguments = arguments
-            return fragment
+            return StreamFragment().apply {
+                arguments = bundleOf(
+                    SUBSCRIBED_KEY to isSubcribed,
+                )
+            }
         }
     }
 }

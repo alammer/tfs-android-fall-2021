@@ -25,7 +25,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts) {
     private fun initViews() {
         contactListAdapter = ContactViewAdapter { item: Contact ->
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ProfileFragment.newInstance(item.userId))
+                .replace(R.id.fragment_container, ProfileFragment.newInstance(item.id))
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }

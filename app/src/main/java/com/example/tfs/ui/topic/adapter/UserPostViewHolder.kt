@@ -4,7 +4,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
+import com.example.tfs.ui.topic.customview.addReaction
 import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.drawUserInitials
 import com.google.android.material.imageview.ShapeableImageView
@@ -25,7 +27,7 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         textMessage.text = message
     }
 
-    fun setMessageClickListener (postClick: (Int) -> Unit, item: Int) {
+    fun setMessageClickListener (item: Int, postClick: (Int) -> Unit) {
         textMessage.setOnLongClickListener {
             postClick(item)
             return@setOnLongClickListener true
@@ -40,7 +42,21 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.dpToPixels())
     }
 
-    fun getEmojilayout(): EmojisLayout = emojiGroup
+    fun createPostReaction(reaction: List<Reaction>) {
+        emojiGroup.addReaction(reaction)
+    }
+
+    fun addReactionListeners(itemId: Int, onEmojiClick: (Int, Int) -> Unit, onAddReactionClick: (Int) -> Unit) {
+        (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
+            emojiGroup.getChildAt(emojiPosition).setOnClickListener {
+                onEmojiClick(itemId, it.tag as Int)
+            }
+        }
+        //click on "+"
+        emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
+            onAddReactionClick(itemId)
+        }
+    }
 }
 
 private const val USER_AVATAR_WIDTH = 37

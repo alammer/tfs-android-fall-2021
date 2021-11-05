@@ -6,17 +6,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.StreamItemList
+import com.example.tfs.domain.streams.StreamItemList
 
 
 class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
     ListAdapter<StreamItemList, RecyclerView.ViewHolder>(StreamDiffCallback()) {
 
     private val streamItemBinder =
-        StreamItemViewHolderBinder(onItemClicked)
+        StreamItemBinder(onItemClicked)
 
     private val topicItemBinder =
-        TopicItemViewHolderBinder(onItemClicked)
+        TopicItemBinder(onItemClicked)
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is StreamItemList.StreamItem -> R.layout.item_stream_rv_header
@@ -56,8 +56,8 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
 private class StreamDiffCallback : DiffUtil.ItemCallback<StreamItemList>() {
 
     override fun areItemsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
-        return (oldItem as? StreamItemList.StreamItem)?.streamId == (newItem as? StreamItemList.StreamItem)?.streamId
-                || (oldItem as? StreamItemList.TopicItem)?.topicId == (newItem as? StreamItemList.TopicItem)?.topicId
+        return (oldItem as? StreamItemList.StreamItem)?.id == (newItem as? StreamItemList.StreamItem)?.id
+                || (oldItem as? StreamItemList.TopicItem)?.id == (newItem as? StreamItemList.TopicItem)?.id
     }
 
     override fun areContentsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {

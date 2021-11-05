@@ -2,13 +2,13 @@ package com.example.tfs.ui.streams.adapter
 
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
-import com.example.tfs.domain.StreamItemList
+import com.example.tfs.domain.streams.StreamItemList
 
-class TopicItemViewHolderBinder (private val onClickItem: (StreamItemList) -> Unit) {
+class TopicItemBinder (private val onClickItem: (StreamItemList) -> Unit) {
 
     fun bind(topicItemViewHolder: TopicItemViewHolder, item: StreamItemList.TopicItem) {
 
-        topicItemViewHolder.setTopicName(item.topicName)
+        topicItemViewHolder.setTopicName(item.name)
 
         topicItemViewHolder.setTopicStat(item.messageStat)
 

@@ -4,7 +4,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
+import com.example.tfs.ui.topic.customview.addReaction
 
 class OwnerPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -15,5 +17,7 @@ class OwnerPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         textMessage.text = message
     }
 
-    fun getEmojilayout(): EmojisLayout = emojiGroup
+    fun createPostReaction(reaction: List<Reaction>) {
+        emojiGroup.addReaction(reaction, true)
+    }
 }

@@ -56,6 +56,7 @@ class PlusView @JvmOverloads constructor(
             centerPoint.y,
             linePaint
         )
+
         canvas.drawLine(
             centerPoint.x,
             centerPoint.y - LINE_LENGHT,
@@ -67,6 +68,7 @@ class PlusView @JvmOverloads constructor(
     }
 
     companion object {
+
         private val LINE_LENGHT = 7.dpToPixels().toFloat()
         private val LINE_WIDTH = 2.dpToPixels().toFloat()
         private val VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
