@@ -8,11 +8,15 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.provider.ContactsContract
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
 import com.google.android.material.imageview.ShapeableImageView
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,6 +48,19 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
 
     canvas.drawText(userInitials, size / 2f, size / 2f - offset, paint)
     setImageBitmap(bitmap)
+}
+
+fun View.hideSoftKeyboard() {
+    try {
+        val im: InputMethodManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        im.hideSoftInputFromWindow(windowToken, 0)
+    } catch (ignored: RuntimeException) {
+    }
+    if (this is EditText) {
+        text.clear()
+    }
+    clearFocus()
 }
 
 fun TextView.setUserState(userState: Int) {

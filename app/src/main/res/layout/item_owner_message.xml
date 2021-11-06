@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="end"
     android:layout_marginVertical="16dp"
     android:paddingHorizontal="12dp">
 
@@ -19,7 +20,7 @@
         android:textSize="@dimen/info_text_size"
         android:paddingHorizontal="16dp"
         android:paddingVertical="10dp"
-        tools:text="Sdsahjjdsahsa jdhjasdhkjsa  sdsdsdsdsd" />
+        tools:text="Sdsa" />
 
     <com.example.tfs.ui.topic.customview.EmojisLayout
         android:id="@+id/lEmojis"

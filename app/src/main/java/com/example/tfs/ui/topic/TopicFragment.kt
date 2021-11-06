@@ -1,19 +1,17 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.view.WindowManager
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
-import com.example.tfs.ui.main.MainActivity
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.TestMockDataGenerator
+import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
 
@@ -26,13 +24,14 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private val streamId by lazy {
         requireArguments().getInt(STREAM_KEY, -1)
     }
+
     private val viewBinding by viewBinding(FragmentTopicBinding::bind)
+
     private lateinit var topicListAdapter: TopicViewAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        onChangeMessage()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +53,10 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         }
 
         with(viewBinding) {
-            tvTopic.text = root.context.getString(R.string.topic_name_template, requireArguments().getString(TOPIC_NAME, "Unknown"))
+            tvTopic.text = root.context.getString(
+                R.string.topic_name_template,
+                requireArguments().getString(TOPIC_NAME, "Unknown")
+            )
             tvTopicTitle.text = requireArguments().getString(STREAM_NAME, "Unknown")
 
             topicListAdapter = TopicViewAdapter(
@@ -74,14 +76,23 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
                     )
                     topicListAdapter.submitList(newTopic)
                     rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
-                    //TODO("HIDE KEYBOARD")
-                    etMessage.text.clear()
                     btnSendPost.setImageResource(R.drawable.ic_text_plus)
                 }
+                requireActivity().currentFocus?.apply { hideSoftKeyboard() }
             }
 
             btnTopicNavBack.setOnClickListener {
                 requireActivity().supportFragmentManager.popBackStack()
+            }
+
+            etMessage.doAfterTextChanged {
+                if (etMessage.text.isNotBlank()) {
+                    btnSendPost.setImageResource(R.drawable.ic_send_arrow)
+
+                }
+                if (etMessage.text.isBlank()) {
+                    btnSendPost.setImageResource(R.drawable.ic_text_plus)
+                }
             }
         }
     }
@@ -93,31 +104,6 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private fun updateReaction(messageId: Int, emojiCode: Int) {
         val newTopic = TestMockDataGenerator.updateReaction(streamId, topicId, messageId, emojiCode)
         topicListAdapter.submitList(newTopic)
-    }
-
-    private fun onChangeMessage() {
-        with(viewBinding) {
-            etMessage.addTextChangedListener(object : TextWatcher {
-                var changeImage = false
-                override fun afterTextChanged(p0: Editable?) {
-                    if (etMessage.text.isNotBlank() && !changeImage) {
-                        btnSendPost.setImageResource(R.drawable.ic_send_arrow)
-                        changeImage = true
-                    }
-                    if (etMessage.text.isBlank() && changeImage) {
-                        btnSendPost.setImageResource(R.drawable.ic_text_plus)
-                        changeImage = false
-                    }
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                }
-            })
-        }
     }
 
     companion object {
