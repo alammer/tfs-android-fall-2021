@@ -6,13 +6,13 @@ import com.example.tfs.domain.topic.Reaction
 data class RemoteStream(
     val id: Int,
     val name: String,
-    val description: String?,
+    val description: String? = null,
     val isPinToTop: Boolean = false,
     val role: Int = 20,
     val subscribers: List<Int> = emptyList(),
     val isPushNotification: Boolean = false,
-    val color: String?,
-    val emailAddress: String?,
+    val color: String? = null,
+    val emailAddress: String? = null,
     val isMute: Boolean = false,
     val streamTraffic: Int = 0,
     val streamPostPolicy: Int = 1,
@@ -31,7 +31,7 @@ data class Post(
     val senderId: Int,
     val senderName: String,
     var reaction: List<Reaction> = emptyList(),
-    val message: String,
+    val content: String,
     val avatar: String? = null,
     val timeStamp: Long,
     val type: String? = null,
@@ -44,7 +44,7 @@ fun RemoteStream.toDomainStream() =
     StreamItemList.StreamItem(id, name)
 
 fun Post.toDomainOwnerPost() =
-    TopicItem.OwnerPostItem(id  = id, reaction = reaction, message = message, timeStamp = timeStamp)
+    TopicItem.OwnerPostItem(id  = id, reaction = reaction, message = content, timeStamp = timeStamp)
 
 fun Post.toDomainUserPost() =
-    TopicItem.UserPostItem(id, userName = senderName, userId = senderId, reaction = reaction, message =  message, avatar = avatar, timeStamp = timeStamp)
+    TopicItem.UserPostItem(id, userName = senderName, userId = senderId, reaction = reaction, message =  content, avatar = avatar, timeStamp = timeStamp)

@@ -4,5 +4,5 @@ data class Reaction(
     val emojiCode: String,
     val emojiName: String,
     val owner: Int,
-    val count: Int,
 )
+
