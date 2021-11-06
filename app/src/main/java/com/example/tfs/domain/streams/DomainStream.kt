@@ -12,7 +12,6 @@ sealed class StreamItemList {
     data class TopicItem(
         val id: Int,
         val name: String,
-        val parentStreamId: Int,
         val parentStreamName: String,
         val messageStat: Int
     ) : StreamItemList()

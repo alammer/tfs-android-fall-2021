@@ -10,7 +10,7 @@ sealed class TopicItem {
         val userName: String,
         val reaction: List<Reaction> = emptyList(),
         val message: String,
-        val avatar: Int? = null,
+        val avatar: String? = null,
         val timeStamp: Long,
     ) : TopicItem()
 
