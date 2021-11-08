@@ -80,17 +80,20 @@ object StreamRepositoryImpl {
         expandedStreams: List<String>
     ): List<StreamItemList> {
         val domainStreamList = mutableListOf<StreamItemList>()
-        val streamList = if (subscribed) {
-            remoteStreamList.filter { mockSubcribedList.contains(it.name) }
-                .map { it.toDomainStream() }
-        } else {
-            remoteStreamList.map { it.toDomainStream() }
-        }
 
-        streamList.forEach {
-            domainStreamList.add(it)
-            if (it.name in expandedStreams) {
-                domainStreamList.addAll(getStreamRelatedTopicList(it.name))
+        val currentList = if (subscribed) remoteStreamList.filter { it.name in mockSubcribedList } else remoteStreamList
+
+        currentList.forEach { remoteStream ->
+            if (remoteStream.name in expandedStreams) {
+                val relatedTopics = getStreamRelatedTopicList(remoteStream.name)
+                if (relatedTopics.isNotEmpty()) {
+                    domainStreamList.add(remoteStream.toDomainStream(true))
+                    domainStreamList.addAll(relatedTopics)
+                } else {
+                    domainStreamList.add(remoteStream.toDomainStream())
+                }
+            } else {
+                domainStreamList.add(remoteStream.toDomainStream())
             }
         }
 

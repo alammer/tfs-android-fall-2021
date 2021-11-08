@@ -108,6 +108,7 @@ class EmojisLayout @JvmOverloads constructor(
 }
 
 fun EmojisLayout.addReaction(reaction: List<Reaction>, isOwner: Boolean = false) {
+    removeAllViews()
     val childLayoutParams = ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT,
         EmojisLayout.CHILD_HEIGHT

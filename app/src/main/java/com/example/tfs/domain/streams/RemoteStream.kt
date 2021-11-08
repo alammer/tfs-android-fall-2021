@@ -45,8 +45,8 @@ fun RemoteTopic.toDomainTopic() =
         messageStat = topic_stat
     )
 
-fun RemoteStream.toDomainStream() =
-    StreamItemList.StreamItem(id, name)
+fun RemoteStream.toDomainStream(isExpanded: Boolean = false) =
+    StreamItemList.StreamItem(id, name, expanded = isExpanded)
 
 fun Post.toDomainOwnerPost() =
     TopicItem.OwnerPostItem(id = id, reaction = reaction, message = content, timeStamp = timeStamp)

@@ -1,6 +1,7 @@
 package com.example.tfs.ui.streams
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -25,11 +26,11 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        streamViewModel.showSubscribed(requireArguments().getBoolean(SUBSCRIBED_KEY, true))
-
         streamViewModel.streamList.observe(viewLifecycleOwner, {
             streamViewAdapter.submitList(it)
         })
+
+        streamViewModel.showSubscribed(requireArguments().getBoolean(SUBSCRIBED_KEY, true))
     }
 
     private fun initViews() {
@@ -37,9 +38,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             when (item) {
                 is StreamItemList.StreamItem -> clickStreamView(item.name)
                 is StreamItemList.TopicItem -> moveToTopicFragment(
-                    item.id,
+                    item.name,
                     item.parentStreamName,
-                    item.name
                 )
             }
         }
@@ -55,14 +55,13 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     }
 
     private fun moveToTopicFragment(
-        topicId: Int,
         topicName: String,
         streamName: String,
     ) {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_container,
-                TopicFragment.newInstance(topicId, topicName, streamName)
+                TopicFragment.newInstance(topicName, streamName)
             )
             .addToBackStack(null)
             .commitAllowingStateLoss()

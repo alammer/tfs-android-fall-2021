@@ -10,7 +10,7 @@ import com.example.tfs.domain.topic.TopicItem
 
 class TopicViewAdapter(
     onChangeReactionClick: (messageId: Int, emojiCode: Int) -> Unit,
-    onAddReactionClick: (messageId: Int) -> Unit
+    onAddReactionClick: (messageId: Int) -> Unit,
 ) : ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private val userPostItemBinder =
@@ -51,7 +51,6 @@ class TopicViewAdapter(
             is DateViewHolder -> {
                 val item = getItem(position) as TopicItem.LocalDateItem
                 holder.setDate(item.postDate)
-
             }
             else -> throw IllegalStateException("Unknown viewHolder")
         }
@@ -60,13 +59,16 @@ class TopicViewAdapter(
 
 private class MessageDiffCallback : DiffUtil.ItemCallback<TopicItem>() {
 
-    override fun areItemsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
-        return (oldItem as? TopicItem.LocalDateItem)?.postDate == (newItem as? TopicItem.LocalDateItem)?.postDate
-                || (oldItem as? TopicItem.UserPostItem)?.timeStamp == (newItem as? TopicItem.UserPostItem)?.timeStamp
+    override fun areItemsTheSame(oldItem: TopicItem, newItem: TopicItem) = when (oldItem) {
+        is TopicItem.LocalDateItem -> oldItem.postDate == (newItem as? TopicItem.LocalDateItem)?.postDate
+        is TopicItem.UserPostItem -> oldItem.timeStamp == (newItem as? TopicItem.UserPostItem)?.timeStamp
+        is TopicItem.OwnerPostItem -> oldItem.timeStamp == (newItem as? TopicItem.OwnerPostItem)?.timeStamp
     }
 
-    override fun areContentsTheSame(oldItem: TopicItem, newItem: TopicItem): Boolean {
-        return oldItem is TopicItem.LocalDateItem == newItem is TopicItem.LocalDateItem
-                || (oldItem as? TopicItem.UserPostItem) == (newItem as? TopicItem.UserPostItem)
+
+    override fun areContentsTheSame(oldItem: TopicItem, newItem: TopicItem) = when (oldItem) {
+        is TopicItem.LocalDateItem -> oldItem == (newItem as? TopicItem.LocalDateItem)
+        is TopicItem.UserPostItem -> oldItem == (newItem as? TopicItem.UserPostItem)
+        is TopicItem.OwnerPostItem -> oldItem == (newItem as? TopicItem.OwnerPostItem)
     }
 }

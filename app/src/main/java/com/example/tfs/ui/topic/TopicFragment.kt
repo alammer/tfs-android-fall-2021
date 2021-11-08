@@ -19,7 +19,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private val topicViewModel: TopicViewModel by viewModels()
 
     private val topicName by lazy {
-        requireArguments().getString(TOPIC_KEY, "")
+        requireArguments().getString(TOPIC_NAME, "")
     }
 
     private val streamName by lazy {
@@ -100,18 +100,15 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
 
     companion object {
 
-        private const val TOPIC_KEY = "topic_id"
         private const val TOPIC_NAME = "topic_name"
         private const val STREAM_NAME = "stream_name"
 
         fun newInstance(
-            topicId: Int,
+            topicName: String,
             streamName: String,
-            topicName: String
         ): TopicFragment {
             return TopicFragment().apply {
                 arguments = bundleOf(
-                    TOPIC_KEY to topicId,
                     TOPIC_NAME to topicName,
                     STREAM_NAME to streamName,
                 )

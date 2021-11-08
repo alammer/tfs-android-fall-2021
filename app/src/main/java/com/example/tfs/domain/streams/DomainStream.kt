@@ -5,7 +5,7 @@ sealed class StreamItemList {
     data class StreamItem(
         val id: Int,
         val name: String,
-        val expanded: Boolean = false,
+        val expanded: Boolean,
     ) : StreamItemList()
 
     data class TopicItem(

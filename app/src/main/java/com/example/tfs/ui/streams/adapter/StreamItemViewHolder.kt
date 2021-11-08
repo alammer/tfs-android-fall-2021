@@ -1,5 +1,6 @@
 package com.example.tfs.ui.streams.adapter
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView

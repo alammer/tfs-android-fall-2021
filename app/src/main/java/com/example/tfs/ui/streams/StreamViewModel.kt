@@ -15,20 +15,14 @@ class StreamViewModel : ViewModel() {
     val streamList: LiveData<List<StreamItemList>?> get() = _streamList
     private val _streamList = MutableLiveData<List<StreamItemList>?>()
 
-    init {
-        _streamList.postValue(repository.getMockDomainStreamList(isSubscribed, expandedStreams))
-    }
-
     fun showSubscribed(showSubscribed: Boolean) {
-        if (showSubscribed != isSubscribed) {
-            isSubscribed = showSubscribed
-            _streamList.postValue(repository.getMockDomainStreamList(isSubscribed, expandedStreams))
-        }
+        isSubscribed = showSubscribed
+        _streamList.value = repository.getMockDomainStreamList(showSubscribed, expandedStreams)
     }
 
     fun changeStreamMode(streamName: String) {
         if (!expandedStreams.remove(streamName)) expandedStreams.add(streamName)
-        _streamList.postValue(repository.getMockDomainStreamList(isSubscribed, expandedStreams))
+        _streamList.value = repository.getMockDomainStreamList(isSubscribed, expandedStreams)
     }
 
 }

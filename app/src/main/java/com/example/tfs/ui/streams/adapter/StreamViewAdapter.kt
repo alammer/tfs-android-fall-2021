@@ -1,5 +1,6 @@
 package com.example.tfs.ui.streams.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -25,6 +26,7 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        Log.i("StreamViewAdapter", "Function called: onCreateViewHolder() $viewType")
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
@@ -35,7 +37,6 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
             }
         }
     }
-
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
@@ -49,19 +50,21 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
             }
             else -> throw IllegalStateException("Unknown viewHolder")
         }
-
     }
 }
 
 private class StreamDiffCallback : DiffUtil.ItemCallback<StreamItemList>() {
 
-    override fun areItemsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
-        return (oldItem as? StreamItemList.StreamItem)?.id == (newItem as? StreamItemList.StreamItem)?.id
-                || (oldItem as? StreamItemList.TopicItem)?.id == (newItem as? StreamItemList.TopicItem)?.id
-    }
+    override fun areItemsTheSame(oldItem: StreamItemList, newItem: StreamItemList) =
+        when (oldItem) {
+            is StreamItemList.StreamItem -> oldItem.name == (newItem as? StreamItemList.StreamItem)?.name
+            is StreamItemList.TopicItem -> oldItem.name == (newItem as? StreamItemList.TopicItem)?.name
+        }
 
-    override fun areContentsTheSame(oldItem: StreamItemList, newItem: StreamItemList): Boolean {
-        return (oldItem as? StreamItemList.StreamItem)?.expanded == (newItem as? StreamItemList.StreamItem)?.expanded
-                || (oldItem as? StreamItemList.TopicItem) == (newItem as? StreamItemList.TopicItem)
-    }
+
+    override fun areContentsTheSame(oldItem: StreamItemList, newItem: StreamItemList) =
+        when (oldItem) {
+            is StreamItemList.StreamItem -> oldItem == (newItem as? StreamItemList.StreamItem)
+            is StreamItemList.TopicItem -> oldItem == (newItem as? StreamItemList.TopicItem)
+        }
 }
