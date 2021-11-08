@@ -1,5 +1,6 @@
 package com.example.tfs.data
 
+import android.util.Log
 import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.domain.streams.*
 import com.example.tfs.domain.topic.Reaction
@@ -26,13 +27,12 @@ private val mockStreamList =
         "random"
     )
 
-class StreamRepositoryImpl {
-    var subscribed = true
+object StreamRepositoryImpl {
 
     private val contactNames = names.shuffled()
         .zip(surnames.shuffled()) { name, surname -> "$name $surname" }
 
-    private val contactList = getMockContacts()
+    val contactList = getMockContacts()
 
     private val mockSubcribedList =
         mockStreamList.shuffled().slice(0..(mockStreamList.indices).random())
@@ -59,7 +59,7 @@ class StreamRepositoryImpl {
     private fun getMockRemoteTopicList(): List<RemoteTopic> {
         val testTopic = mutableListOf<RemoteTopic>()
 
-        (1..(1..30).random()).forEach {
+        (0..(1..30).random()).forEach {
             testTopic.add(
                 RemoteTopic(
                     name = "topic-$it",
@@ -72,28 +72,36 @@ class StreamRepositoryImpl {
         return testTopic.toList()
     }
 
-    private fun getStreamRelatedTopicList(streamName: String) = remoteTopicList.filter { it.parentStreamName == streamName }
+    private fun getStreamRelatedTopicList(streamName: String) =
+        remoteTopicList.filter { it.parentStreamName == streamName }.map { it.toDomainTopic() }
 
-    //тут добавляем списки топиков к темам
-    fun getMockDomainStreamList(subscribed: Boolean = false, expandedStreams: List<String>): MutableList<StreamItemList> {
+    fun getMockDomainStreamList(
+        subscribed: Boolean = false,
+        expandedStreams: List<String>
+    ): List<StreamItemList> {
         val domainStreamList = mutableListOf<StreamItemList>()
         val streamList = if (subscribed) {
             remoteStreamList.filter { mockSubcribedList.contains(it.name) }
+                .map { it.toDomainStream() }
         } else {
-            remoteStreamList
+            remoteStreamList.map { it.toDomainStream() }
         }
-        if (subscribed) {
-            domainStreamList.addAll(remoteStreamList.filter { mockSubcribedList.contains(it.name) }
-                .map { it.toDomainStream() })
-        } else
-            domainStreamList.addAll(remoteStreamList.map { it.toDomainStream() })
-        return domainStreamList
+
+        streamList.forEach {
+            domainStreamList.add(it)
+            if (it.name in expandedStreams) {
+                domainStreamList.addAll(getStreamRelatedTopicList(it.name))
+            }
+        }
+
+        return domainStreamList.toList()
     }
 
 
-
     fun getMockDomainTopic(streamName: String, topicName: String): List<TopicItem> {
-        val topic = remoteTopicList.first { it.parentStreamName == streamName && it.name == topicName }
+        val topic =
+            remoteTopicList.firstOrNull { it.parentStreamName == streamName && it.name == topicName }
+                ?: return emptyList()
         val datedPostList = mutableListOf<TopicItem>()
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()

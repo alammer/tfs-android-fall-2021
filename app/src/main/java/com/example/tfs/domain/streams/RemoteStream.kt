@@ -1,7 +1,7 @@
 package com.example.tfs.domain.streams
 
-import com.example.tfs.domain.topic.TopicItem
 import com.example.tfs.domain.topic.Reaction
+import com.example.tfs.domain.topic.TopicItem
 
 data class RemoteStream(
     val id: Int,
@@ -38,13 +38,26 @@ data class Post(
 )
 
 fun RemoteTopic.toDomainTopic() =
-    StreamItemList.TopicItem(id = 0, name = name, parentStreamName = parentStreamName, messageStat = topic_stat)
+    StreamItemList.TopicItem(
+        id = 0,
+        name = name,
+        parentStreamName = parentStreamName,
+        messageStat = topic_stat
+    )
 
 fun RemoteStream.toDomainStream() =
     StreamItemList.StreamItem(id, name)
 
 fun Post.toDomainOwnerPost() =
-    TopicItem.OwnerPostItem(id  = id, reaction = reaction, message = content, timeStamp = timeStamp)
+    TopicItem.OwnerPostItem(id = id, reaction = reaction, message = content, timeStamp = timeStamp)
 
 fun Post.toDomainUserPost() =
-    TopicItem.UserPostItem(id, userName = senderName, userId = senderId, reaction = reaction, message =  content, avatar = avatar, timeStamp = timeStamp)
+    TopicItem.UserPostItem(
+        id,
+        userName = senderName,
+        userId = senderId,
+        reaction = reaction,
+        message = content,
+        avatar = avatar,
+        timeStamp = timeStamp
+    )

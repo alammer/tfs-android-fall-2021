@@ -2,6 +2,7 @@ package com.example.tfs.ui.topic.adapter
 
 import android.view.View
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.domain.topic.Reaction
@@ -27,15 +28,15 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         textMessage.text = message
     }
 
-    fun setMessageClickListener (item: Int, postClick: (Int) -> Unit) {
+    fun setMessageClickListener(item: Int, postClick: (Int) -> Unit) {
         textMessage.setOnLongClickListener {
             postClick(item)
             return@setOnLongClickListener true
         }
     }
 
-    fun setUserAvatarImage(imageUri: Int) {
-        userAvatar.setImageResource(imageUri)
+    fun setUserAvatarImage(userAvatarUrl: String) {
+        userAvatar.setImageURI(userAvatarUrl.toUri())
     }
 
     fun setUserInitilas(userName: String) {
@@ -46,7 +47,11 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         emojiGroup.addReaction(reaction)
     }
 
-    fun addReactionListeners(itemId: Int, onEmojiClick: (Int, Int) -> Unit, onAddReactionClick: (Int) -> Unit) {
+    fun addReactionListeners(
+        itemId: Int,
+        onEmojiClick: (Int, Int) -> Unit,
+        onAddReactionClick: (Int) -> Unit
+    ) {
         (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
             emojiGroup.getChildAt(emojiPosition).setOnClickListener {
                 onEmojiClick(itemId, it.tag as Int)

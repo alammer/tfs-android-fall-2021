@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import com.example.tfs.R
 import com.example.tfs.domain.topic.Reaction
-import com.example.tfs.util.OWNER_ID
 import com.example.tfs.util.dpToPixels
+import kotlin.random.Random
 
 
 class EmojisLayout @JvmOverloads constructor(
@@ -116,11 +116,11 @@ fun EmojisLayout.addReaction(reaction: List<Reaction>, isOwner: Boolean = false)
     reaction.forEach {
         val view = EmojiView(
             context,
-            emojiCode = it.emoji,
-            count = it.count,
-            isClicked = it.userList.contains(OWNER_ID)
+            emojiCode = it.emojiCode.toInt(),
+            count = 10,
+            isClicked = Random.nextBoolean()
         )
-        view.tag = it.emoji
+        view.tag = it.emojiCode
         view.layoutParams = childLayoutParams
         addView(view)
     }
