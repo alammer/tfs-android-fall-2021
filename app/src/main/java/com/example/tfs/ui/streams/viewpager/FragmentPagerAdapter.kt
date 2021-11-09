@@ -6,7 +6,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.tfs.ui.streams.StreamFragment
 
 class FragmentPagerAdapter(
-    fragmentActivity: FragmentActivity
+    fragmentActivity: FragmentActivity,
 ) : FragmentStateAdapter(fragmentActivity) {
 
     override fun createFragment(position: Int): Fragment {

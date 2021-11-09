@@ -12,6 +12,7 @@ import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
+import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
 
 class TopicFragment : Fragment(R.layout.fragment_topic) {
@@ -34,11 +35,27 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        topicViewModel.topicList.observe(viewLifecycleOwner, {
-            topicListAdapter.submitList(it)
-        })
+        topicViewModel.topicScreenState.observe(viewLifecycleOwner) {
+            processTopicScreenState(it)
+        }
 
-        topicViewModel.fetchTopic(streamName, topicName)
+        topicViewModel.fetchTopic(streamName to topicName)
+    }
+
+    private fun processTopicScreenState(it: TopicScreenState) {
+        when (it) {
+            is TopicScreenState.Result -> {
+                topicListAdapter.submitList(it.items) { viewBinding.rvTopic.scrollToPosition(0) }
+                //viewBinding.loadingProgress.isVisible = false
+            }
+            TopicScreenState.Loading -> {
+                // viewBinding.loadingProgress.isVisible = true
+            }
+            is TopicScreenState.Error -> {
+                context.toast(it.error.message)
+                //viewBinding.loadingProgress.isVisible = false
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +87,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
                     //TODO("add new post to current topic")
                     rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
                     btnSendPost.setImageResource(R.drawable.ic_text_plus)
+                    topicViewModel.fetchTopic(streamName to topicName)
                 }
                 requireActivity().currentFocus?.apply { hideSoftKeyboard() }
             }

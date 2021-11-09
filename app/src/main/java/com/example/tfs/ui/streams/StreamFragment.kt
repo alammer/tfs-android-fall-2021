@@ -11,14 +11,18 @@ import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.domain.streams.StreamItemList
 import com.example.tfs.ui.streams.adapter.StreamViewAdapter
+import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import com.example.tfs.ui.topic.TopicFragment
+import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
 
 class StreamFragment : Fragment(R.layout.fragment_stream) {
 
     private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 
-    private val streamViewModel: StreamViewModel by viewModels()
+    private val streamViewModel: StreamViewModel by viewModels(
+        ownerProducer = { requireActivity() }
+    )
 
     private lateinit var streamViewAdapter: StreamViewAdapter
 
@@ -26,11 +30,24 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        streamViewModel.streamList.observe(viewLifecycleOwner, {
-            streamViewAdapter.submitList(it)
-        })
+        streamViewModel.streamScreenState.observe(viewLifecycleOwner) { processStreamScreenState(it) }
+    }
 
-        streamViewModel.showSubscribed(requireArguments().getBoolean(SUBSCRIBED_KEY, true))
+    private fun processStreamScreenState(it: StreamScreenState?) {
+        when (it) {
+            is StreamScreenState.Result -> {
+                streamViewAdapter.submitList(it.items) { viewBinding.rvStreams.scrollToPosition(0) }
+                //viewBinding.loadingProgress.isVisible = false
+            }
+            StreamScreenState.Loading -> {
+                // viewBinding.loadingProgress.isVisible = true
+            }
+            is StreamScreenState.Error -> {
+                context.toast(it.error.message)
+                streamViewModel.retrySubscribe()
+                //viewBinding.loadingProgress.isVisible = false
+            }
+        }
     }
 
     private fun initViews() {
@@ -47,10 +64,12 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         with(viewBinding) {
             rvStreams.adapter = streamViewAdapter
             rvStreams.layoutManager = LinearLayoutManager(context)
+
         }
     }
 
     private fun clickStreamView(streamName: String) {
+        Log.i("StreamFragment", "Function called: clickStreamView()")
         streamViewModel.changeStreamMode(streamName)
     }
 

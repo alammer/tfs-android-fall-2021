@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
 import com.google.android.material.imageview.ShapeableImageView
-import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -73,8 +72,10 @@ fun TextView.setUserState(userState: Int) {
     }
 }
 
-fun Context?.toast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+fun Context?.toast(message: String?) {
+    message?.let {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }
 
 fun Int.dpToPixels() = (this * Resources.getSystem().displayMetrics.density).toInt()

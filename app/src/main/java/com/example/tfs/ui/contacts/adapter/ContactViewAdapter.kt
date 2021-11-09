@@ -29,7 +29,7 @@ class ContactViewAdapter(onContactClick: (Int) -> Unit) :
 private class ContactDiffCallback : DiffUtil.ItemCallback<Contact>() {
 
     override fun areItemsTheSame(oldItem: Contact, newItem: Contact) =
-        oldItem.id == newItem.id
+        oldItem.name == newItem.name
 
     override fun areContentsTheSame(oldItem: Contact, newItem: Contact) =
         oldItem == newItem

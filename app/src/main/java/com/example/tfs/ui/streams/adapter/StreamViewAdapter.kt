@@ -1,6 +1,5 @@
 package com.example.tfs.ui.streams.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -26,7 +25,6 @@ class StreamViewAdapter(onItemClicked: (StreamItemList) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        Log.i("StreamViewAdapter", "Function called: onCreateViewHolder() $viewType")
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {

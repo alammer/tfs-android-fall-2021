@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, fragment)
+            .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }

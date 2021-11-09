@@ -1,11 +1,13 @@
 package com.example.tfs.data
 
-import android.util.Log
 import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.domain.streams.*
 import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.domain.topic.TopicItem
 import com.example.tfs.util.*
+import io.reactivex.Observable
+import io.reactivex.internal.operators.observable.ObservableFromCallable
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 private val names = listOf("Ivan", "John", "Petr", "Max", "Mike", "Alex")
@@ -32,7 +34,7 @@ object StreamRepositoryImpl {
     private val contactNames = names.shuffled()
         .zip(surnames.shuffled()) { name, surname -> "$name $surname" }
 
-    val contactList = getMockContacts()
+    val contactList = getMockContacts("")
 
     private val mockSubcribedList =
         mockStreamList.shuffled().slice(0..(mockStreamList.indices).random())
@@ -40,6 +42,25 @@ object StreamRepositoryImpl {
     private val remoteStreamList = getMockRemoteStreams()
 
     private val remoteTopicList = getMockRemoteTopicList()
+
+    fun fetchStreams(
+        searchQuery: String,
+        isSubscribed: Boolean,
+        expandedStreams: List<String>,
+    ): Observable<List<StreamItemList>> =
+        ObservableFromCallable {
+            getMockDomainStreamList(searchQuery,
+                isSubscribed, expandedStreams)
+        }.delay(1000L, TimeUnit.MILLISECONDS)
+
+    fun fetchTopic(streamName: String, topicName: String): Observable<List<TopicItem>> =
+        ObservableFromCallable {
+            getMockDomainTopic(streamName, topicName)
+        }.delay(1000L, TimeUnit.MILLISECONDS)
+
+    fun getContacts(query: String): Observable<List<Contact>> = ObservableFromCallable {
+        getMockContacts(query)
+    }.delay(1000L, TimeUnit.MILLISECONDS)
 
     private fun getMockRemoteStreams(): List<RemoteStream> {
         val mockStream = mutableListOf<RemoteStream>()
@@ -73,17 +94,19 @@ object StreamRepositoryImpl {
     }
 
     private fun getStreamRelatedTopicList(streamName: String) =
-        remoteTopicList.filter { it.parentStreamName == streamName }.map { it.toDomainTopic() }
+        remoteTopicList/*.filter { it.parentStreamName == streamName }*/.map { it.toDomainTopic() }
 
-    fun getMockDomainStreamList(
+    private fun getMockDomainStreamList(
+        searchQuery: String,
         subscribed: Boolean = false,
-        expandedStreams: List<String>
+        expandedStreams: List<String>,
     ): List<StreamItemList> {
         val domainStreamList = mutableListOf<StreamItemList>()
 
-        val currentList = if (subscribed) remoteStreamList.filter { it.name in mockSubcribedList } else remoteStreamList
+        val currentList =
+            if (subscribed) remoteStreamList.filter { it.name in mockSubcribedList } else remoteStreamList
 
-        currentList.forEach { remoteStream ->
+        currentList.filter { it.name.contains(searchQuery) }.forEach { remoteStream ->
             if (remoteStream.name in expandedStreams) {
                 val relatedTopics = getStreamRelatedTopicList(remoteStream.name)
                 if (relatedTopics.isNotEmpty()) {
@@ -97,11 +120,14 @@ object StreamRepositoryImpl {
             }
         }
 
-        return domainStreamList.toList()
+        if (domainStreamList.size % (3..5).random() == 0) {
+            throw IllegalArgumentException("Wrong dataset size!")
+        } else {
+            return domainStreamList.toList()
+        }
     }
 
-
-    fun getMockDomainTopic(streamName: String, topicName: String): List<TopicItem> {
+    private fun getMockDomainTopic(streamName: String, topicName: String): List<TopicItem> {
         val topic =
             remoteTopicList.firstOrNull { it.parentStreamName == streamName && it.name == topicName }
                 ?: return emptyList()
@@ -128,6 +154,25 @@ object StreamRepositoryImpl {
         return datedPostList
     }
 
+    private fun getMockContacts(query: String): List<Contact> {
+        val contacts = mutableListOf<Contact>()
+
+        (5..(10..50).random()).forEach {
+            contacts.add(
+                Contact(
+                    it,
+                    contactNames.shuffled().first(),
+                    providers.shuffled().first().run { "mail$it$this" },
+                    it % 2,
+                    Random.nextBoolean(),
+                    null,
+                    null
+                )
+            )
+        }
+        return contacts.filter { it.name.contains(query) }.toList()
+    }
+
     private fun getMockPostList(): List<Post> {
         val testPost = mutableListOf<Post>()
         val startTime = System.currentTimeMillis() - 86400L * 7 * 1000
@@ -146,25 +191,6 @@ object StreamRepositoryImpl {
             )
         }
         return testPost.toList()
-    }
-
-    private fun getMockContacts(): List<Contact> {
-        val contacts = mutableListOf<Contact>()
-
-        (0..(0..50).random()).forEach {
-            contacts.add(
-                Contact(
-                    it,
-                    contactNames.shuffled().first(),
-                    providers.shuffled().first().run { "mail$it$this" },
-                    it % 2,
-                    Random.nextBoolean(),
-                    null,
-                    null
-                )
-            )
-        }
-        return contacts.toList()
     }
 
     private fun getMockReaction(): List<Reaction> {
