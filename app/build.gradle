@@ -1,11 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
 }
 
 android {
     compileSdk 31
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    def zulipApiKey = properties.getProperty("zulip_api_key", "")
+    def email = properties.getProperty("email", "")
+
 
     defaultConfig {
         applicationId "com.example.tfs"
@@ -14,13 +20,16 @@ android {
         versionCode 1
         versionName "1.0"
 
+        buildConfigField 'String', 'ZULIP_API_KEY', zulipApiKey
+        buildConfigField 'String', 'ZULIP_USER', email
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildFeatures {
         viewBinding true
     }
-
 
     buildTypes {
         release {
@@ -55,4 +64,17 @@ dependencies {
     //ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.4.0'
+
+    // http connection
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+
+    // http client
+    def okhttp_version = '5.0.0-alpha.2'
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    // json
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
 }

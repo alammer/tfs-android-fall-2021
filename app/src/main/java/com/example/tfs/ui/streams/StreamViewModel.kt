@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tfs.data.StreamRepositoryImpl
+import com.example.tfs.network.models.toDomainStream
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -62,6 +63,7 @@ internal class StreamViewModel : ViewModel() {
                     query.isSubscribed,
                     query.expandedStream)
             }
+            .map { it.toDomainStream() }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { _streamScreenState.value = StreamScreenState.Result(it) },

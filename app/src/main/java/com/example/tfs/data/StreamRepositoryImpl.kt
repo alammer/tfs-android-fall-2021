@@ -4,8 +4,13 @@ import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.domain.streams.*
 import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.domain.topic.TopicItem
+import com.example.tfs.network.ApiService
+import com.example.tfs.network.models.StreamResponse
+import com.example.tfs.network.models.TopicResponse
+import com.example.tfs.network.models.toDomainStream
 import com.example.tfs.util.*
 import io.reactivex.Observable
+import io.reactivex.Observable.fromCallable
 import io.reactivex.internal.operators.observable.ObservableFromCallable
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -31,6 +36,8 @@ private val mockStreamList =
 
 object StreamRepositoryImpl {
 
+
+
     private val contactNames = names.shuffled()
         .zip(surnames.shuffled()) { name, surname -> "$name $surname" }
 
@@ -47,16 +54,10 @@ object StreamRepositoryImpl {
         searchQuery: String,
         isSubscribed: Boolean,
         expandedStreams: List<String>,
-    ): Observable<List<StreamItemList>> =
-        ObservableFromCallable {
-            getMockDomainStreamList(searchQuery,
-                isSubscribed, expandedStreams)
-        }.delay(1000L, TimeUnit.MILLISECONDS)
+    ): Observable<StreamResponse> = ApiService.create().getStreams()
 
-    fun fetchTopic(streamName: String, topicName: String): Observable<List<TopicItem>> =
-        ObservableFromCallable {
-            getMockDomainTopic(streamName, topicName)
-        }.delay(1000L, TimeUnit.MILLISECONDS)
+
+    fun fetchTopic(streamId: Int): Observable <TopicResponse> = ApiService.create().getTopics(streamId)
 
     fun getContacts(query: String): Observable<List<Contact>> = ObservableFromCallable {
         getMockContacts(query)

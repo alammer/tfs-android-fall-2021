@@ -69,7 +69,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     }
 
     private fun clickStreamView(streamName: String) {
-        Log.i("StreamFragment", "Function called: clickStreamView()")
         streamViewModel.changeStreamMode(streamName)
     }
 
