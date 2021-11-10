@@ -49,5 +49,6 @@ private fun OkHttpClient.Builder.addHttpLoggingInterceptor() = apply {
 fun Retrofit.Builder.addJsonConverter() = apply {
     val json = Json { ignoreUnknownKeys = true }
     val contentType = APPLICATION_JSON_TYPE.toMediaType()
+
     this.addConverterFactory(json.asConverterFactory(contentType))
 }

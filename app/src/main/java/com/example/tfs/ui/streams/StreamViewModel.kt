@@ -1,10 +1,10 @@
 package com.example.tfs.ui.streams
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.data.StreamRepositoryImpl
-import com.example.tfs.network.models.toDomainStream
+import com.example.tfs.data.RepositoryImpl
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 internal class StreamViewModel : ViewModel() {
 
-    private val repository = StreamRepositoryImpl
+    private val repository = RepositoryImpl()
     private val expandedStreams: MutableList<String> = mutableListOf()
     private var isSubscribed = true
     private var currentSearchQuery = ""
@@ -35,21 +35,21 @@ internal class StreamViewModel : ViewModel() {
         isSubscribed = subscribed
         searchStream.onNext(QueryKey(currentSearchQuery,
             isSubscribed,
-            expandedStreams.toList()))//.copy(queryString = currentSearchQuery, isSubscribed = isSubscribed, expandedStream = expandedStreams))
+            expandedStreams.toList()))
     }
 
     fun changeStreamMode(streamName: String) {
         if (!expandedStreams.remove(streamName)) expandedStreams.add(streamName)
         searchStream.onNext(QueryKey(currentSearchQuery,
             isSubscribed,
-            expandedStreams.toList()))//QueryKey().copy(queryString = currentSearchQuery, isSubscribed = isSubscribed, expandedStream = expandedStreams))
+            expandedStreams.toList()))
     }
 
     fun fetchStreams(searchQuery: String) {
         currentSearchQuery = searchQuery
         searchStream.onNext(QueryKey(currentSearchQuery,
             isSubscribed,
-            expandedStreams.toList()))//QueryKey().copy(queryString = currentSearchQuery, isSubscribed = isSubscribed, expandedStream = expandedStreams))
+            expandedStreams.toList()))
     }
 
     private fun subscribeToSearchStreams() {
@@ -58,12 +58,7 @@ internal class StreamViewModel : ViewModel() {
             .distinctUntilChanged()
             .doOnNext { _streamScreenState.postValue(StreamScreenState.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
-            .switchMap { query ->
-                repository.fetchStreams(query.queryString,
-                    query.isSubscribed,
-                    query.expandedStream)
-            }
-            .map { it.toDomainStream() }
+            .switchMap { query -> repository.fetchSubscribed(query.queryString, query.isSubscribed, query.expandedStream) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { _streamScreenState.value = StreamScreenState.Result(it) },
@@ -97,6 +92,4 @@ internal class StreamViewModel : ViewModel() {
 
         const val INITIAL_QUERY: String = ""
     }
-
-
 }

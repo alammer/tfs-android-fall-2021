@@ -9,9 +9,8 @@ sealed class StreamItemList {
     ) : StreamItemList()
 
     data class TopicItem(
-        val id: Int,
         val name: String,
         val parentStreamName: String,
-        val messageStat: Int
+        val max_id: Int
     ) : StreamItemList()
 }
