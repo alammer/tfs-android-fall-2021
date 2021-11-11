@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
-import com.example.tfs.util.dpToPixels
+import com.example.tfs.util.toPx
 
 class PlusView @JvmOverloads constructor(
     context: Context,
@@ -69,10 +69,10 @@ class PlusView @JvmOverloads constructor(
 
     companion object {
 
-        private val LINE_LENGHT = 7.dpToPixels().toFloat()
-        private val LINE_WIDTH = 2.dpToPixels().toFloat()
-        private val VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
-        private val DEFAULT_WIDTH = 45.dpToPixels()
-        private val DEFAULT_HEGHT = 30.dpToPixels()
+        private val LINE_LENGHT = 7.toPx.toFloat()
+        private val LINE_WIDTH = 2.toPx.toFloat()
+        private val VIEW_BG_RECT_RADIUS = 10.toPx.toFloat()
+        private val DEFAULT_WIDTH = 45.toPx
+        private val DEFAULT_HEGHT = 30.toPx
     }
 }

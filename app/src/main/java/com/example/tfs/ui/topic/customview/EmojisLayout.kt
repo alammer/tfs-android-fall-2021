@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import com.example.tfs.R
 import com.example.tfs.domain.topic.Reaction
-import com.example.tfs.util.dpToPixels
+import com.example.tfs.util.toPx
 import kotlin.random.Random
 
 
@@ -101,9 +101,9 @@ class EmojisLayout @JvmOverloads constructor(
 
     companion object {
 
-        private val DIVIDER_HEIGHT = 8.dpToPixels()
-        private val DIVIDER_WIDTH = 10.dpToPixels()
-        val CHILD_HEIGHT = 30.dpToPixels()
+        private val DIVIDER_HEIGHT = 8.toPx
+        private val DIVIDER_WIDTH = 10.toPx
+        val CHILD_HEIGHT = 30.toPx
     }
 }
 

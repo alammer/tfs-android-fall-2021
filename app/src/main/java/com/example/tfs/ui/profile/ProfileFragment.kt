@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentProfileBinding
-import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.setUserState
+import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -34,7 +34,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         imgProfileUser.setImageURI(userImage.toUri())
                     } ?: imgProfileUser.drawUserInitials(
                         name,
-                        PROFILE_USER_IMAGE_WIDTH.dpToPixels()
+                        PROFILE_USER_IMAGE_WIDTH.toPx
                     )  //быдловатый вариант с размером
                 }
             }

@@ -6,6 +6,7 @@ import com.example.tfs.network.models.TopicResponse
 import com.example.tfs.network.utils.NetworkConstants.BASE_URL
 import com.example.tfs.network.utils.addJsonConverter
 import com.example.tfs.network.utils.setClient
+import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -16,13 +17,13 @@ import retrofit2.http.Path
 interface ApiService {
 
     @GET("streams")
-    fun getStreams(): Single<RawStreamResponse>
+    fun getRawStreams(): Single<RawStreamResponse>
 
     @GET("users/me/subscriptions")
     fun getSubscribedStreams(): Single<SubscribedStreamResponse>
 
     @GET("users/me/{stream_id}/topics")
-    fun getTopics(@Path("stream_id") stream_id: Int): Single<TopicResponse>
+    fun getTopics(@Path("stream_id") stream_id: Int): Observable<TopicResponse>
 
     companion object {
 

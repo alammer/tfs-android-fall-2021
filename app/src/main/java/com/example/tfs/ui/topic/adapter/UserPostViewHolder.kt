@@ -8,8 +8,8 @@ import com.example.tfs.R
 import com.example.tfs.domain.topic.Reaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.ui.topic.customview.addReaction
-import com.example.tfs.util.dpToPixels
 import com.example.tfs.util.drawUserInitials
+import com.example.tfs.util.toPx
 import com.google.android.material.imageview.ShapeableImageView
 
 
@@ -40,7 +40,7 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setUserInitilas(userName: String) {
-        userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.dpToPixels())
+        userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.toPx)
     }
 
     fun createPostReaction(reaction: List<Reaction>) {

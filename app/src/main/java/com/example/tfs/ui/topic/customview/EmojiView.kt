@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
-import com.example.tfs.util.dpToPixels
-import com.example.tfs.util.spToPixels
+import com.example.tfs.util.toPx
+import com.example.tfs.util.spToPx
 import kotlin.math.max
 
 class EmojiView @JvmOverloads constructor(
@@ -38,7 +38,7 @@ class EmojiView @JvmOverloads constructor(
         } else {
             checkTextColor
         }
-        textSize = 14.spToPixels()
+        textSize = 14.spToPx
         textAlign = Paint.Align.CENTER
     }
 
@@ -108,10 +108,10 @@ class EmojiView @JvmOverloads constructor(
 
     companion object {
 
-        private val VIEW_BG_RECT_RADIUS = 10.dpToPixels().toFloat()
-        private val HORIZONTAL_PADDING = 8.dpToPixels()
-        private val VERTICAL_PADDING = 4.dpToPixels()
-        private val DEFAULT_WIDTH = 45.dpToPixels()
-        private val DEFAULT_HEGHT = 30.dpToPixels()
+        private val VIEW_BG_RECT_RADIUS = 10.toPx.toFloat()
+        private val HORIZONTAL_PADDING = 8.toPx
+        private val VERTICAL_PADDING = 4.toPx
+        private val DEFAULT_WIDTH = 45.toPx
+        private val DEFAULT_HEGHT = 30.toPx
     }
 }

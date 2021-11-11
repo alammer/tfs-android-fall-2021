@@ -1,7 +1,6 @@
 package com.example.tfs.ui.streams
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -53,7 +52,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     private fun initViews() {
         streamViewAdapter = StreamViewAdapter { item: StreamItemList ->
             when (item) {
-                is StreamItemList.StreamItem -> clickStreamView(item.name)
+                is StreamItemList.StreamItem -> clickStreamView(item.id)
                 is StreamItemList.TopicItem -> moveToTopicFragment(
                     item.name,
                     item.parentStreamName,
@@ -68,8 +67,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         }
     }
 
-    private fun clickStreamView(streamName: String) {
-        streamViewModel.changeStreamMode(streamName)
+    private fun clickStreamView(streamId: Int) {
+        streamViewModel.changeStreamMode(streamId)
     }
 
     private fun moveToTopicFragment(

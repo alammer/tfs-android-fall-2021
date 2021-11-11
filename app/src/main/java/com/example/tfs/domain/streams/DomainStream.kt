@@ -5,7 +5,8 @@ sealed class StreamItemList {
     data class StreamItem(
         val id: Int,
         val name: String,
-        val expanded: Boolean,
+        val topics: List<TopicItem> = emptyList(),
+        val expanded: Boolean = false,
     ) : StreamItemList()
 
     data class TopicItem(

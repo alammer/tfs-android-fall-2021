@@ -1,10 +1,10 @@
 package com.example.tfs.ui.streams
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tfs.data.RepositoryImpl
+import com.example.tfs.ui.streams.adapter.StreamToItemMapper
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,7 +17,8 @@ import java.util.concurrent.TimeUnit
 internal class StreamViewModel : ViewModel() {
 
     private val repository = RepositoryImpl()
-    private val expandedStreams: MutableList<String> = mutableListOf()
+    private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
+    private val expandedStreams: MutableList<Int> = mutableListOf()
     private var isSubscribed = true
     private var currentSearchQuery = ""
 
@@ -38,8 +39,8 @@ internal class StreamViewModel : ViewModel() {
             expandedStreams.toList()))
     }
 
-    fun changeStreamMode(streamName: String) {
-        if (!expandedStreams.remove(streamName)) expandedStreams.add(streamName)
+    fun changeStreamMode(streamId: Int) {
+        if (!expandedStreams.remove(streamId)) expandedStreams.add(streamId)
         searchStream.onNext(QueryKey(currentSearchQuery,
             isSubscribed,
             expandedStreams.toList()))
@@ -58,7 +59,12 @@ internal class StreamViewModel : ViewModel() {
             .distinctUntilChanged()
             .doOnNext { _streamScreenState.postValue(StreamScreenState.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
-            .switchMap { query -> repository.fetchSubscribed(query.queryString, query.isSubscribed, query.expandedStream) }
+            .switchMap { query ->
+                repository.fetchStreams(query.queryString,
+                    query.isSubscribed,
+                    query.expandedStream)
+            }
+            .map(streamToItemMapper)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { _streamScreenState.value = StreamScreenState.Result(it) },
@@ -85,7 +91,7 @@ internal class StreamViewModel : ViewModel() {
     private data class QueryKey(
         val queryString: String = INITIAL_QUERY,
         val isSubscribed: Boolean = true,
-        val expandedStream: List<String>,
+        val expandedStream: List<Int>,
     )
 
     companion object {
