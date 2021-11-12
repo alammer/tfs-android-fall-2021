@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.topic.TopicItem
+import com.example.tfs.domain.topic.PostItem
 
 class TopicViewAdapter(
     onChangeReactionClick: (messageId: Int, emojiCode: Int) -> Unit,
     onAddReactionClick: (messageId: Int) -> Unit,
-) : ListAdapter<TopicItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+) : ListAdapter<PostItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private val userPostItemBinder =
         UserPostItemBinder(onChangeReactionClick, onAddReactionClick)
@@ -19,9 +19,9 @@ class TopicViewAdapter(
         OwnerPostItemBinder()
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is TopicItem.UserPostItem -> R.layout.item_user_message
-        is TopicItem.OwnerPostItem -> R.layout.item_owner_message
-        is TopicItem.LocalDateItem -> R.layout.item_topic_rv_date
+        is PostItem.UserPostItem -> R.layout.item_user_message
+        is PostItem.OwnerPostItem -> R.layout.item_owner_message
+        is PostItem.LocalDateItem -> R.layout.item_topic_rv_date
         else -> throw IllegalStateException("Unknown view")
     }
 
@@ -39,17 +39,17 @@ class TopicViewAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is UserPostViewHolder -> {
-                val item = getItem(position) as TopicItem.UserPostItem
+                val item = getItem(position) as PostItem.UserPostItem
                 userPostItemBinder.bind(holder, item)
             }
 
             is OwnerPostViewHolder -> {
-                val item = getItem(position) as TopicItem.OwnerPostItem
+                val item = getItem(position) as PostItem.OwnerPostItem
                 ownerPostItemBinder.bind(holder, item)
             }
 
             is DateViewHolder -> {
-                val item = getItem(position) as TopicItem.LocalDateItem
+                val item = getItem(position) as PostItem.LocalDateItem
                 holder.setDate(item.postDate)
             }
             else -> throw IllegalStateException("Unknown viewHolder")
@@ -57,18 +57,18 @@ class TopicViewAdapter(
     }
 }
 
-private class MessageDiffCallback : DiffUtil.ItemCallback<TopicItem>() {
+private class MessageDiffCallback : DiffUtil.ItemCallback<PostItem>() {
 
-    override fun areItemsTheSame(oldItem: TopicItem, newItem: TopicItem) = when (oldItem) {
-        is TopicItem.LocalDateItem -> oldItem.postDate == (newItem as? TopicItem.LocalDateItem)?.postDate
-        is TopicItem.UserPostItem -> oldItem.timeStamp == (newItem as? TopicItem.UserPostItem)?.timeStamp
-        is TopicItem.OwnerPostItem -> oldItem.timeStamp == (newItem as? TopicItem.OwnerPostItem)?.timeStamp
+    override fun areItemsTheSame(oldItem: PostItem, newItem: PostItem) = when (oldItem) {
+        is PostItem.LocalDateItem -> oldItem.postDate == (newItem as? PostItem.LocalDateItem)?.postDate
+        is PostItem.UserPostItem -> oldItem.timeStamp == (newItem as? PostItem.UserPostItem)?.timeStamp
+        is PostItem.OwnerPostItem -> oldItem.timeStamp == (newItem as? PostItem.OwnerPostItem)?.timeStamp
     }
 
 
-    override fun areContentsTheSame(oldItem: TopicItem, newItem: TopicItem) = when (oldItem) {
-        is TopicItem.LocalDateItem -> oldItem == (newItem as? TopicItem.LocalDateItem)
-        is TopicItem.UserPostItem -> oldItem == (newItem as? TopicItem.UserPostItem)
-        is TopicItem.OwnerPostItem -> oldItem == (newItem as? TopicItem.OwnerPostItem)
+    override fun areContentsTheSame(oldItem: PostItem, newItem: PostItem) = when (oldItem) {
+        is PostItem.LocalDateItem -> oldItem == (newItem as? PostItem.LocalDateItem)
+        is PostItem.UserPostItem -> oldItem == (newItem as? PostItem.UserPostItem)
+        is PostItem.OwnerPostItem -> oldItem == (newItem as? PostItem.OwnerPostItem)
     }
 }
