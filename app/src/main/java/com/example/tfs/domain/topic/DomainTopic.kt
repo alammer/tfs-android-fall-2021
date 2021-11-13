@@ -8,7 +8,7 @@ sealed class PostItem {
         val id: Int,
         val userId: Int,
         val userName: String,
-        val reaction: List<Reaction> = emptyList(),
+        val reaction: List<DomainReaction> = emptyList(),
         val message: String,
         val avatar: String? = null,
         val timeStamp: Long,
@@ -16,7 +16,7 @@ sealed class PostItem {
 
     data class OwnerPostItem(
         val id: Int,
-        val reaction: List<Reaction> = emptyList(),
+        val reaction: List<DomainReaction> = emptyList(),
         val message: String,
         val timeStamp: Long,
     ) : PostItem()

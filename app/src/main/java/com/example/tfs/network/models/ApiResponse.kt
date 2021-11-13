@@ -1,6 +1,7 @@
 package com.example.tfs.network.models
 
 import com.example.tfs.domain.streams.StreamItemList
+import com.example.tfs.domain.topic.PostItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -67,28 +68,6 @@ data class Post(
     var reaction: List<PostReaction> = emptyList(),
 )
 
-@Serializable
-data class PostReaction(
-    @SerialName("emoji_name")
-    val emojiName: String,
-    @SerialName("emoji_code")
-    val emojiCode: String,
-    @SerialName("reaction_type")
-    val type: String,
-    @SerialName("user_id")
-    val userId: Int,
-    @SerialName("user")
-    val userInfo: User
-)
-
-@Serializable
-data class User(
-    @SerialName("id")
-    val id: Int,
-    @SerialName("full_name")
-    val name: String,
-)
-
 fun Stream.toDomainStream(
     parentName: String,
     topics: List<Topic> = emptyList(),
@@ -100,4 +79,10 @@ fun Stream.toDomainStream(
 
 fun Topic.toDomainTopic(parentStream: String) =
     StreamItemList.TopicItem(name = name, parentStream, max_id = max_id)
+
+fun Post.toOwnerPostItem() =
+    PostItem.OwnerPostItem(id = id, message = content, timeStamp = timeStamp, reaction = reaction.map { it.toDomainReaction() })
+
+fun Post.toUserPostItem() =
+    PostItem.OwnerPostItem(id = id, message = content, timeStamp = timeStamp, reaction = reaction.map { it.toDomainReaction() })
 
