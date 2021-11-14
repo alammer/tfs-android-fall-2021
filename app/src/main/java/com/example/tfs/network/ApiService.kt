@@ -4,7 +4,7 @@ import com.example.tfs.network.models.MessageQueueResponse
 import com.example.tfs.network.models.RawStreamResponse
 import com.example.tfs.network.models.SubscribedStreamResponse
 import com.example.tfs.network.models.TopicResponse
-import com.example.tfs.network.utils.NetworkConstants.BASE_URL
+import com.example.tfs.network.utils.NetworkConstants.API_BASE_URL
 import com.example.tfs.network.utils.addJsonConverter
 import com.example.tfs.network.utils.setClient
 import io.reactivex.Observable
@@ -34,7 +34,7 @@ interface ApiService {
 
         fun create(): ApiService {
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(API_BASE_URL)
                 .setClient()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addJsonConverter()

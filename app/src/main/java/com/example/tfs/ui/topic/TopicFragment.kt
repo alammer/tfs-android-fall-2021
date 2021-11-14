@@ -1,6 +1,7 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -45,6 +46,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private fun processTopicScreenState(it: TopicScreenState) {
         when (it) {
             is TopicScreenState.Result -> {
+                Log.i("TopicFragment", "Function called: processTopicScreenState() ${it.items}")
                 topicListAdapter.submitList(it.items) { viewBinding.rvTopic.scrollToPosition(0) }
                 //viewBinding.loadingProgress.isVisible = false
             }

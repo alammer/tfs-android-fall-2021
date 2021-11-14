@@ -40,7 +40,7 @@ data class Topic(
 
 @Serializable
 data class MessageQueueResponse(
-    @SerialName("message")
+    @SerialName("messages")
     val postList: List<Post> = emptyList(),
 )
 
@@ -84,5 +84,5 @@ fun Post.toOwnerPostItem() =
     PostItem.OwnerPostItem(id = id, message = content, timeStamp = timeStamp, reaction = reaction.map { it.toDomainReaction() })
 
 fun Post.toUserPostItem() =
-    PostItem.OwnerPostItem(id = id, message = content, timeStamp = timeStamp, reaction = reaction.map { it.toDomainReaction() })
+    PostItem.UserPostItem(id = id, userId = senderId, userName = senderName, message = content, avatar = avatar,  timeStamp = timeStamp, reaction = reaction.map { it.toDomainReaction() })
 

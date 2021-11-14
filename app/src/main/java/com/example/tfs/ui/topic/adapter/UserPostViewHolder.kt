@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.adapter
 
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.net.toUri
@@ -8,9 +9,11 @@ import com.example.tfs.R
 import com.example.tfs.domain.topic.DomainReaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.ui.topic.customview.addReaction
-import com.example.tfs.util.drawUserInitials
-import com.example.tfs.util.toPx
+import com.example.tfs.util.*
 import com.google.android.material.imageview.ShapeableImageView
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
 class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,7 +28,15 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setMessageText(message: String) {
-        textMessage.text = message
+        Single.fromCallable { message.tryToParseContentImage(itemView.resources) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { Log.i("DoOnSuccess", "Function called: $it") }
+            .doOnError { Log.i("DoOnError", "Function called: ${it.message}") }
+            .subscribe(
+                { textMessage.text = it },
+                { textMessage.text = message.rawContent(itemView.resources) }
+            )
     }
 
     fun setMessageClickListener(item: Int, postClick: (Int) -> Unit) {

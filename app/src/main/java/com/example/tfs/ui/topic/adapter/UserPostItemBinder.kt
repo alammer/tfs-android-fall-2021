@@ -19,10 +19,10 @@ class UserPostItemBinder(
             userPostViewHolder.setUserAvatarImage(it)
         } ?: userPostViewHolder.setUserInitilas(item.userName)
 
-        if (item.reaction.isNotEmpty()) {
+        /*if (item.reaction.isNotEmpty()) {
             userPostViewHolder.createPostReaction(item.reaction)
             userPostViewHolder.addReactionListeners(item.id, onChangeReactionClick, onAddReactionClick)
-        }
+        }*/
 
     }
 }
