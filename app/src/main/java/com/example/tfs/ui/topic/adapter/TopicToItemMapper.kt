@@ -22,8 +22,6 @@ internal class TopicToItemMapper : (List<Post>) -> (List<PostItem>) {
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()
 
-        Log.i("TopicToItemMapper", "Function called: createDomainPostItemList() rawlist $rawList")
-
         rawList.forEach { post ->
             if (post.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = post.timeStamp.startOfDay()
@@ -40,7 +38,7 @@ internal class TopicToItemMapper : (List<Post>) -> (List<PostItem>) {
                 datedPostList.add(post.toUserPostItem())
             }
         }
-        Log.i("TopicToItemMapper", "Function called: createDomainPostItemList() datedlist $datedPostList")
+
         return datedPostList.toList()
     }
 }

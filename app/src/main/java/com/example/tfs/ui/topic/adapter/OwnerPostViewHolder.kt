@@ -21,16 +21,8 @@ class OwnerPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val textMessage = itemView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = itemView.findViewById<EmojisLayout>(R.id.lEmojis)
 
-    fun setMessageText(message: String) {
-        Single.fromCallable { message.tryToParseContentImage(itemView.resources) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { Log.i("DoOnSuccess", "Function called: $it") }
-            .doOnError { Log.i("DoOnError", "Function called: ${it.message}") }
-            .subscribe(
-                { textMessage.text = it },
-                { textMessage.text = message.rawContent(itemView.resources) }
-            )
+    fun setMessageText(message: CharSequence) {
+        textMessage.text = message
     }
 
     fun createPostReaction(reaction: List<DomainReaction>) {

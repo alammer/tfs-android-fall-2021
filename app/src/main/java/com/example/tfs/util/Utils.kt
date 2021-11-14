@@ -196,17 +196,17 @@ val Int.toPx: Int
 
 val Long.shortDate
     get() = SimpleDateFormat("d MMM", Locale("ru", "RU"))
-        .format(this).replace(".", "")
+        .format(this * 1000L).replace(".", "")
 
 val Long.fullDate
     get() = SimpleDateFormat("d MMMM',' ' 'yyyy", Locale("ru", "RU"))
-        .format(this).replace(".", "")
+        .format(this * 1000L).replace(".", "")
 
 val Long.year
     get() = SimpleDateFormat("yyyy")
-        .format(this).toInt()
+        .format(this * 1000L).toInt()
 
-fun Long.startOfDay() = this - (this % 86400000L)
+fun Long.startOfDay() = this - (this % 86400L)
 
 fun Cursor.getContactId() =
     getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))

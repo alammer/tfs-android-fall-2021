@@ -27,16 +27,8 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         userName.text = name
     }
 
-    fun setMessageText(message: String) {
-        Single.fromCallable { message.tryToParseContentImage(itemView.resources) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { Log.i("DoOnSuccess", "Function called: $it") }
-            .doOnError { Log.i("DoOnError", "Function called: ${it.message}") }
-            .subscribe(
-                { textMessage.text = it },
-                { textMessage.text = message.rawContent(itemView.resources) }
-            )
+    fun setMessageText(message: CharSequence) {
+        textMessage.text = message
     }
 
     fun setMessageClickListener(item: Int, postClick: (Int) -> Unit) {

@@ -117,11 +117,11 @@ fun EmojisLayout.addReaction(reaction: List<DomainReaction>, isOwner: Boolean = 
     reaction.forEach {
         val view = EmojiView(
             context,
-            emojiCode = it.emojiCode.toInt(),
-            count = 10,
-            isClicked = Random.nextBoolean()
+            emojiCode = it.emojiName,//it.emojiCode.toInt(),
+            count = it.count,
+            isClicked = it.isClicked
         )
-        view.tag = it.emojiCode
+        view.tag = 0//it.emojiCode
         view.layoutParams = childLayoutParams
         addView(view)
     }

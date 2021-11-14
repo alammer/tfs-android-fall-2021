@@ -15,7 +15,7 @@ class EmojiView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
-    emojiCode: Int? = null,
+    emojiCode: String,
     count: Int? = null,
     isClicked: Boolean = false
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
@@ -54,11 +54,11 @@ class EmojiView @JvmOverloads constructor(
 
     init {
         count?.let {
-            emojiCode?.let {
+
                 currentCount = count
-                emojiGliph = StringBuilder().appendCodePoint(emojiCode).toString()
+                emojiGliph = emojiCode//StringBuilder().appendCodePoint(emojiCode).toString()
                 setReaction(emojiGliph, currentCount)
-            }
+
         }
     }
 
