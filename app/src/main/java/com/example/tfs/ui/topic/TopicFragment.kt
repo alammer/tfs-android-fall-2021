@@ -1,7 +1,6 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -48,9 +47,9 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
             bundle.getBundle(EMOJI_RESPONSE_KEY)?.let { response ->
                 val updatedMessageId = response.getInt(EMOJI_RESPONSE_MESSAGE)
-                val updatedEmojiCode = response.getString(EMOJI_RESPONSE_NAME)
-                val updatedEmojiId = response.getString(EMOJI_RESPONSE_ID)
-                //TODO("call complitable update message reaction request here")
+                val updatedEmojiName = response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
+                val updatedEmojiCode = response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
+                topicViewModel.addReaction(updatedMessageId, updatedEmojiName, updatedEmojiCode)
             }
         }
     }
@@ -117,7 +116,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     }
 
     private fun updateReaction(messageId: Int, emojiCode: String) {
-        //TODO("change reaction $emojiCode in current post $messageId")
+        topicViewModel.updateReaction(messageId, emojiCode)
     }
 
     companion object {
@@ -143,4 +142,4 @@ const val TOPIC_REQUEST_KEY = "emoji_request"
 const val EMOJI_RESPONSE_KEY = "emoji_response"
 const val EMOJI_RESPONSE_MESSAGE = "emoji_key"
 const val EMOJI_RESPONSE_NAME = "emoji_name"
-const val EMOJI_RESPONSE_ID = "emoji_id"
+const val EMOJI_RESPONSE_CODE = "emoji_id"

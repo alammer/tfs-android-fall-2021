@@ -20,7 +20,7 @@ class OwnerPostItemBinder() {
             .doOnError { Log.i("DoOnError", "Function called: ${it.message}") }
             .subscribe(
                 { ownerPostViewHolder.setMessageText(it) },
-                { ownerPostViewHolder.setMessageText(item.message.rawContent(Resources.getSystem())) }
+                { ownerPostViewHolder.setMessageText(item.message.rawContent()) }
             )
 
         ownerPostViewHolder.createPostReaction(item.reaction)

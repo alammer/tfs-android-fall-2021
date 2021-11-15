@@ -5,6 +5,7 @@ import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.Post
 import com.example.tfs.network.models.Stream
 import com.example.tfs.network.models.toDomainStream
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -25,6 +26,18 @@ interface Repository {
         parentStream: String,
         topicName: String,
     ): Observable<List<Post>>
+
+    fun addReaction(
+        messageId: Int,
+        emojiName: String,
+        emojiCode: String,
+    ): Completable
+
+    fun removeReaction(
+        messageId: Int,
+        emojiName: String,
+        emojiCode: String,
+    ): Completable
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -42,6 +55,15 @@ class RepositoryImpl : Repository {
 
     override fun fetchTopic(parentStream: String, topicName: String): Observable<List<Post>> =
         fetchMessageQueue(parentStream, topicName)
+
+    override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+        networkService.addReaction(messageId, emojiName,emojiCode)
+            .subscribeOn(Schedulers.io())
+
+    override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+        networkService.removeReaction(messageId, emojiName,emojiCode)
+            .subscribeOn(Schedulers.io())
+
 
     private fun fetchMessageQueue(parentStream: String, topicName: String) =
         networkService.getTopicMessageQueue(createGetTopicQuery(parentStream, topicName))

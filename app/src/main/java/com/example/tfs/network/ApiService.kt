@@ -7,13 +7,12 @@ import com.example.tfs.network.models.TopicResponse
 import com.example.tfs.network.utils.NetworkConstants.BASE_URL
 import com.example.tfs.network.utils.addJsonConverter
 import com.example.tfs.network.utils.setClient
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 
 
 interface ApiService {
@@ -30,6 +29,21 @@ interface ApiService {
     @GET("api/v1/messages")
     fun getTopicMessageQueue(@QueryMap options: HashMap<String, Any>): Single<MessageQueueResponse>
 
+    @POST("api/v1/messages/{message_id}/reactions")
+    fun addReaction(
+        @Path("message_id") message_id: Int,
+        @Query("emoji_name") emoji_name: String,
+        @Query("emoji_code") emoji_code: String,
+        @Query("reaction_type") reaction_type: String = "unicode_emoji"
+    ): Completable
+
+    @DELETE("api/v1/messages/{message_id}/reactions")
+    fun removeReaction(
+        @Path("message_id") message_id: Int,
+        @Query("emoji_name") emoji_name: String,
+        @Query("emoji_code") emoji_code: String,
+        @Query("reaction_type") reaction_type: String = "unicode_emoji"
+    ): Completable
 
     companion object {
 

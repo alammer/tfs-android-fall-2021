@@ -38,7 +38,7 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
             val response = bundleOf(
                 EMOJI_RESPONSE_MESSAGE to requireArguments().getInt(MESSAGE_KEY, -1),
                 EMOJI_RESPONSE_NAME to emojiName,
-                EMOJI_RESPONSE_ID to emojiApiCode
+                EMOJI_RESPONSE_CODE to emojiApiCode
             )
             setFragmentResult(
                 TOPIC_REQUEST_KEY,

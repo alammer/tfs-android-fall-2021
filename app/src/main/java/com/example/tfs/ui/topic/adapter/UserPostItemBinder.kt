@@ -20,7 +20,7 @@ class UserPostItemBinder(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { userPostViewHolder.setMessageText(it) },
-                { userPostViewHolder.setMessageText(item.message.rawContent(Resources.getSystem())) }
+                { userPostViewHolder.setMessageText(item.message.rawContent()) }
             )
 
         userPostViewHolder.setUserName(item.userName)

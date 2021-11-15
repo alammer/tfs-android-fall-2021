@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,9 @@ import io.reactivex.subjects.PublishSubject
 
 
 internal class TopicViewModel : ViewModel() {
+
+
+    private var lastEmoji: String = ""
 
     private val repository = RepositoryImpl()
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
@@ -41,6 +45,26 @@ internal class TopicViewModel : ViewModel() {
             .map(topicToItemMapper)
             .subscribeBy(
                 onNext = { _topicScreenState.value = TopicScreenState.Result(it) },
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+            )
+            .addTo(compositeDisposable)
+    }
+
+    fun addReaction(messageId: Int, emojiName: String, emojiCode: String) {
+        lastEmoji = emojiName
+        repository.addReaction(messageId, emojiName, emojiCode)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+            )
+            .addTo(compositeDisposable)
+
+    }
+
+    fun updateReaction(messageId: Int, emojiCode: String) {
+        repository.removeReaction(messageId, lastEmoji, emojiCode)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
                 onError = { _topicScreenState.value = TopicScreenState.Error(it) }
             )
             .addTo(compositeDisposable)
