@@ -9,9 +9,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.ui.topic.TOPIC_REQUEST_KEY
-import com.example.tfs.ui.topic.TOPIC_RESULT_KEY
-import com.example.tfs.util.CreateEmojiSet
+import com.example.tfs.ui.topic.*
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EmojiDialogFragment : BottomSheetDialogFragment() {
@@ -19,23 +17,32 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
     private lateinit var emojiAdapter: EmojiRecyclerAdapter
     private lateinit var emojiSheetRecycler: RecyclerView
 
+    private val emojiMap by lazy {
+        createEmojiMap()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return LayoutInflater.from(context).inflate(R.layout.bsd_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         emojiSheetRecycler = view.findViewById(R.id.rvEmoji)
-        emojiAdapter = EmojiRecyclerAdapter{ emojiCode: Int ->
-            val response = IntArray(2)
-            response[0] = requireArguments().getInt(MESSAGE_KEY, -1)
-            response[1] = emojiCode
+        emojiSheetRecycler.setHasFixedSize(true)
+        emojiAdapter = EmojiRecyclerAdapter { emojiCode: String ->
+            val emojiName = emojiMap.keys.firstOrNull { emojiMap[it]?.second == emojiCode }
+            val emojiApiCode = emojiMap[emojiName]?.first
+            val response = bundleOf(
+                EMOJI_RESPONSE_MESSAGE to requireArguments().getInt(MESSAGE_KEY, -1),
+                EMOJI_RESPONSE_NAME to emojiName,
+                EMOJI_RESPONSE_ID to emojiApiCode
+            )
             setFragmentResult(
                 TOPIC_REQUEST_KEY,
-                bundleOf(TOPIC_RESULT_KEY to response),
+                bundleOf(EMOJI_RESPONSE_KEY to response),
             )
             dismiss()
         }
@@ -44,7 +51,24 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         emojiSheetRecycler.layoutManager =
             GridLayoutManager(context, 7, GridLayoutManager.VERTICAL, false)
 
-        emojiAdapter.submitList(CreateEmojiSet.createEmojiSet())
+        emojiAdapter.submitList(emojiMap.values.map { (_, unicodeCodePoint) -> unicodeCodePoint }
+            .toSet().toList())
+    }
+
+    private fun createEmojiMap(): Map<String, Pair<String, String>> {
+
+        val emojiMap = mutableMapOf<String, Pair<String, String>>()
+
+        requireActivity().assets
+            .open("zulip_emoji_map")
+            .reader()
+            .useLines { file ->
+                file.forEach { line ->
+                    val (emojiName, emojiId) = line.split(":")
+                    emojiMap[emojiName] = emojiId to emojiId.getUnicodeGlyph()
+                }
+            }
+        return emojiMap.toMap()
     }
 
     companion object {

@@ -43,10 +43,21 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         topicViewModel.fetchTopic(streamName to topicName)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
+            bundle.getBundle(EMOJI_RESPONSE_KEY)?.let { response ->
+                val updatedMessageId = response.getInt(EMOJI_RESPONSE_MESSAGE)
+                val updatedEmojiCode = response.getString(EMOJI_RESPONSE_NAME)
+                val updatedEmojiId = response.getString(EMOJI_RESPONSE_ID)
+                //TODO("call complitable update message reaction request here")
+            }
+        }
+    }
+
     private fun processTopicScreenState(it: TopicScreenState) {
         when (it) {
             is TopicScreenState.Result -> {
-                Log.i("TopicFragment", "Function called: processTopicScreenState() ${it.items}")
                 topicListAdapter.submitList(it.items) { viewBinding.rvTopic.scrollToPosition(0) }
                 //viewBinding.loadingProgress.isVisible = false
             }
@@ -60,15 +71,6 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
-            bundle.getIntArray(TOPIC_RESULT_KEY)?.let {
-                //TODO("add emoji it[1] to current post it[0]")
-            }
-        }
-    }
-
     private fun initViews() {
         with(viewBinding) {
             tvTopic.text = root.context.getString(
@@ -78,7 +80,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
             tvTopicTitle.text = requireArguments().getString(STREAM_NAME, "Unknown")
 
             topicListAdapter = TopicViewAdapter(
-                { messageId: Int, emojiCode: Int -> updateReaction(messageId, emojiCode) },
+                { messageId: Int, emojiCode: String -> updateReaction(messageId, emojiCode) },
                 { messageId -> onRecycleViewLongPress(messageId) }
             )
             rvTopic.adapter = topicListAdapter
@@ -114,7 +116,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         EmojiDialogFragment.newInstance(messageId).show(childFragmentManager, tag)
     }
 
-    private fun updateReaction(messageId: Int, emojiCode: Int) {
+    private fun updateReaction(messageId: Int, emojiCode: String) {
         //TODO("change reaction $emojiCode in current post $messageId")
     }
 
@@ -137,5 +139,8 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     }
 }
 
-const val TOPIC_REQUEST_KEY = "emogi_key"
-const val TOPIC_RESULT_KEY = "emoji_id"
+const val TOPIC_REQUEST_KEY = "emoji_request"
+const val EMOJI_RESPONSE_KEY = "emoji_response"
+const val EMOJI_RESPONSE_MESSAGE = "emoji_key"
+const val EMOJI_RESPONSE_NAME = "emoji_name"
+const val EMOJI_RESPONSE_ID = "emoji_id"

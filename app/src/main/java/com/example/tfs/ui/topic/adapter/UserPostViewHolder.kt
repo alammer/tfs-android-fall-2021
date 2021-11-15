@@ -1,19 +1,14 @@
 package com.example.tfs.ui.topic.adapter
 
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.topic.DomainReaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.ui.topic.customview.addReaction
 import com.example.tfs.util.*
 import com.google.android.material.imageview.ShapeableImageView
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 
 class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -46,18 +41,19 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.toPx)
     }
 
-    fun createPostReaction(reaction: List<DomainReaction>) {
-        emojiGroup.addReaction(reaction)
+    fun createPostReaction(reaction: List<ItemReaction>) {
+        emojiGroup.removeAllViews()
+        if (reaction.isNotEmpty()) emojiGroup.addReaction(reaction)
     }
 
     fun addReactionListeners(
         itemId: Int,
-        onEmojiClick: (Int, Int) -> Unit,
-        onAddReactionClick: (Int) -> Unit
+        onEmojiClick: (Int, String) -> Unit,
+        onAddReactionClick: (Int) -> Unit,
     ) {
         (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
             emojiGroup.getChildAt(emojiPosition).setOnClickListener {
-                onEmojiClick(itemId, it.tag as Int)
+                onEmojiClick(itemId, it.tag as String)
             }
         }
         //click on "+"

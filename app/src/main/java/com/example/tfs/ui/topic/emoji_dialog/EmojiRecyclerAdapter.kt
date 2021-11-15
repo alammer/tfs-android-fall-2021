@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 
-class EmojiRecyclerAdapter(private val onEmojiClick: (Int) -> Unit) :
-    ListAdapter<Int, EmojiRecyclerAdapter.EmojiViewHolder>(EmojiDiffCallback()) {
+class EmojiRecyclerAdapter(private val onEmojiClick: (String) -> Unit) :
+    ListAdapter<String, EmojiRecyclerAdapter.EmojiViewHolder>(EmojiDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiViewHolder {
         val view =
@@ -20,7 +20,7 @@ class EmojiRecyclerAdapter(private val onEmojiClick: (Int) -> Unit) :
 
     override fun onBindViewHolder(holder: EmojiViewHolder, position: Int) {
         val item = getItem(position)
-        holder.emojiTextView.text = StringBuilder().appendCodePoint(item).toString()
+        holder.emojiTextView.text = item
         holder.emojiTextView.setOnClickListener { onEmojiClick(item) }
     }
 
@@ -29,9 +29,9 @@ class EmojiRecyclerAdapter(private val onEmojiClick: (Int) -> Unit) :
     }
 }
 
-private class EmojiDiffCallback : DiffUtil.ItemCallback<Int>() {
+private class EmojiDiffCallback : DiffUtil.ItemCallback<String>() {
 
-    override fun areItemsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
+    override fun areItemsTheSame(oldItem: String, newItem: String) = oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
+    override fun areContentsTheSame(oldItem: String, newItem: String) = oldItem == newItem
 }

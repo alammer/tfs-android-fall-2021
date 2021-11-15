@@ -45,6 +45,13 @@ android {
         jvmTarget = '11'
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
+    sourceSets {
+        main {
+            assets {
+                srcDirs 'src/main/assets'
+            }
+        }
+    }
 }
 
 dependencies {

@@ -1,8 +1,6 @@
 package com.example.tfs.network.models
 
 import com.example.tfs.domain.streams.StreamItemList
-import com.example.tfs.domain.topic.DomainReaction
-import com.example.tfs.domain.topic.PostItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -81,23 +79,4 @@ fun Stream.toDomainStream(
 fun Topic.toDomainTopic(parentStream: String) =
     StreamItemList.TopicItem(name = name, parentStream, max_id = max_id)
 
-fun Post.toOwnerPostItem() =
-    PostItem.OwnerPostItem(id = id, message = content, timeStamp = timeStamp, reaction = createDomainReactionList(reaction))
 
-fun Post.toUserPostItem() =
-    PostItem.UserPostItem(id = id, userId = senderId, userName = senderName, message = content, avatar = avatar,  timeStamp = timeStamp, reaction = createDomainReactionList(reaction))
-
-private fun createDomainReactionList(reaction: List<PostReaction>): List<DomainReaction> {
-
-    return reaction
-        .associate { emoji -> emoji.emojiName to reaction.count { it.emojiName == emoji.emojiName } }
-        .toList()
-        .map { (name, count) ->  DomainReaction(emojiName = name, count = count, checkEmoji(reaction, name) )}
-        .sortedByDescending { it.count }
-}
-
-private fun checkEmoji(reaction: List<PostReaction>, name: String): Boolean {
-    reaction.filter { it.emojiName == name }
-        .firstOrNull { it.userId == 37 }
-        ?.let { return true  } ?: return false
-}

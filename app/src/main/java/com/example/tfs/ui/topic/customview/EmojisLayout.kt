@@ -5,16 +5,15 @@ import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.ViewGroup
 import com.example.tfs.R
-import com.example.tfs.domain.topic.DomainReaction
+import com.example.tfs.ui.topic.adapter.ItemReaction
 import com.example.tfs.util.toPx
-import kotlin.random.Random
 
 
 class EmojisLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
+    defStyleRes: Int = 0,
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
     private var isOwner = false
@@ -107,8 +106,7 @@ class EmojisLayout @JvmOverloads constructor(
     }
 }
 
-fun EmojisLayout.addReaction(reaction: List<DomainReaction>, isOwner: Boolean = false) {
-    removeAllViews()
+fun EmojisLayout.addReaction(reaction: List<ItemReaction>, isOwner: Boolean = false) {
     val childLayoutParams = ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT,
         EmojisLayout.CHILD_HEIGHT
@@ -117,11 +115,11 @@ fun EmojisLayout.addReaction(reaction: List<DomainReaction>, isOwner: Boolean = 
     reaction.forEach {
         val view = EmojiView(
             context,
-            emojiCode = it.emojiName,//it.emojiCode.toInt(),
+            emojiCode = it.unicodeGliph,//it.emojiCode.toInt(),
             count = it.count,
             isClicked = it.isClicked
         )
-        view.tag = 0//it.emojiCode
+        view.tag = it.emojiCode
         view.layoutParams = childLayoutParams
         addView(view)
     }

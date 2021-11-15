@@ -1,9 +1,7 @@
 package com.example.tfs.network.models
 
-import com.example.tfs.domain.topic.DomainReaction
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.random.Random
 
 @Serializable
 data class PostReaction(
@@ -17,8 +15,6 @@ data class PostReaction(
     val userId: Int,
 )
 
-//fun PostReaction.toDomainReaction() =
-//    DomainReaction(emojiName = emojiName, userId = userId)
 
 
 

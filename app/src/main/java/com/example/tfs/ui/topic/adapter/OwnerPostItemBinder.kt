@@ -13,7 +13,6 @@ class OwnerPostItemBinder() {
 
     fun bind(ownerPostViewHolder: OwnerPostViewHolder, item: PostItem.OwnerPostItem) {
 
-        //ownerPostViewHolder.setMessageText(item.message)
         Single.fromCallable { item.message.tryToParseContentImage(Resources.getSystem()) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -24,6 +23,6 @@ class OwnerPostItemBinder() {
                 { ownerPostViewHolder.setMessageText(item.message.rawContent(Resources.getSystem())) }
             )
 
-        if (item.reaction.isNotEmpty()) ownerPostViewHolder.createPostReaction(item.reaction)
+        ownerPostViewHolder.createPostReaction(item.reaction)
     }
 }

@@ -9,6 +9,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.provider.ContactsContract
 import android.text.Html
@@ -22,17 +23,14 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.toSpannable
-import androidx.core.text.toSpanned
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
+import com.example.tfs.network.utils.NetworkConstants
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
-import android.graphics.drawable.Drawable
-import android.util.Log
-import com.example.tfs.network.utils.NetworkConstants
-import com.squareup.picasso.Picasso
 
 
 fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
@@ -74,7 +72,7 @@ fun String.tryToParseContentImage(res: Resources): CharSequence {
     return trimSpannable(spanned).toSpannable()
 }
 
-fun String.rawContent(res: Resources): CharSequence {
+fun String.rawContent(): CharSequence {
 
     val spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         (Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT))
@@ -93,7 +91,7 @@ class ImageGetter(
         val holder = BitmapDrawablePlaceHolder(res, null)
 
         //TODO("сделать регулярку на начало img_ulr, если допускаются ссылки на внешние хостинги")
-        val bitmap = Picasso.get().load("${NetworkConstants.SERVER_BASE_URL}$url").get()
+        val bitmap = Picasso.get().load("${NetworkConstants.BASE_URL}$url").get()
 
         val drawable = BitmapDrawable(res, bitmap)
 
@@ -123,6 +121,7 @@ class ImageGetter(
             this.drawable = drawable
         }
     }
+
     // Function to get screenWidth used above
     private fun getScreenWidth() =
         Resources.getSystem().displayMetrics.widthPixels

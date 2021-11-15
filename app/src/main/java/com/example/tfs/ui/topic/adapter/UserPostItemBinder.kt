@@ -1,7 +1,6 @@
 package com.example.tfs.ui.topic.adapter
 
 import android.content.res.Resources
-import android.util.Log
 import com.example.tfs.domain.topic.PostItem
 import com.example.tfs.util.rawContent
 import com.example.tfs.util.tryToParseContentImage
@@ -10,8 +9,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class UserPostItemBinder(
-    private val onChangeReactionClick: (Int, Int) -> Unit,
-    private val onAddReactionClick: (messageId: Int) -> Unit
+    private val onChangeReactionClick: (messageId: Int, emojiName: String) -> Unit,
+    private val onAddReactionClick: (messageId: Int) -> Unit,
 ) {
 
     fun bind(userPostViewHolder: UserPostViewHolder, item: PostItem.UserPostItem) {
@@ -21,7 +20,7 @@ class UserPostItemBinder(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { userPostViewHolder.setMessageText(it) },
-                { userPostViewHolder.setMessageText(item.message.rawContent(Resources.getSystem()))}
+                { userPostViewHolder.setMessageText(item.message.rawContent(Resources.getSystem())) }
             )
 
         userPostViewHolder.setUserName(item.userName)
@@ -34,9 +33,12 @@ class UserPostItemBinder(
             userPostViewHolder.setUserAvatarImage(it)
         } ?: userPostViewHolder.setUserInitilas(item.userName)
 
+        userPostViewHolder.createPostReaction(item.reaction)
+
         if (item.reaction.isNotEmpty()) {
-            userPostViewHolder.createPostReaction(item.reaction)
-            userPostViewHolder.addReactionListeners(item.id, onChangeReactionClick, onAddReactionClick)
+            userPostViewHolder.addReactionListeners(item.id,
+                onChangeReactionClick,
+                onAddReactionClick)
         }
 
     }

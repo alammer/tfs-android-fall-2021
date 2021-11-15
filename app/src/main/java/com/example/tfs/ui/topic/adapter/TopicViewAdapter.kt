@@ -9,7 +9,7 @@ import com.example.tfs.R
 import com.example.tfs.domain.topic.PostItem
 
 class TopicViewAdapter(
-    onChangeReactionClick: (messageId: Int, emojiCode: Int) -> Unit,
+    onChangeReactionClick: (messageId: Int, emojiName: String) -> Unit,
     onAddReactionClick: (messageId: Int) -> Unit,
 ) : ListAdapter<PostItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
