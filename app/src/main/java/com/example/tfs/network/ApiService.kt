@@ -29,6 +29,14 @@ interface ApiService {
     @GET("api/v1/messages")
     fun getTopicMessageQueue(@QueryMap options: HashMap<String, Any>): Single<MessageQueueResponse>
 
+    @POST("api/v1/messages")
+    fun sendMessage(
+        @Query("to") streamName: String,
+        @Query("topic") topicName: String,
+        @Query("content") reaction_type: String,
+        @Query("type") type: String = "stream",
+    ): Completable
+
     @POST("api/v1/messages/{message_id}/reactions")
     fun addReaction(
         @Path("message_id") message_id: Int,

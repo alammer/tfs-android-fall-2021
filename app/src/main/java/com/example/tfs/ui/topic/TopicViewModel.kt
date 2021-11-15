@@ -15,10 +15,8 @@ import io.reactivex.subjects.PublishSubject
 
 
 internal class TopicViewModel : ViewModel() {
-
-
+    //remove field after db implement
     private var lastEmoji: String = ""
-
     private val repository = RepositoryImpl()
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
 
@@ -50,6 +48,15 @@ internal class TopicViewModel : ViewModel() {
             .addTo(compositeDisposable)
     }
 
+    fun sendMessage(streamName: String, topicName: String, content: String) {
+        repository.sendMessage(streamName, topicName, content)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+            )
+            .addTo(compositeDisposable)
+    }
+
     fun addReaction(messageId: Int, emojiName: String, emojiCode: String) {
         lastEmoji = emojiName
         repository.addReaction(messageId, emojiName, emojiCode)
@@ -74,4 +81,5 @@ internal class TopicViewModel : ViewModel() {
         super.onCleared()
         compositeDisposable.dispose()
     }
+
 }

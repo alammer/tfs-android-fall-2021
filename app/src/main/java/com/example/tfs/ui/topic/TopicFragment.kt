@@ -57,7 +57,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private fun processTopicScreenState(it: TopicScreenState) {
         when (it) {
             is TopicScreenState.Result -> {
-                topicListAdapter.submitList(it.items) { viewBinding.rvTopic.scrollToPosition(0) }
+                topicListAdapter.submitList(it.items) //{ viewBinding.rvTopic.scrollToPosition(0) }
                 //viewBinding.loadingProgress.isVisible = false
             }
             TopicScreenState.Loading -> {
@@ -87,9 +87,10 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
 
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
-                    //TODO("add new post to current topic")
+                    topicViewModel.sendMessage(streamName, topicName, etMessage.text.toString())
                     rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
                     btnSendPost.setImageResource(R.drawable.ic_text_plus)
+                    //change search query for update topic
                     topicViewModel.fetchTopic(streamName to topicName)
                 }
                 requireActivity().currentFocus?.apply { hideSoftKeyboard() }

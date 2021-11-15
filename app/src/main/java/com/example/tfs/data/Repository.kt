@@ -27,6 +27,12 @@ interface Repository {
         topicName: String,
     ): Observable<List<Post>>
 
+    fun sendMessage(
+        streamName: String,
+        topicName: String,
+        content: String,
+    ): Completable
+
     fun addReaction(
         messageId: Int,
         emojiName: String,
@@ -55,6 +61,10 @@ class RepositoryImpl : Repository {
 
     override fun fetchTopic(parentStream: String, topicName: String): Observable<List<Post>> =
         fetchMessageQueue(parentStream, topicName)
+
+    override fun sendMessage(streamName: String, topicName: String, content: String): Completable =
+        networkService.sendMessage(streamName,topicName,content)
+            .subscribeOn(Schedulers.io())
 
     override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
         networkService.addReaction(messageId, emojiName,emojiCode)
@@ -130,7 +140,7 @@ class RepositoryImpl : Repository {
     companion object {
 
         const val INITIAL_MESSAGE_QUEUE_ANCHOR = "newest"
-        const val INITIAL_MESSAGE_NUM_BEFORE = 100
+        const val INITIAL_MESSAGE_NUM_BEFORE = 500
         const val INITIAL_MESSAGE_NUM_AFTER = 0
     }
 
