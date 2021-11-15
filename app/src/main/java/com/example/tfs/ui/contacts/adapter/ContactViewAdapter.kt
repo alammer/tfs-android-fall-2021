@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.example.tfs.R
-import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.network.models.User
 
 class ContactViewAdapter(onContactClick: (Int) -> Unit) :

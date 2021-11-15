@@ -27,7 +27,13 @@ interface ApiService {
     fun getTopicMessageQueue(@QueryMap options: HashMap<String, Any>): Single<MessageQueueResponse>
 
     @GET("api/v1/users")
-    fun getAllUsers(): Single<UsersResponse>
+    fun getAllUsers(): Single<UserListResponse>
+
+    @GET("api/v1/users/{user_id}")
+    fun getUser(@Path("user_id") userId: Int): Single<UserResponse>
+
+    @GET("api/v1/users/{user_id}/presence")
+    fun getUserPresence(@Path("user_id") userId: Int): Single<UserPresence>
 
     @POST("api/v1/messages")
     fun sendMessage(

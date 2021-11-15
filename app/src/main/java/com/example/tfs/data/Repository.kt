@@ -1,5 +1,6 @@
 package com.example.tfs.data
 
+import com.example.tfs.domain.contacts.DomainUser
 import com.example.tfs.domain.streams.StreamItemList
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
@@ -27,6 +28,8 @@ interface Repository {
     ): Observable<List<Post>>
 
     fun fetchUsers(query: String): Observable<List<User>>
+
+    fun fetchUser(userId: Int): Single<DomainUser>
 
     fun sendMessage(
         streamName: String,
@@ -68,21 +71,34 @@ class RepositoryImpl : Repository {
         fetchMessageQueue(parentStream, topicName)
 
     override fun sendMessage(streamName: String, topicName: String, content: String): Completable =
-        networkService.sendMessage(streamName,topicName,content)
+        networkService.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
 
     override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
-        networkService.addReaction(messageId, emojiName,emojiCode)
+        networkService.addReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
 
     override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
-        networkService.removeReaction(messageId, emojiName,emojiCode)
+        networkService.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
+
+    override fun fetchUser(userId: Int): Single<DomainUser> =
+        fetchUserPresence(userId)
+
+    private fun fetchUserPresence(userId: Int) =
+        Single.zip(networkService.getUser(userId),
+            networkService.getUserPresence(userId),
+            { user, presence -> Pair(user, presence) })
+            .map { (user, presence) ->
+                user.toDomainUser(presence.userPresence.userPresence)
+            }
+            .subscribeOn(Schedulers.io())
+
 
     private fun fetchUserList(query: String) =
         networkService.getAllUsers()
             .subscribeOn(Schedulers.io())
-            .map { response -> response.userList}
+            .map { response -> response.userList }
             .toObservable()
             .concatMap { userList -> Observable.fromIterable(userList) }
             .filter { it.name.contains(query) }
@@ -129,7 +145,7 @@ class RepositoryImpl : Repository {
     private fun getStreamWithTopics(stream: Stream): Observable<StreamItemList.StreamItem> =
         Observable.zip(Observable.just(stream),
             networkService.getStreamRelatedTopicList(stream.id),
-            { stream, topicList -> Pair(stream, topicList) })
+            { expandedStream, topicList -> Pair(expandedStream, topicList) })
             .map { (stream, topicList) ->
                 stream.toDomainStream(stream.name,
                     topicList.topicResponseList,
@@ -139,12 +155,14 @@ class RepositoryImpl : Repository {
     private fun getStream(stream: Stream): Observable<StreamItemList.StreamItem> =
         Observable.just(stream.toDomainStream(stream.name))
 
-    private fun createGetTopicQuery(parentStream: String, topicName: String) = hashMapOf<String, Any>(
-        "anchor" to INITIAL_MESSAGE_QUEUE_ANCHOR,
-        "num_before" to INITIAL_MESSAGE_NUM_BEFORE,
-        "num_after" to INITIAL_MESSAGE_NUM_AFTER,
-        "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream,"stream"), NarrowObject(topicName, "topic")))
-    )
+    private fun createGetTopicQuery(parentStream: String, topicName: String) =
+        hashMapOf<String, Any>(
+            "anchor" to INITIAL_MESSAGE_QUEUE_ANCHOR,
+            "num_before" to INITIAL_MESSAGE_NUM_BEFORE,
+            "num_after" to INITIAL_MESSAGE_NUM_AFTER,
+            "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
+                NarrowObject(topicName, "topic")))
+        )
 
     @Serializable
     private data class NarrowObject(

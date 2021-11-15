@@ -1,6 +1,7 @@
 package com.example.tfs.ui.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
@@ -9,7 +10,6 @@ import androidx.fragment.app.viewModels
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentProfileBinding
 import com.example.tfs.util.drawUserInitials
-import com.example.tfs.util.setUserState
 import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 
@@ -23,13 +23,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         initViews()
 
         profileViewModel.profile.observe(viewLifecycleOwner, { contact ->
+            Log.i("ProfileFragment", "Contact: $contact")
             contact?.apply {
                 with(viewBinding) {
                     tvProfileName.text = name
-                    profileData?.status?.let { userStatus ->
-                        tvProfileStatus.text = userStatus
-                    } ?: tvProfileStatus.apply { visibility = View.GONE }
-                    tvProfileState.setUserState(1)
+                    //setState(tvProfileState, contact.presenceData.status)
                     avatarUrl?.let { userImage ->
                         imgProfileUser.setImageURI(userImage.toUri())
                     } ?: imgProfileUser.drawUserInitials(
@@ -40,8 +38,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         })
 
-        profileViewModel.fetchProfile(requireArguments().getInt(CONTACT_ID, -1))
+        Log.i("ProfileFragment", "ID: ${requireArguments().getInt(CONTACT_ID, -1)}")
+        profileViewModel.fetchUser(requireArguments().getInt(CONTACT_ID, -1))
     }
+
+//    private fun setState(textView: TextView, state: String) {
+//        when (state) {
+//            "active" -> textView.setTextColor(зелёный)
+//            "idle" -> textView.setTextColor(оранжевый)
+//            else -> textView.setTextColor(red)
+//        }
+//        textView.text = state
+//    }
 
     private fun initViews() {
         viewBinding.btnProfileNavBack.setOnClickListener {

@@ -1,11 +1,10 @@
 package com.example.tfs.ui.contacts.adapter
 
 import com.example.tfs.R
-import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.network.models.User
 
 class ContactItemBinder(
-    private val onContactClick: (Int) -> Unit
+    private val onContactClick: (Int) -> Unit,
 ) {
 
     fun bind(contactViewHolder: ContactViewHolder, item: User) {

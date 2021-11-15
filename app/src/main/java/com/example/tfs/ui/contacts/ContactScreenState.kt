@@ -1,6 +1,5 @@
 package com.example.tfs.ui.contacts
 
-import com.example.tfs.domain.contacts.Contact
 import com.example.tfs.network.models.User
 
 
