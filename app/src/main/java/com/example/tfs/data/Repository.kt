@@ -2,11 +2,10 @@ package com.example.tfs.data
 
 import com.example.tfs.domain.streams.StreamItemList
 import com.example.tfs.network.ApiService
-import com.example.tfs.network.models.Post
-import com.example.tfs.network.models.Stream
-import com.example.tfs.network.models.toDomainStream
+import com.example.tfs.network.models.*
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -26,6 +25,8 @@ interface Repository {
         parentStream: String,
         topicName: String,
     ): Observable<List<Post>>
+
+    fun fetchUsers(query: String): Observable<List<User>>
 
     fun sendMessage(
         streamName: String,
@@ -59,6 +60,10 @@ class RepositoryImpl : Repository {
         if (isSubscribed) fetchSubscribedStreams(expanded, query) else fetchRawStreams(expanded,
             query)
 
+    override fun fetchUsers(query: String): Observable<List<User>> =
+        fetchUserList(query)
+
+
     override fun fetchTopic(parentStream: String, topicName: String): Observable<List<Post>> =
         fetchMessageQueue(parentStream, topicName)
 
@@ -73,6 +78,16 @@ class RepositoryImpl : Repository {
     override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
         networkService.removeReaction(messageId, emojiName,emojiCode)
             .subscribeOn(Schedulers.io())
+
+    private fun fetchUserList(query: String) =
+        networkService.getAllUsers()
+            .subscribeOn(Schedulers.io())
+            .map { response -> response.userList}
+            .toObservable()
+            .concatMap { userList -> Observable.fromIterable(userList) }
+            .filter { it.name.contains(query) }
+            .toList()
+            .toObservable()
 
 
     private fun fetchMessageQueue(parentStream: String, topicName: String) =

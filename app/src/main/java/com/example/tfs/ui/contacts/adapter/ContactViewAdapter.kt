@@ -6,9 +6,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.example.tfs.R
 import com.example.tfs.domain.contacts.Contact
+import com.example.tfs.network.models.User
 
 class ContactViewAdapter(onContactClick: (Int) -> Unit) :
-    ListAdapter<Contact, ContactViewHolder>(ContactDiffCallback()) {
+    ListAdapter<User, ContactViewHolder>(ContactDiffCallback()) {
 
     private val contactItemBinder =
         ContactItemBinder(onContactClick)
@@ -26,11 +27,11 @@ class ContactViewAdapter(onContactClick: (Int) -> Unit) :
     }
 }
 
-private class ContactDiffCallback : DiffUtil.ItemCallback<Contact>() {
+private class ContactDiffCallback : DiffUtil.ItemCallback<User>() {
 
-    override fun areItemsTheSame(oldItem: Contact, newItem: Contact) =
+    override fun areItemsTheSame(oldItem: User, newItem: User) =
         oldItem.name == newItem.name
 
-    override fun areContentsTheSame(oldItem: Contact, newItem: Contact) =
+    override fun areContentsTheSame(oldItem: User, newItem: User) =
         oldItem == newItem
 }

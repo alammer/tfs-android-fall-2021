@@ -1,11 +1,12 @@
 package com.example.tfs.ui.contacts
 
 import com.example.tfs.domain.contacts.Contact
+import com.example.tfs.network.models.User
 
 
 internal sealed class ContactScreenState {
 
-    class Result(val items: List<Contact>) : ContactScreenState()
+    class Result(val items: List<User>) : ContactScreenState()
 
     object Loading : ContactScreenState()
 
