@@ -8,6 +8,11 @@ import org.jetbrains.annotations.NotNull
 @Entity(tableName = "reactions")
 class LocalReaction(
 
+    @PrimaryKey
+    @NotNull
+    @ColumnInfo(name="id")
+    val id: Int,
+
     @NotNull
     @ColumnInfo(name="post_id")
     val postId: Int,
