@@ -1,0 +1,25 @@
+package com.example.tfs.database.entity
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import org.jetbrains.annotations.NotNull
+
+@Entity(tableName = "streams")
+data class LocalStream(
+
+    @PrimaryKey
+    @NotNull
+    @ColumnInfo(name="stream_id")
+    val streamId: Int,
+
+    @NotNull
+    @ColumnInfo(name = "stream_name")
+    val streamName: String,
+
+/*    @field:TypeConverters(Converters::class)
+    @ColumnInfo(name = "topics")
+    val topics: List<String>,*/
+)
+
