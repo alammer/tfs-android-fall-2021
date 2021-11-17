@@ -1,9 +1,6 @@
 package com.example.tfs.database.entity
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
+import androidx.room.*
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "posts")
@@ -39,13 +36,50 @@ data class LocalPost(
 
     @NotNull
     @ColumnInfo(name = "timestamp")
-    val timestamp: Long,
+    val timeStamp: Long,
 
     @field:TypeConverters(Converters::class)
     @ColumnInfo(name = "flags")
     val postFlags: List<String>,
+)
 
- /*   @field:TypeConverters(Converters::class)
-    @ColumnInfo(name = "reactions")
-    val reaction: List<Int>,*/
+@Entity(tableName = "reactions")
+class LocalReaction(
+
+    @PrimaryKey(autoGenerate = true)
+    @NotNull
+    @ColumnInfo(name="id")
+    val id: Int = 0,
+
+    @NotNull
+    @ColumnInfo(name="owner_post_id")
+    val ownerPostId: Int,
+
+    @NotNull
+    @ColumnInfo(name="emoji_name")
+    val emojiName: String,
+
+    @NotNull
+    @ColumnInfo(name = "emoji_code")
+    val emojiCode: String,
+
+    @NotNull
+    @ColumnInfo(name="user_id")
+    val userId: Int,
+)
+
+@Entity(primaryKeys = ["post_id", "owner_post_id"])
+data class PostReactionXRef(
+    val post_id: Long,
+    val owner_post_id: Long
+)
+
+data class PostWithReaction(
+    @Embedded val post: LocalPost,
+    @Relation(
+        parentColumn = "post_id",
+        entityColumn = "owner_post_id",
+        associateBy = Junction(PostReactionXRef::class)
+    )
+    val reaction: List<LocalReaction>
 )

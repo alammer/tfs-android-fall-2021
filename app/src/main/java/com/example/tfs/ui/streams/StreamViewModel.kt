@@ -64,23 +64,13 @@ internal class StreamViewModel : ViewModel() {
                     query.isSubscribed,
                     query.expandedStream)
             }
-            .map(streamToItemMapper)
-            .observeOn(AndroidSchedulers.mainThread())
+            .map { streamToItemMapper(it, expandedStreams) }
+            .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { _streamScreenState.value = StreamScreenState.Result(it) },
                 onError = { _streamScreenState.value = StreamScreenState.Error(it) }
             )
             .addTo(compositeDisposable)
-    }
-
-    fun retrySubscribe() {
-        compositeDisposable.clear()
-        expandedStreams.clear()
-        currentSearchQuery = INITIAL_QUERY
-        subscribeToSearchStreams()
-        searchStream.onNext(QueryKey(currentSearchQuery,
-            isSubscribed,
-            expandedStreams.toList()))
     }
 
     override fun onCleared() {

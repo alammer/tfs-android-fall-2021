@@ -6,10 +6,10 @@ import androidx.room.RoomDatabase
 import com.example.tfs.MessengerApp
 import com.example.tfs.database.entity.*
 
-@Database(entities = [LocalStream::class, LocalTopic::class, LocalPost::class, LocalReaction::class, LocalUser::class], version = 0, exportSchema = false)
+@Database(entities = [LocalStream::class, PostReactionXRef::class, LocalPost::class, LocalReaction::class, LocalUser::class], version = 1, exportSchema = false)
 abstract class MessengerDB : RoomDatabase(){
 
-    abstract val movieDataDao: MessengerDataDao
+    abstract val localDataDao: MessengerDataDao
 
     companion object {
         private const val DB_NAME = "Zulip.db"

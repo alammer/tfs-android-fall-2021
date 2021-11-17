@@ -1,5 +1,6 @@
 package com.example.tfs.network.models
 
+import com.example.tfs.database.entity.LocalUser
 import com.example.tfs.domain.contacts.DomainUser
 import com.example.tfs.domain.contacts.UserPresence
 import kotlinx.serialization.SerialName
@@ -61,6 +62,14 @@ data class AggregatedStatus(
     val userStatus: String,
     @SerialName("timestamp")
     val userTimestamp: Long,
+)
+
+fun User.toLocalUser() = LocalUser(
+    id = id,
+    userName = name,
+    email = email,
+    avatarUrl = avatarUrl,
+    isActive = isActive
 )
 
 fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =

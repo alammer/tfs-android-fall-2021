@@ -33,17 +33,17 @@ internal class ContactsViewModel : ViewModel() {
     }
 
     private fun subscribeToSearchContacts() {
-        searchContact
+        /*searchContact
             .subscribeOn(Schedulers.io())
             .doOnNext { _contactScreenState.postValue(ContactScreenState.Loading) }
             .debounce(500L, TimeUnit.MILLISECONDS, Schedulers.io())
-            .switchMap { query -> repository.fetchUsers(query) }
+            .switchMap { query -> repository.getRemoteUserList(query) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { _contactScreenState.value = ContactScreenState.Result(it) },
                 onError = { _contactScreenState.value = ContactScreenState.Error(it) }
             )
-            .addTo(compositeDisposable)
+            .addTo(compositeDisposable)*/
     }
 
     override fun onCleared() {

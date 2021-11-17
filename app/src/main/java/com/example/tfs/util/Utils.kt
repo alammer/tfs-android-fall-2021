@@ -176,7 +176,7 @@ fun Fragment.showSystemMessage(text: String, longDuration: Boolean = false) {
 
 fun Context?.toast(message: String?) {
     message?.let {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }
 

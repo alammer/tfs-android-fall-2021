@@ -39,8 +39,8 @@ internal class TopicViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .doOnNext { _topicScreenState.postValue(TopicScreenState.Loading) }
             .switchMap { (streamName, topicName) -> repository.fetchTopic(streamName, topicName) }
-            .observeOn(AndroidSchedulers.mainThread())
             .map(topicToItemMapper)
+            .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { _topicScreenState.value = TopicScreenState.Result(it) },
                 onError = { _topicScreenState.value = TopicScreenState.Error(it) }

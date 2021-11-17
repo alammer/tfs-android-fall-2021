@@ -43,7 +43,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             }
             is StreamScreenState.Error -> {
                 context.toast(it.error.message)
-                streamViewModel.retrySubscribe()
+                //streamViewModel.retrySubscribe()
                 //viewBinding.loadingProgress.isVisible = false
             }
         }

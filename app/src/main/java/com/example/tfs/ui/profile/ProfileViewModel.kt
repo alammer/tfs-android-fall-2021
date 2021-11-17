@@ -19,7 +19,7 @@ class ProfileViewModel : ViewModel() {
     private val _profile = MutableLiveData<DomainUser?>()
 
     fun fetchUser(contactId: Int) {
-        repository.fetchUser(contactId)
+        repository.getRemoteUser(contactId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onError = { _profile.value = null },

@@ -1,30 +1,33 @@
 package com.example.tfs.ui.topic.adapter
 
 import android.util.Log
+import com.example.tfs.database.entity.LocalReaction
+import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.domain.topic.DomainReaction
 import com.example.tfs.domain.topic.PostItem
-import com.example.tfs.network.models.Post
-import com.example.tfs.network.models.PostReaction
 import com.example.tfs.ui.topic.getUnicodeGlyph
 import com.example.tfs.util.fullDate
 import com.example.tfs.util.shortDate
 import com.example.tfs.util.startOfDay
 import com.example.tfs.util.year
 
-internal class TopicToItemMapper : (List<Post>) -> (List<PostItem>) {
+internal class TopicToItemMapper : (List<PostWithReaction>) -> (List<PostItem>) {
 
-    override fun invoke(postList: List<Post>): List<PostItem> = createDomainPostItemList(postList)
+    override fun invoke(postList: List<PostWithReaction>): List<PostItem> =
+        createDomainPostItemList(postList)
 
 
-    private fun createDomainPostItemList(rawList: List<Post>): List<PostItem> {
+    private fun createDomainPostItemList(rawList: List<PostWithReaction>): List<PostItem> {
+
+        Log.i("TopicToItemMapper", "Function called: createDomainPostItemList() $rawList")
 
         val datedPostList = mutableListOf<PostItem>()
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()
 
         rawList.forEach { post ->
-            if (post.timeStamp.startOfDay() > startTopicDate) {
-                startTopicDate = post.timeStamp.startOfDay()
+            if (post.post.timeStamp.startOfDay() > startTopicDate) {
+                startTopicDate = post.post.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
                     datedPostList.add(PostItem.LocalDateItem(startTopicDate.fullDate))
                 } else {
@@ -43,23 +46,27 @@ internal class TopicToItemMapper : (List<Post>) -> (List<PostItem>) {
     }
 }
 
-fun Post.toOwnerPostItem() =
-    PostItem.OwnerPostItem(id = id,
-        message = content,
-        timeStamp = timeStamp,
-        reaction = createUiReactionList(reaction, "owner"))
+fun PostWithReaction.toOwnerPostItem() =
+    PostItem.OwnerPostItem(id = post.postId,
+        message = post.content,
+        timeStamp = post.timeStamp,
+        reaction = createUiReactionList(reaction, post.postId, post.senderId))
 
-fun Post.toUserPostItem() =
-    PostItem.UserPostItem(id = id,
-        userId = senderId,
-        userName = senderName,
-        message = content,
-        avatar = avatar,
-        timeStamp = timeStamp,
-        reaction = createUiReactionList(reaction, senderName))
+fun PostWithReaction.toUserPostItem() =
+    PostItem.UserPostItem(id = post.postId,
+        userId = post.senderId,
+        userName = post.senderName,
+        message = post.content,
+        avatar = post.avatarUrl,
+        timeStamp = post.timeStamp,
+        reaction = createUiReactionList(reaction, post.postId, post.senderId))
 
 
-private fun createUiReactionList(reaction: List<PostReaction>, sender: String): List<ItemReaction> {
+private fun createUiReactionList(
+    reaction: List<LocalReaction>,
+    postId: Int,
+    senderId: Int,
+): List<ItemReaction> {
 
     if (reaction.isNullOrEmpty()) {
         return emptyList()
@@ -97,7 +104,7 @@ private fun createUiReactionList(reaction: List<PostReaction>, sender: String): 
     return itemReaction.toList().map { it.second }.sortedByDescending { it.count }
 }
 
-private fun checkEmoji(reaction: List<PostReaction>, name: String): Boolean {
+private fun checkEmoji(reaction: List<LocalReaction>, name: String): Boolean {
     reaction.filter { it.emojiName == name }
         .firstOrNull { it.userId == 37 }
         ?.let { return true } ?: return false

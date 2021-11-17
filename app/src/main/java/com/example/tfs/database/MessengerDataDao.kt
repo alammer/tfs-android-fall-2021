@@ -1,58 +1,52 @@
 package com.example.tfs.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.tfs.database.entity.*
+import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.Observable
+import io.reactivex.Single
 
 @Dao
 interface MessengerDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllStream(localStreams: List<LocalStream>)
+    fun insertStreams(localStreams: List<LocalStream>): Completable
 
-    @Query("SELECT * FROM streams")
-    fun getAllStreams(): List<LocalStream>
+    @Query("SELECT * FROM streams WHERE is_subscribed = :isSubscribed")
+    fun getStreams(isSubscribed: Boolean): Single<List<LocalStream>>
 
     @Query("DELETE FROM streams")
-    fun clearStreams()
+    fun clearStreams(): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllUsers(localUsers: List<LocalUser>)
+    fun insertAllUsers(localUsers: List<LocalUser>): Completable
 
     @Query("SELECT * FROM contacts")
-    fun getAllUsers(): List<LocalUser>
+    fun getAllUsers(): Single<List<LocalUser>>
 
     @Query("DELETE FROM contacts")
-    fun clearContacts()
+    fun clearContacts(): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllTopics(localTopics: List<LocalTopic>)
-
-    @Query("SELECT * FROM topics WHERE parent_stream = :parentStream ")
-    fun getRelatedTopics(parentStream: String): List<LocalTopic>
-
-    @Query("DELETE FROM topics")
-    fun clearTopic()
+    fun insertAllPosts(localPostList: List<LocalPost>): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllPosts(localPosts: List<LocalPost>)
+    fun insertPost(localPost: LocalPost): Completable
 
-    @Query("SELECT * FROM posts WHERE stream_name = :parentStream AND topic_name = :topicName ORDER BY timestamp ASC")
-    fun getRelatedPosts(parentStream: String, topicName: String): List<LocalPost>
+    @Transaction
+    @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName")
+    fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
-    fun clearPosts(postId: Int)
+    fun clearPost(postId: Int): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertReactions(localPosts: List<LocalReaction>)
+    fun insertReactions(localPosts: List<LocalReaction>): Completable
 
-    @Query("SELECT * FROM reactions WHERE post_id = :postId")
-    fun getPostReactions(postId: Int): List<LocalReaction>
+/*    @Query("SELECT * FROM reactions WHERE owner_post_id = :postId")
+    fun getPostReactions(postId: Int): Maybe<List<LocalReaction>>*/
 
-    @Query("DELETE FROM reactions WHERE post_id = :postId")
-    fun deleteReactions(postId: Int)
-
-
+    @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
+    fun deleteReactions(postId: Int): Completable
 }
