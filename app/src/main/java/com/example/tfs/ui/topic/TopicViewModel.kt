@@ -17,6 +17,7 @@ import io.reactivex.subjects.PublishSubject
 internal class TopicViewModel : ViewModel() {
     //remove field after db implement
     private var lastEmoji: String = ""
+    private var currentAnchorPost = 0
     private val repository = RepositoryImpl()
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
 
@@ -33,6 +34,11 @@ internal class TopicViewModel : ViewModel() {
     fun fetchTopic(fetchQuery: Pair<String, String>) {
         searchTopic.onNext(fetchQuery)
     }
+
+    fun updateTopic(isDownScroll: Boolean = true) {
+
+    }
+
 
     private fun subscribeToFetchTopic() {
         searchTopic

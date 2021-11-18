@@ -198,8 +198,8 @@ class RepositoryImpl : Repository {
         getRemotePostList(parentStream, topicName)
             .subscribeOn(Schedulers.io())
 
-    private fun getRemotePostList(streamName: String, topicName: String) =
-        networkService.getRemotePostList(createGetTopicQuery(streamName, topicName))
+    private fun getRemotePostList(streamName: String, topicName: String, anchorPostId: Int = 0) =
+        networkService.getRemotePostList(createPostListQuery(streamName, topicName))
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
             .toObservable()
 
@@ -238,26 +238,28 @@ class RepositoryImpl : Repository {
             }
             .subscribeOn(Schedulers.io())
 
-    private fun createGetTopicQuery(parentStream: String, topicName: String) =
-        hashMapOf<String, Any>(
-            "anchor" to INITIAL_MESSAGE_QUEUE_ANCHOR,
-            "num_before" to INITIAL_MESSAGE_NUM_BEFORE,
-            "num_after" to INITIAL_MESSAGE_NUM_AFTER,
-            "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
-                NarrowObject(topicName, "topic")))
-        )
+    private fun createPostListQuery(parentStream: String, topicName: String, anchorPost: Int = 0, isForward: Boolean = true, isInitial: Boolean = false) =
+        if (isInitial) {
+            hashMapOf<String, Any>(
+                "anchor" to "newest",
+                "num_before" to 50,
+                "num_after" to  0,
+                "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
+                    NarrowObject(topicName, "topic")))
+            )
+        } else {
+            hashMapOf<String, Any>(
+                "anchor" to anchorPost,
+                "num_before" to if (isForward) 0 else 20,
+                "num_after" to if (isForward) 20 else 0,
+                "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
+                    NarrowObject(topicName, "topic")))
+            )
+        }
 
     @Serializable
     private data class NarrowObject(
         val operand: String,
         val operator: String,
     )
-
-    companion object {
-
-        const val INITIAL_MESSAGE_QUEUE_ANCHOR = "newest"
-        const val INITIAL_MESSAGE_NUM_BEFORE = 500
-        const val INITIAL_MESSAGE_NUM_AFTER = 0
-    }
-
 }

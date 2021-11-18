@@ -15,6 +15,10 @@ import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
+import androidx.recyclerview.widget.RecyclerView
+
+
+
 
 class TopicFragment : Fragment(R.layout.fragment_topic) {
 
@@ -84,7 +88,15 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
                 { messageId -> onRecycleViewLongPress(messageId) }
             )
             rvTopic.adapter = topicListAdapter
-            rvTopic.layoutManager = LinearLayoutManager(context)
+
+            val layoutManager = LinearLayoutManager(context)
+            rvTopic.layoutManager = layoutManager
+
+            rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) {
+                override fun loadPage(isForward: Boolean) {
+                    topicViewModel.updateTopic(isForward)
+                }
+            })
 
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
