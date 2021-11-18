@@ -58,7 +58,6 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     private fun processTopicScreenState(it: TopicScreenState) {
         when (it) {
             is TopicScreenState.Result -> {
-                Log.i("TopicFragment", "Function called: processTopicScreenState() ${it.items}")
                 topicListAdapter.submitList(it.items) //{ viewBinding.rvTopic.scrollToPosition(0) }
                 //viewBinding.loadingProgress.isVisible = false
             }
@@ -67,7 +66,6 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
             }
             is TopicScreenState.Error -> {
                 context.toast("Error in topic screen: ${it.error.message}")
-                Log.i("Repo", "Function called: Topic ${it.error.message}")
                 //viewBinding.loadingProgress.isVisible = false
             }
         }

@@ -3,7 +3,7 @@ package com.example.tfs.ui.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.data.RepositoryImpl
+import com.example.tfs.domain.RepositoryImpl
 import com.example.tfs.domain.contacts.DomainUser
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

@@ -3,8 +3,6 @@ package com.example.tfs.database
 import androidx.room.*
 import com.example.tfs.database.entity.*
 import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
@@ -35,7 +33,7 @@ interface MessengerDataDao {
     fun insertPost(localPost: LocalPost): Completable
 
     @Transaction
-    @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName")
+    @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName ORDER BY post_id ASC")
     fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
@@ -43,9 +41,6 @@ interface MessengerDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReactions(localPosts: List<LocalReaction>): Completable
-
-/*    @Query("SELECT * FROM reactions WHERE owner_post_id = :postId")
-    fun getPostReactions(postId: Int): Maybe<List<LocalReaction>>*/
 
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
     fun deleteReactions(postId: Int): Completable

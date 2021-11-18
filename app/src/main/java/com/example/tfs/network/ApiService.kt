@@ -24,7 +24,7 @@ interface ApiService {
     fun getStreamRelatedTopicList(@Path("stream_id") stream_id: Int): Observable<TopicResponse>
 
     @GET("api/v1/messages")
-    fun getTopicMessageQueue(@QueryMap options: HashMap<String, Any>): Single<PostListResponse>
+    fun getRemotePostList(@QueryMap options: HashMap<String, Any>): Single<PostListResponse>
 
     @GET("api/v1/users")
     fun getAllUsers(): Single<UserListResponse>

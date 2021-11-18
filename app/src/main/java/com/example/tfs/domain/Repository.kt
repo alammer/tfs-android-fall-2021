@@ -1,4 +1,4 @@
-package com.example.tfs.data
+package com.example.tfs.domain
 
 import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalStream
@@ -25,29 +25,7 @@ interface Repository {
         expanded: List<Int>,
     ): Observable<List<LocalStream>>
 
-    fun getRemoteStreams(
-        query: String,
-        isSubscribed: Boolean,
-        expanded: List<Int>,
-    ): Observable<List<LocalStream>>
-
-    fun getLocalStreams(
-        query: String,
-        isSubscribed: Boolean,
-    ): Single<List<LocalStream>>
-
-    fun getRemoteTopic(
-        parentStream: String,
-        topicName: String,
-    ): Observable<List<PostWithReaction>>
-
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
-
-    fun getLocalTopic(streamName: String, topicName: String): Single<List<PostWithReaction>>
-
-    fun getLocalUsers(query: String): Observable<List<LocalUser>>
-
-    fun getRemoteUserList(query: String): Observable<List<LocalUser>>
 
     fun getRemoteUser(userId: Int): Single<DomainUser>
 
@@ -75,6 +53,18 @@ class RepositoryImpl : Repository {
 
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
+
+    override fun sendMessage(streamName: String, topicName: String, content: String): Completable =
+        networkService.sendMessage(streamName, topicName, content)
+            .subscribeOn(Schedulers.io())
+
+    override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+        networkService.addReaction(messageId, emojiName, emojiCode)
+            .subscribeOn(Schedulers.io())
+
+    override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+        networkService.removeReaction(messageId, emojiName, emojiCode)
+            .subscribeOn(Schedulers.io())
 
     override fun fetchStreams(
         query: String,
@@ -118,97 +108,13 @@ class RepositoryImpl : Repository {
             }
     }
 
-    private fun insertPostListToDB(
-        remotePostList: List<PostWithReaction>,
-    ): Completable {
-        return Completable.concat(remotePostList.map { post ->
-            database.insertPost(post.post)
-                .andThen(database.insertReactions(post.reaction))
-        })
-    }
-
-
-    override fun getLocalTopic(
-        streamName: String,
-        topicName: String,
-    ): Single<List<PostWithReaction>> =
-        database.getPostWithReaction(streamName, topicName)
-            .subscribeOn(Schedulers.io())
-
-
-    override fun getRemoteTopic(
-        parentStream: String,
-        topicName: String,
-    ): Observable<List<PostWithReaction>> =
-        fetchPostList(parentStream, topicName)
-            .subscribeOn(Schedulers.io())
-
-
-    private fun fetchPostList(streamName: String, topicName: String) =
-        networkService.getTopicMessageQueue(createGetTopicQuery(streamName, topicName))
-            .subscribeOn(Schedulers.io())
-            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
-            .toObservable()
-
-    override fun getLocalStreams(
-        query: String,
-        isSubscribed: Boolean,
-    ): Single<List<LocalStream>> =
-        database.getStreams(isSubscribed)
-            .subscribeOn(Schedulers.io())
-
-    override fun getRemoteStreams(
+    private fun getRemoteStreams(
         query: String,
         isSubscribed: Boolean,
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
         if (isSubscribed) fetchSubscribedStreams(expanded, query) else fetchRawStreams(expanded,
             query)
-
-    override fun getLocalUsers(query: String): Observable<List<LocalUser>> =
-        database.getAllUsers()
-            .observeOn(Schedulers.io())
-            .toObservable()
-
-    override fun sendMessage(streamName: String, topicName: String, content: String): Completable =
-        networkService.sendMessage(streamName, topicName, content)
-            .subscribeOn(Schedulers.io())
-
-    override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
-        networkService.addReaction(messageId, emojiName, emojiCode)
-            .subscribeOn(Schedulers.io())
-
-    override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
-        networkService.removeReaction(messageId, emojiName, emojiCode)
-            .subscribeOn(Schedulers.io())
-
-    override fun getRemoteUserList(query: String): Observable<List<LocalUser>> =
-        fetchUserList(query)
-
-    override fun getRemoteUser(userId: Int): Single<DomainUser> =
-        fetchUserPresence(userId)
-
-    private fun fetchUserPresence(userId: Int) =
-        Single.zip(networkService.getUser(userId),
-            networkService.getUserPresence(userId),
-            { user, presence -> Pair(user, presence) })
-            .map { (user, presence) ->
-                user.toDomainUser(presence.userPresence.userPresence)
-            }
-            .subscribeOn(Schedulers.io())
-
-
-    private fun fetchUserList(query: String) =
-        networkService.getAllUsers()
-            .subscribeOn(Schedulers.io())
-            .map { response -> response.userList }
-            .toObservable()
-            .concatMap { userList -> Observable.fromIterable(userList) }
-            .filter { it.name.contains(query) }
-            .map { it.toLocalUser() }
-            .toList()
-            .toObservable()
-
 
     private fun fetchSubscribedStreams(
         expanded: List<Int>,
@@ -258,6 +164,67 @@ class RepositoryImpl : Repository {
 
     private fun getStream(stream: Stream, isSubscribed: Boolean = false): Observable<LocalStream> =
         Observable.just(stream.toLocalStream(isSubscribed))
+
+    private fun getLocalTopic(
+        streamName: String,
+        topicName: String,
+    ): Single<List<PostWithReaction>> =
+        database.getPostWithReaction(streamName, topicName)
+            .subscribeOn(Schedulers.io())
+
+    private fun getRemoteTopic(
+        parentStream: String,
+        topicName: String,
+    ): Observable<List<PostWithReaction>> =
+        getRemotePostList(parentStream, topicName)
+            .subscribeOn(Schedulers.io())
+
+    private fun getRemotePostList(streamName: String, topicName: String) =
+        networkService.getRemotePostList(createGetTopicQuery(streamName, topicName))
+            .subscribeOn(Schedulers.io())
+            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
+            .toObservable()
+
+    private fun insertPostListToDB(
+        remotePostList: List<PostWithReaction>,
+    ): Completable {
+        return Completable.concat(remotePostList.map { post ->
+            database.insertPost(post.post)
+                .andThen(database.insertReactions(post.reaction))
+        })
+    }
+
+    private fun getLocalUsers(query: String): Observable<List<LocalUser>> =
+        database.getAllUsers()
+            .observeOn(Schedulers.io())
+            .toObservable()
+
+    private fun getRemoteUserList(query: String): Observable<List<LocalUser>> =
+        fetchUserList(query)
+
+    override fun getRemoteUser(userId: Int): Single<DomainUser> =
+        fetchUserPresence(userId)
+
+    private fun fetchUserPresence(userId: Int) =
+        Single.zip(networkService.getUser(userId),
+            networkService.getUserPresence(userId),
+            { user, presence -> Pair(user, presence) })
+            .map { (user, presence) ->
+                user.toDomainUser(presence.userPresence.userPresence)
+            }
+            .subscribeOn(Schedulers.io())
+
+
+    private fun fetchUserList(query: String) =
+        networkService.getAllUsers()
+            .subscribeOn(Schedulers.io())
+            .map { response -> response.userList }
+            .toObservable()
+            .concatMap { userList -> Observable.fromIterable(userList) }
+            .filter { it.name.contains(query) }
+            .map { it.toLocalUser() }
+            .toList()
+            .toObservable()
 
     private fun createGetTopicQuery(parentStream: String, topicName: String) =
         hashMapOf<String, Any>(

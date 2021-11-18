@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.example.tfs.R
-import com.example.tfs.util.toPx
 import com.example.tfs.util.spToPx
+import com.example.tfs.util.toPx
 import kotlin.math.max
 
 class EmojiView @JvmOverloads constructor(
@@ -17,7 +17,7 @@ class EmojiView @JvmOverloads constructor(
     defStyleRes: Int = 0,
     emojiCode: String,
     count: Int? = null,
-    isClicked: Boolean = false
+    isClicked: Boolean = false,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private var text = ""
@@ -25,7 +25,7 @@ class EmojiView @JvmOverloads constructor(
     private val textBounds = Rect()
     private val textCoordinate = PointF()
     private var currentCount = 0
-    private var emojiGliph = ""
+    private var emojiGlyph = ""
     private val backColor = ContextCompat.getColor(context, R.color.view_bg)
     private val checkBackColor = ContextCompat.getColor(context, R.color.check_emoji_view_bg_color)
     private val textColor = ContextCompat.getColor(context, R.color.emoji_text_color)
@@ -54,11 +54,9 @@ class EmojiView @JvmOverloads constructor(
 
     init {
         count?.let {
-
-                currentCount = count
-                emojiGliph = emojiCode//StringBuilder().appendCodePoint(emojiCode).toString()
-                setReaction(emojiGliph, currentCount)
-
+            currentCount = count
+            emojiGlyph = emojiCode//StringBuilder().appendCodePoint(emojiCode).toString()
+            setReaction(emojiGlyph, currentCount)
         }
     }
 

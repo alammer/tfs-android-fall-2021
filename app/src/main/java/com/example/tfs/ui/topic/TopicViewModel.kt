@@ -4,7 +4,7 @@ package com.example.tfs.ui.topic
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.data.RepositoryImpl
+import com.example.tfs.domain.RepositoryImpl
 import com.example.tfs.ui.topic.adapter.TopicToItemMapper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -65,7 +65,6 @@ internal class TopicViewModel : ViewModel() {
                 onError = { _topicScreenState.value = TopicScreenState.Error(it) }
             )
             .addTo(compositeDisposable)
-
     }
 
     fun updateReaction(messageId: Int, emojiCode: String) {
@@ -81,5 +80,4 @@ internal class TopicViewModel : ViewModel() {
         super.onCleared()
         compositeDisposable.dispose()
     }
-
 }

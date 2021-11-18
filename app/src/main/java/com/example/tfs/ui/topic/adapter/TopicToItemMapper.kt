@@ -1,6 +1,5 @@
 package com.example.tfs.ui.topic.adapter
 
-import android.util.Log
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.domain.topic.DomainReaction
@@ -18,8 +17,6 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> (List<PostItem>) 
 
 
     private fun createDomainPostItemList(rawList: List<PostWithReaction>): List<PostItem> {
-
-        Log.i("TopicToItemMapper", "Function called: createDomainPostItemList() $rawList")
 
         val datedPostList = mutableListOf<PostItem>()
         var startTopicDate = 0L
@@ -50,7 +47,7 @@ fun PostWithReaction.toOwnerPostItem() =
     PostItem.OwnerPostItem(id = post.postId,
         message = post.content,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction, post.postId, post.senderId))
+        reaction = createUiReactionList(reaction))
 
 fun PostWithReaction.toUserPostItem() =
     PostItem.UserPostItem(id = post.postId,
@@ -59,13 +56,11 @@ fun PostWithReaction.toUserPostItem() =
         message = post.content,
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction, post.postId, post.senderId))
+        reaction = createUiReactionList(reaction))
 
 
 private fun createUiReactionList(
     reaction: List<LocalReaction>,
-    postId: Int,
-    senderId: Int,
 ): List<ItemReaction> {
 
     if (reaction.isNullOrEmpty()) {
@@ -79,7 +74,7 @@ private fun createUiReactionList(
             DomainReaction(
                 emojiName = name,
                 emojiCode = reaction.first { it.emojiName == name }.emojiCode,
-                emojiGliph = reaction.first { it.emojiName == name }.emojiCode.getUnicodeGlyph(),
+                emojiGlyph = reaction.first { it.emojiName == name }.emojiCode.getUnicodeGlyph(),
                 count = count,
                 isClicked = checkEmoji(reaction, name))
         }
@@ -93,11 +88,11 @@ private fun createUiReactionList(
                 val newClicked =
                     if (emoji.isClicked) true else isClicked
                 itemReaction[emoji.emojiCode] =
-                    ItemReaction(emoji.emojiCode, emoji.emojiGliph, newCount, newClicked)
+                    ItemReaction(emoji.emojiCode, emoji.emojiGlyph, newCount, newClicked)
             }
         } else {
             itemReaction[emoji.emojiCode] =
-                ItemReaction(emoji.emojiCode, emoji.emojiGliph, emoji.count, emoji.isClicked)
+                ItemReaction(emoji.emojiCode, emoji.emojiGlyph, emoji.count, emoji.isClicked)
         }
     }
 

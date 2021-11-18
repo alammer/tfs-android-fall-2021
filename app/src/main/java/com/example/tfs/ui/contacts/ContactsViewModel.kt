@@ -3,14 +3,9 @@ package com.example.tfs.ui.contacts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.data.RepositoryImpl
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.example.tfs.domain.RepositoryImpl
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
 
 internal class ContactsViewModel : ViewModel() {
 
