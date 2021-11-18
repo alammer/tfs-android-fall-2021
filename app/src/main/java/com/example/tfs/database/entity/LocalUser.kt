@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "contacts")
-class LocalUser (
+data class LocalUser (
 
     @PrimaryKey
     @NotNull

@@ -44,7 +44,7 @@ data class LocalPost(
 )
 
 @Entity(tableName = "reactions")
-class LocalReaction(
+data class LocalReaction(
 
     @PrimaryKey(autoGenerate = true)
     @NotNull

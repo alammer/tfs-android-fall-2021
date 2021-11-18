@@ -27,6 +27,8 @@ interface Repository {
 
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
 
+    fun fetchUserList(query: String): Observable<List<LocalUser>>
+
     fun getRemoteUser(userId: Int): Single<DomainUser>
 
     fun sendMessage(
@@ -77,10 +79,7 @@ class RepositoryImpl : Repository {
         return database.getStreams(isSubscribed)
             .flatMapObservable { localStreamList: List<LocalStream> ->
                 remoteSource
-/*                    .observeOn(Schedulers.computation())    //DiffUtil maybe?
-                   .filter { remoteStreamList: List<LocalStream> ->
-                        remoteStreamList != localStreamList
-                    }*/
+                    //DiffUtil?
                     .flatMapSingle { remoteStreamList ->
                         database.insertStreams(remoteStreamList)
                             .andThen(Single.just(remoteStreamList))
@@ -108,6 +107,27 @@ class RepositoryImpl : Repository {
             }
     }
 
+    override fun fetchUserList(
+        query: String,
+    ): Observable<List<LocalUser>> {
+        val remoteSource: Observable<List<LocalUser>> =
+            getRemoteUserList()
+
+        return getLocalUserList()
+            .flatMapObservable { localUserList: List<LocalUser> ->
+                remoteSource
+/*                    .observeOn(Schedulers.computation())    //DiffUtil maybe?
+                   .filter { remoteStreamList: List<LocalStream> ->
+                        remoteStreamList != localStreamList
+                    }*/
+                    .flatMapSingle { remoteUserList ->
+                        database.insertAllUsers(remoteUserList)
+                            .andThen(Single.just(remoteUserList.filter { it.userName.contains(query) }))
+                    }
+                    .startWith(localUserList.filter { it.userName.contains(query) })
+            }
+    }
+
     private fun getRemoteStreams(
         query: String,
         isSubscribed: Boolean,
@@ -115,13 +135,13 @@ class RepositoryImpl : Repository {
     ): Observable<List<LocalStream>> =
         if (isSubscribed) fetchSubscribedStreams(expanded, query) else fetchRawStreams(expanded,
             query)
+            .subscribeOn(Schedulers.io())
 
     private fun fetchSubscribedStreams(
         expanded: List<Int>,
         query: String,
     ): Observable<List<LocalStream>> =
         networkService.getSubscribedStreams()
-            .subscribeOn(Schedulers.io())
             .map { response -> response.streams.filter { it.name.contains(query) } }
             .toObservable()
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -138,7 +158,6 @@ class RepositoryImpl : Repository {
         query: String,
     ): Observable<List<LocalStream>> =
         networkService.getRawStreams()
-            .subscribeOn(Schedulers.io())
             .map { response -> response.streams.filter { it.name.contains(query) } }
             .toObservable()
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -181,7 +200,6 @@ class RepositoryImpl : Repository {
 
     private fun getRemotePostList(streamName: String, topicName: String) =
         networkService.getRemotePostList(createGetTopicQuery(streamName, topicName))
-            .subscribeOn(Schedulers.io())
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
             .toObservable()
 
@@ -194,18 +212,24 @@ class RepositoryImpl : Repository {
         })
     }
 
-    private fun getLocalUsers(query: String): Observable<List<LocalUser>> =
+    private fun getLocalUserList(): Single<List<LocalUser>> =
         database.getAllUsers()
-            .observeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
+
+    private fun getRemoteUserList(): Observable<List<LocalUser>> =
+        networkService.getAllUsers()
+            .subscribeOn(Schedulers.io())
+            .map { response -> response.userList }
+            .toObservable()
+            .concatMap { userList -> Observable.fromIterable(userList) }
+            .map { it.toLocalUser() }
+            .toList()
             .toObservable()
 
-    private fun getRemoteUserList(query: String): Observable<List<LocalUser>> =
-        fetchUserList(query)
-
     override fun getRemoteUser(userId: Int): Single<DomainUser> =
-        fetchUserPresence(userId)
+        getUserPresence(userId)
 
-    private fun fetchUserPresence(userId: Int) =
+    private fun getUserPresence(userId: Int) =
         Single.zip(networkService.getUser(userId),
             networkService.getUserPresence(userId),
             { user, presence -> Pair(user, presence) })
@@ -213,18 +237,6 @@ class RepositoryImpl : Repository {
                 user.toDomainUser(presence.userPresence.userPresence)
             }
             .subscribeOn(Schedulers.io())
-
-
-    private fun fetchUserList(query: String) =
-        networkService.getAllUsers()
-            .subscribeOn(Schedulers.io())
-            .map { response -> response.userList }
-            .toObservable()
-            .concatMap { userList -> Observable.fromIterable(userList) }
-            .filter { it.name.contains(query) }
-            .map { it.toLocalUser() }
-            .toList()
-            .toObservable()
 
     private fun createGetTopicQuery(parentStream: String, topicName: String) =
         hashMapOf<String, Any>(
