@@ -10,19 +10,23 @@ import com.example.tfs.util.shortDate
 import com.example.tfs.util.startOfDay
 import com.example.tfs.util.year
 
-internal class TopicToItemMapper : (List<PostWithReaction>) -> (List<PostItem>) {
+internal class TopicToItemMapper : (List<PostWithReaction>) -> TopicListObject {
 
-    override fun invoke(postList: List<PostWithReaction>): List<PostItem> =
+    override fun invoke(postList: List<PostWithReaction>): TopicListObject =
         createDomainPostItemList(postList)
 
 
-    private fun createDomainPostItemList(rawList: List<PostWithReaction>): List<PostItem> {
+    private fun createDomainPostItemList(rawList: List<PostWithReaction>): TopicListObject {
 
         val datedPostList = mutableListOf<PostItem>()
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis()
 
-        rawList.forEach { post ->
+        val upAnchorId = rawList.firstOrNull()?.post?.postId ?: 0
+        val downAnchorId = rawList.lastOrNull()?.post?.postId ?: 0
+        val localLength = rawList.size
+
+            rawList.forEach { post ->
             if (post.post.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = post.post.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
@@ -39,9 +43,16 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> (List<PostItem>) 
             //}
         }
 
-        return datedPostList.toList()
+        return TopicListObject(
+            itemList = datedPostList.toList(),
+            upAnchorId = upAnchorId,
+            downAnchorId = downAnchorId,
+            localDataLength = localLength,
+            uiDataLength = datedPostList.size
+        )
     }
 }
+
 
 fun PostWithReaction.toOwnerPostItem() =
     PostItem.OwnerPostItem(id = post.postId,
@@ -110,4 +121,12 @@ data class ItemReaction(
     val unicodeGliph: String,
     val count: Int,
     val isClicked: Boolean = false,
+)
+
+data class TopicListObject(
+    val itemList: List<PostItem>,
+    val upAnchorId: Int,
+    val downAnchorId: Int,
+    val localDataLength: Int,
+    val uiDataLength: Int,
 )

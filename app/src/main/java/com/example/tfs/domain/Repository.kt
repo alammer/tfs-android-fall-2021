@@ -7,6 +7,7 @@ import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.domain.contacts.DomainUser
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
+import com.example.tfs.ui.topic.PagingQuery
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -26,6 +27,8 @@ interface Repository {
     ): Observable<List<LocalStream>>
 
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
+
+    fun uploadTopic(query: PagingQuery): Observable<List<PostWithReaction>>
 
     fun fetchUserList(query: String): Observable<List<LocalUser>>
 
@@ -77,6 +80,7 @@ class RepositoryImpl : Repository {
             getRemoteStreams(query, isSubscribed, expanded)
 
         return database.getStreams(isSubscribed)
+            .subscribeOn(Schedulers.io())
             .flatMapObservable { localStreamList: List<LocalStream> ->
                 remoteSource
                     //DiffUtil?
@@ -93,19 +97,30 @@ class RepositoryImpl : Repository {
         topicName: String,
     ): Observable<List<PostWithReaction>> {
         val remoteSource: Observable<List<PostWithReaction>> =
-            getRemoteTopic(streamName, topicName)
+            getRemoteTopic(PagingQuery(streamName, topicName, isInitial = true))
 
         return getLocalTopic(streamName, topicName)
+            .subscribeOn(Schedulers.io())
             .flatMapObservable { localPostList: List<PostWithReaction> ->
                 remoteSource
                     .flatMapSingle { remotePostList ->
-                        insertPostListToDB(remotePostList)
+                        insertTopicToDB(remotePostList)
                             .andThen(Single.just(remotePostList))
 
                     }
                     .startWith(localPostList)
             }
     }
+
+    override fun uploadTopic(
+        query: PagingQuery,
+    ): Observable<List<PostWithReaction>> =
+
+        Observable.zip(getRemoteTopic(query), database.getTopicSize().toObservable(),
+            { newPage, currentSize -> Pair(newPage, currentSize) })
+            .subscribeOn(Schedulers.io())
+            .map { (page, size) -> addNextPage(page, query, size) }
+            .flatMapSingle { database.getPostWithReaction(query.streamName, query.topicName) }
 
     override fun fetchUserList(
         query: String,
@@ -114,6 +129,7 @@ class RepositoryImpl : Repository {
             getRemoteUserList()
 
         return getLocalUserList()
+            .subscribeOn(Schedulers.io())
             .flatMapObservable { localUserList: List<LocalUser> ->
                 remoteSource
 /*                    .observeOn(Schedulers.computation())    //DiffUtil maybe?
@@ -135,7 +151,6 @@ class RepositoryImpl : Repository {
     ): Observable<List<LocalStream>> =
         if (isSubscribed) fetchSubscribedStreams(expanded, query) else fetchRawStreams(expanded,
             query)
-            .subscribeOn(Schedulers.io())
 
     private fun fetchSubscribedStreams(
         expanded: List<Int>,
@@ -151,7 +166,6 @@ class RepositoryImpl : Repository {
             }
             .toList()
             .toObservable()
-
 
     private fun fetchRawStreams(
         expanded: List<Int>,
@@ -189,27 +203,40 @@ class RepositoryImpl : Repository {
         topicName: String,
     ): Single<List<PostWithReaction>> =
         database.getPostWithReaction(streamName, topicName)
-            .subscribeOn(Schedulers.io())
 
-    private fun getRemoteTopic(
-        parentStream: String,
-        topicName: String,
-    ): Observable<List<PostWithReaction>> =
-        getRemotePostList(parentStream, topicName)
-            .subscribeOn(Schedulers.io())
-
-    private fun getRemotePostList(streamName: String, topicName: String, anchorPostId: Int = 0) =
-        networkService.getRemotePostList(createPostListQuery(streamName, topicName))
+    private fun getRemoteTopic(query: PagingQuery) =
+        networkService.getRemotePostList(createPostListQuery(query))
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
             .toObservable()
 
-    private fun insertPostListToDB(
+    private fun insertTopicToDB(
         remotePostList: List<PostWithReaction>,
-    ): Completable {
-        return Completable.concat(remotePostList.map { post ->
+    ): Completable =
+        database.deleteTopic()
+            .andThen(insertPostList(remotePostList))
+
+    private fun insertPostList(remotePostList: List<PostWithReaction>) =
+        Completable.concat(remotePostList.map { post ->
             database.insertPost(post.post)
                 .andThen(database.insertReactions(post.reaction))
         })
+
+    private fun addNextPage(
+        newPage: List<PostWithReaction>,
+        query: PagingQuery,
+        currentSize: Int,
+    ): Completable {
+        return if (newPage.size + currentSize <= 50) {
+            insertPostList(newPage)
+        } else {
+            if (query.isDownScroll) {
+                database.removeFirstPage(newPage.size - (50 - currentSize))
+                    .andThen(insertPostList(newPage))
+            } else {
+                database.removeLastPage(newPage.size - (50 - currentSize))
+                    .andThen(insertPostList(newPage))
+            }
+        }
     }
 
     private fun getLocalUserList(): Single<List<LocalUser>> =
@@ -218,7 +245,6 @@ class RepositoryImpl : Repository {
 
     private fun getRemoteUserList(): Observable<List<LocalUser>> =
         networkService.getAllUsers()
-            .subscribeOn(Schedulers.io())
             .map { response -> response.userList }
             .toObservable()
             .concatMap { userList -> Observable.fromIterable(userList) }
@@ -227,33 +253,33 @@ class RepositoryImpl : Repository {
             .toObservable()
 
     override fun getRemoteUser(userId: Int): Single<DomainUser> =
-        getUserPresence(userId)
+        getUserWithPresence(userId)
+            .subscribeOn(Schedulers.io())
 
-    private fun getUserPresence(userId: Int) =
+    private fun getUserWithPresence(userId: Int) =
         Single.zip(networkService.getUser(userId),
             networkService.getUserPresence(userId),
             { user, presence -> Pair(user, presence) })
             .map { (user, presence) ->
                 user.toDomainUser(presence.userPresence.userPresence)
             }
-            .subscribeOn(Schedulers.io())
 
-    private fun createPostListQuery(parentStream: String, topicName: String, anchorPost: Int = 0, isForward: Boolean = true, isInitial: Boolean = false) =
-        if (isInitial) {
+    private fun createPostListQuery(query: PagingQuery) =
+        if (query.isInitial) {
             hashMapOf<String, Any>(
                 "anchor" to "newest",
                 "num_before" to 50,
-                "num_after" to  0,
-                "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
-                    NarrowObject(topicName, "topic")))
+                "num_after" to 0,
+                "narrow" to Json.encodeToString(listOf(NarrowObject(query.streamName, "stream"),
+                    NarrowObject(query.topicName, "topic")))
             )
         } else {
             hashMapOf<String, Any>(
-                "anchor" to anchorPost,
-                "num_before" to if (isForward) 0 else 20,
-                "num_after" to if (isForward) 20 else 0,
-                "narrow" to Json.encodeToString(listOf(NarrowObject(parentStream, "stream"),
-                    NarrowObject(topicName, "topic")))
+                "anchor" to query.anchorId,
+                "num_before" to if (query.isDownScroll) 0 else 20,
+                "num_after" to if (query.isDownScroll) 20 else 0,
+                "narrow" to Json.encodeToString(listOf(NarrowObject(query.streamName, "stream"),
+                    NarrowObject(query.topicName, "topic")))
             )
         }
 

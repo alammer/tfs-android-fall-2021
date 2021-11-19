@@ -1,7 +1,6 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -15,9 +14,6 @@ import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
-import androidx.recyclerview.widget.RecyclerView
-
-
 
 
 class TopicFragment : Fragment(R.layout.fragment_topic) {
@@ -94,7 +90,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
 
             rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) {
                 override fun loadPage(isForward: Boolean) {
-                    topicViewModel.updateTopic(isForward)
+                    topicViewModel.uploadTopic(isForward)
                 }
             })
 
