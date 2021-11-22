@@ -1,6 +1,7 @@
 package com.example.tfs.database.entity
 
 import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "posts")
@@ -8,7 +9,7 @@ data class LocalPost(
 
     @PrimaryKey
     @NotNull
-    @ColumnInfo(name="post_id")
+    @ColumnInfo(name = "post_id")
     val postId: Int,
 
     @NotNull
@@ -43,20 +44,28 @@ data class LocalPost(
     val postFlags: List<String>,
 )
 
-@Entity(tableName = "reactions")
+@Entity(tableName = "reactions",
+    /*primaryKeys = ["owner_post_id", "emoji_code", "user_id"],*/
+    foreignKeys = [
+        ForeignKey(entity = LocalPost::class,
+            parentColumns = ["post_id"],
+            childColumns = ["owner_post_id"],
+            onDelete = CASCADE)
+    ],
+    /*indices = [Index(value = ["owner_post_id"], unique = true)]*/)
 data class LocalReaction(
 
     @PrimaryKey(autoGenerate = true)
     @NotNull
-    @ColumnInfo(name="id")
+    @ColumnInfo(name = "id")
     val id: Int = 0,
 
     @NotNull
-    @ColumnInfo(name="owner_post_id")
+    @ColumnInfo(name = "owner_post_id")
     val ownerPostId: Int,
 
     @NotNull
-    @ColumnInfo(name="emoji_name")
+    @ColumnInfo(name = "emoji_name")
     val emojiName: String,
 
     @NotNull
@@ -64,22 +73,26 @@ data class LocalReaction(
     val emojiCode: String,
 
     @NotNull
-    @ColumnInfo(name="user_id")
+    @ColumnInfo(name = "is_custom")
+    val isCustom: Boolean,
+
+    @NotNull
+    @ColumnInfo(name = "user_id")
     val userId: Int,
 )
 
 @Entity(primaryKeys = ["post_id", "owner_post_id"])
 data class PostReactionXRef(
-    val post_id: Long,
-    val owner_post_id: Long
+    val post_id: Int,
+    val owner_post_id: Int,
 )
 
 data class PostWithReaction(
-    @Embedded val post: LocalPost,
+    @Embedded
+    val post: LocalPost,
     @Relation(
         parentColumn = "post_id",
         entityColumn = "owner_post_id",
-        associateBy = Junction(PostReactionXRef::class)
     )
     val reaction: List<LocalReaction>
 )

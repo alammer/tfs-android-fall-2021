@@ -1,5 +1,6 @@
 package com.example.tfs.domain
 
+import android.util.Log
 import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.database.entity.LocalUser
@@ -98,15 +99,16 @@ class RepositoryImpl : Repository {
     ): Observable<List<PostWithReaction>> {
         val remoteSource: Observable<List<PostWithReaction>> =
             getRemoteTopic(PagingQuery(streamName, topicName, isInitial = true))
+        
+        Log.i("Repository", "Function called: fetchTopic()")
 
-        return getLocalTopic(streamName, topicName)
+        return getLocalTopic()
             .subscribeOn(Schedulers.io())
             .flatMapObservable { localPostList: List<PostWithReaction> ->
                 remoteSource
                     .flatMapSingle { remotePostList ->
                         insertTopicToDB(remotePostList)
                             .andThen(Single.just(remotePostList))
-
                     }
                     .startWith(localPostList)
             }
@@ -115,12 +117,42 @@ class RepositoryImpl : Repository {
     override fun uploadTopic(
         query: PagingQuery,
     ): Observable<List<PostWithReaction>> =
-
         Observable.zip(getRemoteTopic(query), database.getTopicSize().toObservable(),
             { newPage, currentSize -> Pair(newPage, currentSize) })
             .subscribeOn(Schedulers.io())
-            .map { (page, size) -> addNextPage(page, query, size) }
-            .flatMapSingle { database.getPostWithReaction(query.streamName, query.topicName) }
+            .flatMapSingle { (page, size) ->
+                addNextPage(query, page, size)
+                    .andThen(database.getPostWithReaction())
+            }
+           /*.subscribeOn(Schedulers.io())    //WTF???
+            .map { (page, size) -> addNextPage(query, page, size) }
+            .flatMapSingle { database.getPostWithReaction(query.streamName, query.topicName) }*/
+
+
+    private fun insertPostList(remotePostList: List<PostWithReaction>): Completable {
+        return Completable.concat(remotePostList.map { post ->
+            database.insertPost(post.post)
+                .andThen(database.insertReactions(post.reaction))
+        })
+    }
+
+    private fun addNextPage(
+        query: PagingQuery,
+        newPage: List<PostWithReaction>,
+        currentSize: Int,
+    ): Completable {
+        return if (newPage.size + currentSize <= 51) {
+            insertPostList(newPage)
+        } else {
+            if (query.isDownScroll) {
+                database.removeFirstPage(newPage.size - (51 - currentSize))
+                    .andThen(insertPostList(newPage))
+            } else {
+                database.removeLastPage(newPage.size - (51 - currentSize))
+                    .andThen(insertPostList(newPage))
+            }
+        }
+    }
 
     override fun fetchUserList(
         query: String,
@@ -198,11 +230,12 @@ class RepositoryImpl : Repository {
     private fun getStream(stream: Stream, isSubscribed: Boolean = false): Observable<LocalStream> =
         Observable.just(stream.toLocalStream(isSubscribed))
 
-    private fun getLocalTopic(
-        streamName: String,
-        topicName: String,
-    ): Single<List<PostWithReaction>> =
-        database.getPostWithReaction(streamName, topicName)
+    private fun getLocalTopic(): Single<List<PostWithReaction>> {
+        Log.i("Repository", "Function called: getLocalTopic()")
+        return database.getPostWithReaction()
+            /*.doAfterSuccess { Log.i("Repository", "Function called: getLocalTopic() Success $it") }
+            .doOnError { Log.i("Repository", "Function called: getLocalTopic() Error $it") }*/
+    }
 
     private fun getRemoteTopic(query: PagingQuery) =
         networkService.getRemotePostList(createPostListQuery(query))
@@ -214,30 +247,6 @@ class RepositoryImpl : Repository {
     ): Completable =
         database.deleteTopic()
             .andThen(insertPostList(remotePostList))
-
-    private fun insertPostList(remotePostList: List<PostWithReaction>) =
-        Completable.concat(remotePostList.map { post ->
-            database.insertPost(post.post)
-                .andThen(database.insertReactions(post.reaction))
-        })
-
-    private fun addNextPage(
-        newPage: List<PostWithReaction>,
-        query: PagingQuery,
-        currentSize: Int,
-    ): Completable {
-        return if (newPage.size + currentSize <= 50) {
-            insertPostList(newPage)
-        } else {
-            if (query.isDownScroll) {
-                database.removeFirstPage(newPage.size - (50 - currentSize))
-                    .andThen(insertPostList(newPage))
-            } else {
-                database.removeLastPage(newPage.size - (50 - currentSize))
-                    .andThen(insertPostList(newPage))
-            }
-        }
-    }
 
     private fun getLocalUserList(): Single<List<LocalUser>> =
         database.getAllUsers()

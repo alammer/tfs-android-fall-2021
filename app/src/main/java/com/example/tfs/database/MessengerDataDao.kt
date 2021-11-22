@@ -38,21 +38,21 @@ interface MessengerDataDao {
     @Query("SELECT count(post_id) FROM posts")
     fun getTopicSize(): Single<Int>
 
-    @Query("DELETE FROM posts WHERE post_id IN (SELECT post_id FROM posts ORDER BY post_id ASC LIMIT :newPage)")
-    fun removeFirstPage(newPage: Int): Completable
+    @Query("DELETE FROM posts WHERE post_id IN (SELECT post_id FROM posts ORDER BY post_id ASC LIMIT :newPageSize)")
+    fun removeFirstPage(newPageSize: Int): Completable
 
-    @Query("DELETE FROM posts WHERE post_id IN (SELECT post_id FROM posts ORDER BY post_id DESC LIMIT :newPage)")
-    fun removeLastPage(newPage: Int): Completable
+    @Query("DELETE FROM posts WHERE post_id IN (SELECT post_id FROM posts ORDER BY post_id DESC LIMIT :newPageSize)")
+    fun removeLastPage(newPageSize: Int): Completable
 
     @Transaction
-    @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName ORDER BY post_id ASC")
-    fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
+    @Query("SELECT * FROM posts")
+    fun getPostWithReaction(): Single<List<PostWithReaction>>
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertReactions(localPosts: List<LocalReaction>): Completable
+    fun insertReactions(localReaction: List<LocalReaction>): Completable
 
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
     fun deleteReactions(postId: Int): Completable

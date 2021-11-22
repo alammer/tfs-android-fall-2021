@@ -115,7 +115,7 @@ fun EmojisLayout.addReaction(reaction: List<ItemReaction>, isOwner: Boolean = fa
     reaction.forEach {
         val view = EmojiView(
             context,
-            emojiCode = it.unicodeGliph,//it.emojiCode.toInt(),
+            emojiCode = it.unicodeGlyph,//it.emojiCode.toInt(),
             count = it.count,
             isClicked = it.isClicked
         )

@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.adapter
 
+import android.util.Log
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.domain.topic.DomainReaction
@@ -12,8 +13,11 @@ import com.example.tfs.util.year
 
 internal class TopicToItemMapper : (List<PostWithReaction>) -> TopicListObject {
 
-    override fun invoke(postList: List<PostWithReaction>): TopicListObject =
-        createDomainPostItemList(postList)
+    override fun invoke(postList: List<PostWithReaction>): TopicListObject {
+        val c = createDomainPostItemList(postList)
+        Log.i("Repo", "Function called: after invoke() $c")
+        return c
+    }
 
 
     private fun createDomainPostItemList(rawList: List<PostWithReaction>): TopicListObject {
@@ -26,7 +30,7 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> TopicListObject {
         val downAnchorId = rawList.lastOrNull()?.post?.postId ?: 0
         val localLength = rawList.size
 
-            rawList.forEach { post ->
+        rawList.forEach { post ->
             if (post.post.timeStamp.startOfDay() > startTopicDate) {
                 startTopicDate = post.post.timeStamp.startOfDay()
                 if (startTopicDate.year < currentDate.year) {
@@ -74,6 +78,7 @@ private fun createUiReactionList(
     reaction: List<LocalReaction>,
 ): List<ItemReaction> {
 
+
     if (reaction.isNullOrEmpty()) {
         return emptyList()
     }
@@ -84,11 +89,15 @@ private fun createUiReactionList(
         .map { (name, count) ->
             DomainReaction(
                 emojiName = name,
-                emojiCode = reaction.first { it.emojiName == name }.emojiCode,
-                emojiGlyph = reaction.first { it.emojiName == name }.emojiCode.getUnicodeGlyph(),
-                count = count,
-                isClicked = checkEmoji(reaction, name))
-        }
+                emojiCode = reaction.first { it.emojiName == name }.run {
+                                           if (isCustom) name else emojiCode
+                },
+                emojiGlyph = reaction.first { it.emojiName == name }.run {
+                    if (isCustom) "ZCE" else emojiCode.getUnicodeGlyph()
+                },
+                    count = count,
+                    isClicked = checkEmoji(reaction, name))
+                }
 
     val itemReaction = mutableMapOf<String, ItemReaction>()
 
@@ -118,7 +127,7 @@ private fun checkEmoji(reaction: List<LocalReaction>, name: String): Boolean {
 
 data class ItemReaction(
     val emojiCode: String,
-    val unicodeGliph: String,
+    val unicodeGlyph: String,
     val count: Int,
     val isClicked: Boolean = false,
 )

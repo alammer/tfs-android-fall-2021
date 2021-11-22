@@ -13,9 +13,11 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
 
 internal class TopicViewModel : ViewModel() {
+
     //remove field after db implement
     private var lastEmoji: String = ""
     private var upAnchorId = -1
@@ -46,7 +48,6 @@ internal class TopicViewModel : ViewModel() {
     }
 
     fun uploadTopic(isDownScroll: Boolean = true) {
-        Log.i("UploadScroll", "Function called: uploadTopic() $isDownScroll $currentDataSize $downAnchorId $upAnchorId")
         if (currentDataSize < MAX_LIST_SIZE) {
             if (isDownScroll) initialFetchTopic.onNext(streamName to topicName)
         } else {
@@ -59,9 +60,9 @@ internal class TopicViewModel : ViewModel() {
 
     private fun subscribeToUploadTopic() {
         pagingFetch
-
             .subscribeOn(Schedulers.io())
             .doOnNext { _topicScreenState.postValue(TopicScreenState.Loading) }
+            .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { repository.uploadTopic(it) }
             .map(topicToItemMapper)
             .observeOn(AndroidSchedulers.mainThread(), true)
@@ -86,6 +87,7 @@ internal class TopicViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { uiTopicObject ->
+                    Log.i("Repo", "Function called: in subscribeBy $uiTopicObject")
                     upAnchorId = uiTopicObject.upAnchorId
                     downAnchorId = uiTopicObject.downAnchorId
                     currentDataSize = uiTopicObject.localDataLength

@@ -45,7 +45,7 @@ data class PostReaction(
     @SerialName("emoji_code")
     val emojiCode: String,
     @SerialName("reaction_type")
-    val type: String,
+    val emojiType: String,
     @SerialName("user_id")
     val userId: Int,
 )
@@ -71,6 +71,7 @@ fun PostReaction.toLocalReaction(postId: Int) =
         ownerPostId = postId,
         emojiName = emojiName,
         emojiCode = emojiCode,
+        isCustom = emojiType == "zulip_extra_emoji",
         userId = userId
     )
 

@@ -16,14 +16,14 @@ abstract class TopicScrollListetner(
         val totalItemCount = linearLayoutManager.itemCount
         val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
 
-        val updateUpScrollPosition = UPDATE_THRESHOLD
+        //val updateUpScrollPosition = UPDATE_THRESHOLD
         val updateDownScrollPosition = totalItemCount - UPDATE_THRESHOLD
 
-        if (lastVisibleItemPosition >= updateDownScrollPosition && dy > 0 ) {
+        if (lastVisibleItemPosition == updateDownScrollPosition && dy > 0 ) {
             loadPage()
         }
 
-        if (firstVisibleItemPosition <= updateUpScrollPosition && dy < 0) {
+        if (firstVisibleItemPosition == UPDATE_THRESHOLD && dy < 0) {
             loadPage(false)
         }
     }
