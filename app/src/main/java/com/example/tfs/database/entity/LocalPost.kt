@@ -44,7 +44,8 @@ data class LocalPost(
     val postFlags: List<String>,
 )
 
-@Entity(tableName = "reactions",
+@Entity(
+    tableName = "reactions",
     /*primaryKeys = ["owner_post_id", "emoji_code", "user_id"],*/
     foreignKeys = [
         ForeignKey(entity = LocalPost::class,
@@ -52,7 +53,8 @@ data class LocalPost(
             childColumns = ["owner_post_id"],
             onDelete = CASCADE)
     ],
-    /*indices = [Index(value = ["owner_post_id"], unique = true)]*/)
+    /*indices = [Index(value = ["owner_post_id"], unique = true)]*/
+)
 data class LocalReaction(
 
     @PrimaryKey(autoGenerate = true)
@@ -81,12 +83,6 @@ data class LocalReaction(
     val userId: Int,
 )
 
-@Entity(primaryKeys = ["post_id", "owner_post_id"])
-data class PostReactionXRef(
-    val post_id: Int,
-    val owner_post_id: Int,
-)
-
 data class PostWithReaction(
     @Embedded
     val post: LocalPost,
@@ -94,5 +90,5 @@ data class PostWithReaction(
         parentColumn = "post_id",
         entityColumn = "owner_post_id",
     )
-    val reaction: List<LocalReaction>
+    val reaction: List<LocalReaction>,
 )

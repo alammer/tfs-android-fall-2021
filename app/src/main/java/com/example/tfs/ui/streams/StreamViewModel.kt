@@ -3,7 +3,7 @@ package com.example.tfs.ui.streams
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.domain.RepositoryImpl
+import com.example.tfs.domain.streams.StreamRepositoryImpl
 import com.example.tfs.ui.streams.adapter.StreamToItemMapper
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 internal class StreamViewModel : ViewModel() {
 
-    private val repository = RepositoryImpl()
+    private val repository = StreamRepositoryImpl()
     private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
     private val expandedStreams: MutableList<Int> = mutableListOf()
     private var isSubscribed = true

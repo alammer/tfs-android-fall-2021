@@ -1,11 +1,10 @@
 package com.example.tfs.ui.topic
 
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.domain.RepositoryImpl
+import com.example.tfs.domain.topic.TopicRepositoryImpl
 import com.example.tfs.ui.topic.adapter.TopicToItemMapper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -26,7 +25,7 @@ internal class TopicViewModel : ViewModel() {
     private lateinit var streamName: String
     private lateinit var topicName: String
 
-    private val repository = RepositoryImpl()
+    private val repository = TopicRepositoryImpl()
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -87,7 +86,6 @@ internal class TopicViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { uiTopicObject ->
-                    Log.i("Repo", "Function called: in subscribeBy $uiTopicObject")
                     upAnchorId = uiTopicObject.upAnchorId
                     downAnchorId = uiTopicObject.downAnchorId
                     currentDataSize = uiTopicObject.localDataLength
@@ -137,7 +135,7 @@ data class PagingQuery(
     val topicName: String,
     val anchorId: Int = 0,
     val isDownScroll: Boolean = true,
-    val isInitial: Boolean = false
+    val isInitial: Boolean = false,
 )
 
 private const val MAX_LIST_SIZE = 50

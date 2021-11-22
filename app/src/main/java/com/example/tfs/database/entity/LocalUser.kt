@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "contacts")
-data class LocalUser (
+data class LocalUser(
 
     @PrimaryKey
     @NotNull
-    @ColumnInfo(name="user_id")
+    @ColumnInfo(name = "user_id")
     val id: Int,
 
     @NotNull
@@ -27,4 +27,12 @@ data class LocalUser (
     @NotNull
     @ColumnInfo(name = "user_status")
     val isActive: Boolean,
+
+    @NotNull
+    @ColumnInfo(name = "user_state")
+    val userState: String = "",
+
+    @NotNull
+    @ColumnInfo(name = "last_visit")
+    val lastVisit: Long = 0,
 )

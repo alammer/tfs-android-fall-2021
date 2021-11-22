@@ -3,6 +3,7 @@ package com.example.tfs.database
 import androidx.room.*
 import com.example.tfs.database.entity.*
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
@@ -22,6 +23,9 @@ interface MessengerDataDao {
 
     @Query("SELECT * FROM contacts")
     fun getAllUsers(): Single<List<LocalUser>>
+
+    @Query("SELECT * FROM contacts WHERE user_id = :userId")
+    fun getUser(userId: Int): Maybe<LocalUser>
 
     @Query("DELETE FROM contacts")
     fun clearContacts(): Completable

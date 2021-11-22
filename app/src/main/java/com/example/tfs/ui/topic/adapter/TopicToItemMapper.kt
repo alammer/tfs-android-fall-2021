@@ -1,45 +1,38 @@
 package com.example.tfs.ui.topic.adapter
 
-import android.util.Log
+
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.domain.topic.DomainReaction
 import com.example.tfs.domain.topic.PostItem
 import com.example.tfs.ui.topic.getUnicodeGlyph
-import com.example.tfs.util.fullDate
-import com.example.tfs.util.shortDate
-import com.example.tfs.util.startOfDay
-import com.example.tfs.util.year
+import com.example.tfs.util.*
+import java.util.*
 
 internal class TopicToItemMapper : (List<PostWithReaction>) -> TopicListObject {
 
-    override fun invoke(postList: List<PostWithReaction>): TopicListObject {
-        val c = createDomainPostItemList(postList)
-        Log.i("Repo", "Function called: after invoke() $c")
-        return c
-    }
-
+    override fun invoke(postList: List<PostWithReaction>): TopicListObject =
+        createDomainPostItemList(postList)
 
     private fun createDomainPostItemList(rawList: List<PostWithReaction>): TopicListObject {
 
         val datedPostList = mutableListOf<PostItem>()
         var startTopicDate = 0L
-        val currentDate = System.currentTimeMillis()
+        val currentDate = System.currentTimeMillis() + localOffset
 
         val upAnchorId = rawList.firstOrNull()?.post?.postId ?: 0
         val downAnchorId = rawList.lastOrNull()?.post?.postId ?: 0
         val localLength = rawList.size
 
         rawList.forEach { post ->
-            if (post.post.timeStamp.startOfDay() > startTopicDate) {
-                startTopicDate = post.post.timeStamp.startOfDay()
+            if (post.post.timeStamp.startOfDay(localOffset/1000L) > startTopicDate) {
+                startTopicDate = post.post.timeStamp.startOfDay(localOffset/1000L)
                 if (startTopicDate.year < currentDate.year) {
                     datedPostList.add(PostItem.LocalDateItem(startTopicDate.fullDate))
                 } else {
                     datedPostList.add(PostItem.LocalDateItem(startTopicDate.shortDate))
                 }
             }
-
             /*if (Random.nextBoolean()) {
             datedPostList.add(post.toOwnerPostItem())
             } else {*/
@@ -56,7 +49,6 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> TopicListObject {
         )
     }
 }
-
 
 fun PostWithReaction.toOwnerPostItem() =
     PostItem.OwnerPostItem(id = post.postId,
@@ -139,3 +131,5 @@ data class TopicListObject(
     val localDataLength: Int,
     val uiDataLength: Int,
 )
+
+private val localOffset = (TimeZone.getDefault().rawOffset + TimeZone.getDefault().dstSavings).toLong()

@@ -3,7 +3,7 @@ package com.example.tfs.ui.contacts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tfs.domain.RepositoryImpl
+import com.example.tfs.domain.contacts.ContactRepositoryImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 internal class ContactsViewModel : ViewModel() {
 
-    private val repository = RepositoryImpl()
+    private val repository = ContactRepositoryImpl()
     private var currentSearchQuery = ""
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()

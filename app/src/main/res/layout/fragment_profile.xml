@@ -63,23 +63,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/userProfile"
+    <TextView
+        android:id="@+id/tvProfileState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:textSize="@dimen/info_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProfileName">
-
-        <TextView
-            android:id="@+id/tvProfileState"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/state_color_green"
-            android:textSize="@dimen/info_text_size"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/tvProfileName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

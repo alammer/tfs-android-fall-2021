@@ -12,7 +12,10 @@ class ContactItemBinder(
 
         contactViewHolder.setContactName(item.userName)
         contactViewHolder.setContactEmail(item.email)
-        contactViewHolder.setContactState(if (item.isActive) R.drawable.ic_offline else R.drawable.ic_online)
+        contactViewHolder.setContactState(if (!item.isActive) R.drawable.ic_offline
+        else {
+            if (item.userState == "active") R.drawable.ic_online else R.drawable.ic_idle
+        })
 
         item.avatarUrl?.let {
             contactViewHolder.setContactAvatar(it)

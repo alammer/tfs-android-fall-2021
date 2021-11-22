@@ -64,12 +64,14 @@ data class AggregatedStatus(
     val userTimestamp: Long,
 )
 
-fun User.toLocalUser() = LocalUser(
+fun User.toLocalUser(presence: AggregatedStatus) = LocalUser(
     id = id,
     userName = name,
     email = email,
     avatarUrl = avatarUrl,
-    isActive = isActive
+    isActive = isActive,
+    userState = presence.userStatus,
+    lastVisit = presence.userTimestamp
 )
 
 fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =
