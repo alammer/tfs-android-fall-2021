@@ -1,6 +1,5 @@
 package com.example.tfs.network.models
 
-import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalStream
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -41,11 +40,12 @@ data class Topic(
 fun Stream.toLocalStream(
     isSubscribed: Boolean = false,
     topics: List<Topic> = emptyList(),
-) = LocalStream(id,
+) = LocalStream(
+    id,
     name,
     isSubscribed = isSubscribed,
     topics = topics.map { it.name },
-    )
+)
 
 
 

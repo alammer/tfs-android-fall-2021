@@ -29,6 +29,9 @@ interface ApiService {
     @GET("api/v1/users")
     fun getAllUsers(): Single<UserListResponse>
 
+    @GET("api/v1/users/me")
+    fun getOwner(): Single<User>
+
     @GET("api/v1/users/{user_id}")
     fun getUser(@Path("user_id") userId: Int): Single<UserResponse>
 
@@ -48,7 +51,7 @@ interface ApiService {
         @Path("message_id") message_id: Int,
         @Query("emoji_name") emoji_name: String,
         @Query("emoji_code") emoji_code: String,
-        @Query("reaction_type") reaction_type: String = "unicode_emoji"
+        @Query("reaction_type") reaction_type: String = "unicode_emoji",
     ): Completable
 
     @DELETE("api/v1/messages/{message_id}/reactions")
@@ -56,7 +59,7 @@ interface ApiService {
         @Path("message_id") message_id: Int,
         @Query("emoji_name") emoji_name: String,
         @Query("emoji_code") emoji_code: String,
-        @Query("reaction_type") reaction_type: String = "unicode_emoji"
+        @Query("reaction_type") reaction_type: String = "unicode_emoji",
     ): Completable
 
     companion object {

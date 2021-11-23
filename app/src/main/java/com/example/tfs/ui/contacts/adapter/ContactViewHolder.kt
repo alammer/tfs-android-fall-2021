@@ -3,12 +3,12 @@ package com.example.tfs.ui.contacts.adapter
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.toPx
 import com.google.android.material.imageview.ShapeableImageView
+import com.squareup.picasso.Picasso
 
 class ContactViewHolder(private val contactItemView: View) :
     RecyclerView.ViewHolder(contactItemView) {
@@ -20,7 +20,9 @@ class ContactViewHolder(private val contactItemView: View) :
     private val contactEmail: TextView = contactItemView.findViewById<TextView>(R.id.tvContactEmail)
 
     fun setContactAvatar(userAvatarUrl: String) {
-        contactAvatar.setImageURI(userAvatarUrl.toUri())
+        Picasso.get().load(userAvatarUrl)
+            .resize(CONTACT_AVATAR_WIDTH.toPx, CONTACT_AVATAR_WIDTH.toPx)
+            .centerCrop().into(contactAvatar)
     }
 
     fun setContactState(userState: Int) {

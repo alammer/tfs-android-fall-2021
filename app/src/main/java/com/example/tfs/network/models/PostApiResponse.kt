@@ -41,11 +41,11 @@ data class RemotePost(
 @Serializable
 data class PostReaction(
     @SerialName("emoji_name")
-    val emojiName: String,
+    val name: String,
     @SerialName("emoji_code")
-    val emojiCode: String,
+    val code: String,
     @SerialName("reaction_type")
-    val emojiType: String,
+    val type: String,
     @SerialName("user_id")
     val userId: Int,
 )
@@ -68,11 +68,11 @@ fun RemotePost.toLocalPostWithReaction() =
 
 fun PostReaction.toLocalReaction(postId: Int) =
     LocalReaction(
-        ownerPostId = postId,
-        emojiName = emojiName,
-        emojiCode = emojiCode,
-        isCustom = emojiType == "zulip_extra_emoji",
-        userId = userId
+        postId = postId,
+        name = name,
+        code = code,
+        userId = userId,
+        isCustom = type == "zulip_extra_emoji",
     )
 
 

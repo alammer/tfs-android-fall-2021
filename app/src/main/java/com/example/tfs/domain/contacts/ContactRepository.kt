@@ -4,12 +4,9 @@ import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalUser
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
-import com.example.tfs.network.models.UserPresence
-import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
 interface ContactRepository {
@@ -55,7 +52,7 @@ class ContactRepositoryImpl : ContactRepository {
             .map { response -> response.userList }
             .toObservable()
             .concatMap { userList -> Observable.fromIterable(userList) }
-            .flatMap {user -> getUserWithPresence(user) }
+            .flatMap { user -> getUserWithPresence(user) }
             .toList()
             .toObservable()
 
@@ -66,13 +63,16 @@ class ContactRepositoryImpl : ContactRepository {
     private fun getUserWithPresence(user: User) =
         Single.zip(networkService.getUser(user.id),
             getUserPresence(user.id),
-            { userResponse, presenceResponse -> Pair(userResponse.user, presenceResponse.userPresence.userPresence) })
+            { userResponse, presenceResponse ->
+                Pair(userResponse.user,
+                    presenceResponse.userPresence.userPresence)
+            })
             .map { (user, presence) ->
                 user.toLocalUser(presence)
             }
             .toObservable()
 
-private fun getUserPresence(userId: Int): Single<UserPresence> {
+    private fun getUserPresence(userId: Int): Single<UserPresence> {
         return networkService.getUserPresence(userId)
             .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available", 0L))))
     }

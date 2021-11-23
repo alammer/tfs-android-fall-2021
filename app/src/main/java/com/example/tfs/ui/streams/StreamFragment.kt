@@ -24,11 +24,15 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
     )
 
     private lateinit var streamViewAdapter: StreamViewAdapter
+    private var ownerId: Int = -1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
+        streamViewModel.owner.observe(viewLifecycleOwner) { owner ->
+            ownerId = owner?.id ?: -1
+        }
         streamViewModel.streamScreenState.observe(viewLifecycleOwner) { processStreamScreenState(it) }
     }
 
@@ -42,8 +46,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                 // viewBinding.loadingProgress.isVisible = true
             }
             is StreamScreenState.Error -> {
+                //Log.i("TopicStreamFragment", "Function called: error ${it.error.message}")
                 context.toast(it.error.message)
-                //streamViewModel.retrySubscribe()
                 //viewBinding.loadingProgress.isVisible = false
             }
         }
@@ -59,7 +63,6 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                 )
             }
         }
-
         with(viewBinding) {
             rvStreams.adapter = streamViewAdapter
             rvStreams.layoutManager = LinearLayoutManager(context)
@@ -78,7 +81,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_container,
-                TopicFragment.newInstance(topicName, streamName)
+                TopicFragment.newInstance(topicName, streamName, ownerId)
             )
             .addToBackStack(null)
             .commitAllowingStateLoss()

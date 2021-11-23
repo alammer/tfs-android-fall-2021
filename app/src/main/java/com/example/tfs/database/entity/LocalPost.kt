@@ -4,21 +4,22 @@ import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import org.jetbrains.annotations.NotNull
 
+
 @Entity(tableName = "posts")
 data class LocalPost(
 
     @PrimaryKey
     @NotNull
     @ColumnInfo(name = "post_id")
-    val postId: Int,
+    val postId: Int = -1,
 
     @NotNull
     @ColumnInfo(name = "topic_name")
-    val topicName: String,
+    val topicName: String = "",
 
     @NotNull
     @ColumnInfo(name = "stream_name")
-    val streamName: String,
+    val streamName: String = "",
 
     @NotNull
     @ColumnInfo(name = "sender_id")
@@ -26,14 +27,14 @@ data class LocalPost(
 
     @NotNull
     @ColumnInfo(name = "sender_name")
-    val senderName: String,
+    val senderName: String = "",
 
     @NotNull
     @ColumnInfo(name = "content")
     val content: String,
 
     @ColumnInfo(name = "avatar_url")
-    val avatarUrl: String?,
+    val avatarUrl: String? = null,
 
     @NotNull
     @ColumnInfo(name = "timestamp")
@@ -41,7 +42,7 @@ data class LocalPost(
 
     @field:TypeConverters(Converters::class)
     @ColumnInfo(name = "flags")
-    val postFlags: List<String>,
+    val postFlags: List<String> = emptyList(),
 )
 
 @Entity(
@@ -64,23 +65,23 @@ data class LocalReaction(
 
     @NotNull
     @ColumnInfo(name = "owner_post_id")
-    val ownerPostId: Int,
+    val postId: Int,
 
     @NotNull
     @ColumnInfo(name = "emoji_name")
-    val emojiName: String,
+    val name: String,
 
     @NotNull
     @ColumnInfo(name = "emoji_code")
-    val emojiCode: String,
-
-    @NotNull
-    @ColumnInfo(name = "is_custom")
-    val isCustom: Boolean,
+    val code: String,
 
     @NotNull
     @ColumnInfo(name = "user_id")
     val userId: Int,
+
+    @NotNull
+    @ColumnInfo(name = "is_custom")
+    val isCustom: Boolean = false,
 )
 
 data class PostWithReaction(

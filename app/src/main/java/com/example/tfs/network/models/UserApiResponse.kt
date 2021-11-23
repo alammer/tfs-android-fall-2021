@@ -1,8 +1,7 @@
 package com.example.tfs.network.models
 
+import com.example.tfs.database.entity.LocalOwner
 import com.example.tfs.database.entity.LocalUser
-import com.example.tfs.domain.contacts.DomainUser
-import com.example.tfs.domain.contacts.UserPresence
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -74,7 +73,20 @@ fun User.toLocalUser(presence: AggregatedStatus) = LocalUser(
     lastVisit = presence.userTimestamp
 )
 
-fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =
+fun User.toOwner() =
+    LocalOwner(id,
+        name,
+        email,
+        role,
+        dateJoined,
+        isActive,
+        avatarUrl,
+        isAdmin,
+        isOwner,
+        isGuest,
+        isBot)
+
+/*fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =
     DomainUser(
         id = user.id,
         name = user.name,
@@ -82,4 +94,4 @@ fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =
         isActive = user.isActive,
         avatarUrl = user.avatarUrl,
         presenceData = UserPresence(presence.userStatus, presence.userTimestamp)
-    )
+    )*/

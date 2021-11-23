@@ -2,13 +2,13 @@ package com.example.tfs.ui.topic.adapter
 
 import android.view.View
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.ui.topic.customview.addReaction
 import com.example.tfs.util.*
 import com.google.android.material.imageview.ShapeableImageView
+import com.squareup.picasso.Picasso
 
 
 class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,7 +34,8 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setUserAvatarImage(userAvatarUrl: String) {
-        userAvatar.setImageURI(userAvatarUrl.toUri())
+        Picasso.get().load(userAvatarUrl).resize(USER_AVATAR_WIDTH.toPx, USER_AVATAR_WIDTH.toPx)
+            .centerCrop().into(userAvatar)
     }
 
     fun setUserInitilas(userName: String) {

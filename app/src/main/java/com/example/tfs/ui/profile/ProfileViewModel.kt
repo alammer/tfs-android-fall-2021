@@ -22,7 +22,7 @@ internal class ProfileViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onError = { _profileScreenState.value = ProfileScreenState.Error(it) },
-                onComplete = { _profileScreenState.value = ProfileScreenState.Result(null)},
+                onComplete = { _profileScreenState.value = ProfileScreenState.Result(null) },
                 onSuccess = { _profileScreenState.value = ProfileScreenState.Result(it) }
             )
             .addTo(compositeDisposable)

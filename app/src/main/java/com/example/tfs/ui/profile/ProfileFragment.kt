@@ -2,9 +2,7 @@ package com.example.tfs.ui.profile
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,6 +12,7 @@ import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.toPx
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
+import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
@@ -38,7 +37,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     response.user?.apply {
                         tvProfileName.text = userName
                         avatarUrl?.let { userImage ->
-                            imgProfileUser.setImageURI(userImage.toUri())
+                            Picasso.get().load(userImage)
+                                .resize(PROFILE_AVATAR_WIDTH.toPx, PROFILE_AVATAR_WIDTH.toPx)
+                                .centerCrop().into(imgProfileUser)
                         } ?: imgProfileUser.drawUserInitials(
                             userName,
                             PROFILE_USER_IMAGE_WIDTH.toPx
@@ -83,3 +84,5 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 }
+
+private const val PROFILE_AVATAR_WIDTH = 185

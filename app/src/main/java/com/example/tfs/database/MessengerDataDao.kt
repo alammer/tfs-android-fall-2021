@@ -31,6 +31,15 @@ interface MessengerDataDao {
     fun clearContacts(): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOwner(owner: LocalOwner): Completable
+
+    @Delete
+    fun deleteOwner(owner: LocalOwner): Completable
+
+    @Query("SELECT * FROM owner")
+    fun getOwner(): Maybe<LocalOwner>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllPosts(localPostList: List<LocalPost>): Completable
 
     @Query("DELETE FROM posts")
@@ -57,6 +66,12 @@ interface MessengerDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReactions(localReaction: List<LocalReaction>): Completable
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertReaction(localReaction: LocalReaction): Completable
+
+    @Query("DELETE FROM reactions WHERE owner_post_id = :postId AND emoji_code = :code AND user_id = :ownerId ")
+    fun deleteReaction(postId: Int, code: String, ownerId: Int): Completable
 
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
     fun deleteReactions(postId: Int): Completable

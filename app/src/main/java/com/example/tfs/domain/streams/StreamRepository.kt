@@ -1,27 +1,41 @@
 package com.example.tfs.domain.streams
 
 import com.example.tfs.database.MessengerDB
+import com.example.tfs.database.entity.LocalOwner
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.Stream
+import com.example.tfs.network.models.User
 import com.example.tfs.network.models.toLocalStream
+import com.example.tfs.network.models.toOwner
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-interface StreaRepository {
+interface StreamRepository {
 
     fun fetchStreams(
         query: String,
         isSubscribed: Boolean,
         expanded: List<Int>,
     ): Observable<List<LocalStream>>
+
+    fun getOwnerPreference(): Single<LocalOwner>
 }
 
-class StreamRepositoryImpl : StreaRepository {
+class StreamRepositoryImpl : StreamRepository {
 
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
+
+    override fun getOwnerPreference(): Single<LocalOwner> {
+        val remoteSource: Single<User> =
+            networkService.getOwner()
+
+        return database.getOwner()
+            .subscribeOn(Schedulers.io())
+            .switchIfEmpty(Single.defer { remoteSource }.flatMap { Single.just(it.toOwner()) })
+    }
 
     override fun fetchStreams(
         query: String,

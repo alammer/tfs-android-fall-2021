@@ -1,7 +1,6 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -29,6 +28,10 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         requireArguments().getString(STREAM_NAME, "")
     }
 
+    private val ownerId by lazy {
+        requireArguments().getInt(OWNER_ID, -1)
+    }
+
     private val viewBinding by viewBinding(FragmentTopicBinding::bind)
 
     private lateinit var topicListAdapter: TopicViewAdapter
@@ -36,6 +39,8 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+
+        topicViewModel.ownerId = ownerId
 
         topicViewModel.topicScreenState.observe(viewLifecycleOwner) {
             processTopicScreenState(it)
@@ -51,7 +56,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
                 val updatedMessageId = response.getInt(EMOJI_RESPONSE_MESSAGE)
                 val updatedEmojiName = response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
                 val updatedEmojiCode = response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
-                topicViewModel.addReaction(updatedMessageId, updatedEmojiName, updatedEmojiCode)
+                topicViewModel.updateReaction(updatedMessageId, updatedEmojiName, updatedEmojiCode)
             }
         }
     }
@@ -81,7 +86,7 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
             tvTopicTitle.text = requireArguments().getString(STREAM_NAME, "Unknown")
 
             topicListAdapter = TopicViewAdapter(
-                { messageId: Int, emojiCode: String -> updateReaction(messageId, emojiCode) },
+                { messageId: Int, emojiCode: String -> updateReaction(messageId = messageId, emojiCode = emojiCode) },
                 { messageId -> onRecycleViewLongPress(messageId) }
             )
             rvTopic.adapter = topicListAdapter
@@ -90,8 +95,8 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
             rvTopic.layoutManager = layoutManager
 
             rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) {
-                override fun loadPage(isForward: Boolean) {
-                    topicViewModel.uploadTopic(isForward)
+                override fun loadPage(isDownScroll: Boolean) {
+                    topicViewModel.uploadTopic(isDownScroll)
                 }
             })
 
@@ -126,23 +131,26 @@ class TopicFragment : Fragment(R.layout.fragment_topic) {
         EmojiDialogFragment.newInstance(messageId).show(childFragmentManager, tag)
     }
 
-    private fun updateReaction(messageId: Int, emojiCode: String) {
-        topicViewModel.updateReaction(messageId, emojiCode)
+    private fun updateReaction(messageId: Int, emojiName: String = "", emojiCode: String) {
+        topicViewModel.updateReaction(messageId, emojiName, emojiCode)
     }
 
     companion object {
 
         private const val TOPIC_NAME = "topic_name"
         private const val STREAM_NAME = "stream_name"
+        private const val OWNER_ID = "owner_id"
 
         fun newInstance(
             topicName: String,
             streamName: String,
+            ownerId: Int
         ): TopicFragment {
             return TopicFragment().apply {
                 arguments = bundleOf(
                     TOPIC_NAME to topicName,
                     STREAM_NAME to streamName,
+                    OWNER_ID to ownerId
                 )
             }
         }

@@ -1,6 +1,5 @@
 package com.example.tfs.ui.streams.adapter
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,7 +20,10 @@ class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamVie
         btnTopicList.setImageResource(icon)
     }
 
-    fun setStreamExpandClickListener(changeExpandState: (StreamItemList.StreamItem) -> Unit, item: StreamItemList.StreamItem) {
+    fun setStreamExpandClickListener(
+        changeExpandState: (StreamItemList.StreamItem) -> Unit,
+        item: StreamItemList.StreamItem,
+    ) {
         btnTopicList.setOnClickListener { changeExpandState(item) }
     }
 }

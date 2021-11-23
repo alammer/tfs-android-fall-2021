@@ -4,6 +4,7 @@ package com.example.tfs.ui.topic
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.domain.topic.TopicRepositoryImpl
 import com.example.tfs.ui.topic.adapter.TopicToItemMapper
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,13 +18,12 @@ import java.util.concurrent.TimeUnit
 
 internal class TopicViewModel : ViewModel() {
 
-    //remove field after db implement
-    private var lastEmoji: String = ""
     private var upAnchorId = -1
     private var downAnchorId = -1
     private var currentDataSize = 0
     private lateinit var streamName: String
     private lateinit var topicName: String
+    var ownerId: Int = -1
 
     private val repository = TopicRepositoryImpl()
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
@@ -34,6 +34,8 @@ internal class TopicViewModel : ViewModel() {
 
     val topicScreenState: LiveData<TopicScreenState> get() = _topicScreenState
     private var _topicScreenState: MutableLiveData<TopicScreenState> = MutableLiveData()
+
+    private val reactionCache: MutableList<LocalReaction> = mutableListOf()
 
     init {
         subscribeToFetchTopic()
@@ -63,7 +65,8 @@ internal class TopicViewModel : ViewModel() {
             .doOnNext { _topicScreenState.postValue(TopicScreenState.Loading) }
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { repository.uploadTopic(it) }
-            .map(topicToItemMapper)
+            .doAfterNext { postList -> reactionCache(postList.flatMap { it.reaction }) }
+            .map { topicToItemMapper(it, ownerId) }
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { uiTopicObject ->
@@ -82,7 +85,8 @@ internal class TopicViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .doOnNext { _topicScreenState.postValue(TopicScreenState.Loading) }
             .switchMap { (streamName, topicName) -> repository.fetchTopic(streamName, topicName) }
-            .map(topicToItemMapper)
+            .doAfterNext { postList -> reactionCache(postList.flatMap { it.reaction }) }
+            .map { topicToItemMapper(it, ownerId) }
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { uiTopicObject ->
@@ -96,33 +100,71 @@ internal class TopicViewModel : ViewModel() {
             .addTo(compositeDisposable)
     }
 
+    private fun reactionCache(reactionList: List<LocalReaction>) {
+        reactionCache.clear()
+        reactionCache.addAll(reactionList)
+    }
+
     fun sendMessage(streamName: String, topicName: String, content: String) {
-        repository.sendMessage(streamName, topicName, content)
+        repository.sendMessage(streamName,
+            topicName,
+            content,
+            ownerId,
+            System.currentTimeMillis() * 1000L)
+            .doOnSubscribe { _topicScreenState.postValue(TopicScreenState.Loading) }
+            .map { topicToItemMapper(it, ownerId) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) },
+                onSuccess = { uiTopicObject ->
+                    upAnchorId = uiTopicObject.upAnchorId
+                    downAnchorId = uiTopicObject.downAnchorId
+                    currentDataSize = uiTopicObject.localDataLength
+                    _topicScreenState.value = TopicScreenState.Result(uiTopicObject.itemList)
+                }
             )
             .addTo(compositeDisposable)
     }
 
-    fun addReaction(messageId: Int, emojiName: String, emojiCode: String) {
-        lastEmoji = emojiName
-        repository.addReaction(messageId, emojiName, emojiCode)
+    fun updateReaction(messageId: Int, emojiName: String, emojiCode: String) {
+        getAlreadyClickedReaction(messageId, emojiCode)?.run {
+            removeReaction(messageId, name, code)
+        } ?: addReaction(messageId, emojiName, emojiCode)
+    }
+
+    private fun addReaction(messageId: Int, emojiName: String, emojiCode: String) {
+        val reactionName =
+            if (emojiName.isNotBlank()) emojiName else reactionCache.first { it.code == emojiCode }.name
+        repository.addReaction(messageId, reactionName, emojiCode, ownerId)
+            .doOnSuccess { postList -> reactionCache(postList.flatMap { it.reaction }) }
+            .map { topicToItemMapper(it, ownerId) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) },
+                onSuccess = { uiTopicObject ->
+                    _topicScreenState.value = TopicScreenState.Result(uiTopicObject.itemList)
+                }
             )
             .addTo(compositeDisposable)
     }
 
-    fun updateReaction(messageId: Int, emojiCode: String) {
-        repository.removeReaction(messageId, lastEmoji, emojiCode)
+    private fun removeReaction(messageId: Int, emojiName: String, emojiCode: String) {
+        repository.removeReaction(messageId, emojiName, emojiCode, ownerId)
+            .doOnSuccess { postList -> reactionCache(postList.flatMap { it.reaction }) }
+            .map { topicToItemMapper(it, ownerId) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onError = { _topicScreenState.value = TopicScreenState.Error(it) }
+                onError = { _topicScreenState.value = TopicScreenState.Error(it) },
+                onSuccess = { uiTopicObject ->
+                    _topicScreenState.value = TopicScreenState.Result(uiTopicObject.itemList)
+                }
             )
             .addTo(compositeDisposable)
     }
+
+    private fun getAlreadyClickedReaction(messageId: Int, emojiCode: String) =
+        reactionCache
+            .firstOrNull { reaction -> reaction.code == emojiCode && reaction.postId == messageId && reaction.userId == ownerId }
 
     override fun onCleared() {
         super.onCleared()

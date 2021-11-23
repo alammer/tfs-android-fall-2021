@@ -2,7 +2,6 @@ package com.example.tfs.ui.contacts.adapter
 
 import com.example.tfs.R
 import com.example.tfs.database.entity.LocalUser
-import com.example.tfs.network.models.User
 
 class ContactItemBinder(
     private val onContactClick: (Int) -> Unit,

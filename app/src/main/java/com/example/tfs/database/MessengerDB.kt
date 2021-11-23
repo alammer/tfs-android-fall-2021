@@ -4,12 +4,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.tfs.MessengerApp
-import com.example.tfs.database.entity.LocalPost
-import com.example.tfs.database.entity.LocalReaction
-import com.example.tfs.database.entity.LocalStream
-import com.example.tfs.database.entity.LocalUser
+import com.example.tfs.database.entity.*
 
-@Database(entities = [LocalStream::class, LocalPost::class, LocalReaction::class, LocalUser::class],
+@Database(entities = [LocalStream::class, LocalPost::class, LocalReaction::class, LocalUser::class, LocalOwner::class],
     version = 1,
     exportSchema = false)
 abstract class MessengerDB : RoomDatabase() {

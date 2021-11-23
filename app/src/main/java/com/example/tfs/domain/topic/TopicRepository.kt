@@ -1,6 +1,8 @@
 package com.example.tfs.domain.topic
 
 import com.example.tfs.database.MessengerDB
+import com.example.tfs.database.entity.LocalPost
+import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.toLocalPostWithReaction
@@ -24,19 +26,23 @@ interface TopicRepository {
         streamName: String,
         topicName: String,
         content: String,
-    ): Completable
+        ownerId: Int,
+        timeStamp: Long,
+    ): Single<List<PostWithReaction>>
 
     fun addReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Completable
+        ownerId: Int,
+    ): Single<List<PostWithReaction>>
 
     fun removeReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Completable
+        ownerId: Int,
+    ): Single<List<PostWithReaction>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -45,19 +51,48 @@ class TopicRepositoryImpl : TopicRepository {
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
 
-    override fun sendMessage(streamName: String, topicName: String, content: String): Completable =
+    override fun sendMessage(
+        streamName: String,
+        topicName: String,
+        content: String,
+        ownerId: Int,
+        timeStamp: Long,
+    ): Single<List<PostWithReaction>> =
         networkService.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
+            .andThen(database.insertPost(LocalPost(senderId = ownerId,
+                timeStamp = timeStamp,
+                content = content)))
+            .andThen(getLocalTopic())
 
-    override fun addReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+    override fun addReaction(
+        messageId: Int,
+        emojiName: String,
+        emojiCode: String,
+        ownerId: Int,
+    ): Single<List<PostWithReaction>> =
         networkService.addReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
+            .andThen(database.insertReaction(LocalReaction(postId = messageId,
+                name = emojiName,
+                code = emojiCode,
+                userId = ownerId)))
+            .andThen(getLocalTopic())
 
-    override fun removeReaction(messageId: Int, emojiName: String, emojiCode: String): Completable =
+
+    override fun removeReaction(
+        messageId: Int,
+        emojiName: String,
+        emojiCode: String,
+        ownerId: Int,
+    ): Single<List<PostWithReaction>> =
         networkService.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
+            .andThen(database.deleteReaction(messageId, emojiCode, ownerId))
+            .andThen(getLocalTopic())
 
     override fun fetchTopic(
+        //to refactor for query parse
         streamName: String,
         topicName: String,
     ): Observable<List<PostWithReaction>> {

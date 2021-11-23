@@ -29,7 +29,8 @@ private fun OkHttpClient.Builder.addHeaderInterceptor() = apply {
     val interceptor = Interceptor { chain ->
         val request = chain.request()
             .newBuilder()
-            .addHeader(AUTH_HEADER, Credentials.basic(BuildConfig.ZULIP_USER, BuildConfig.ZULIP_API_KEY))
+            .addHeader(AUTH_HEADER,
+                Credentials.basic(BuildConfig.ZULIP_USER, BuildConfig.ZULIP_API_KEY))
             .build()
 
         chain.proceed(request)

@@ -3,6 +3,7 @@ package com.example.tfs.ui.streams
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.tfs.database.entity.LocalOwner
 import com.example.tfs.domain.streams.StreamRepositoryImpl
 import com.example.tfs.ui.streams.adapter.StreamToItemMapper
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
@@ -28,8 +29,22 @@ internal class StreamViewModel : ViewModel() {
     val streamScreenState: LiveData<StreamScreenState> get() = _streamScreenState
     private var _streamScreenState: MutableLiveData<StreamScreenState> = MutableLiveData()
 
+    val owner: LiveData<LocalOwner?> get() = _owner
+    private var _owner: MutableLiveData<LocalOwner?> = MutableLiveData()
+
     init {
+        updateOwnerPreference()
         subscribeToSearchStreams()
+    }
+
+    private fun updateOwnerPreference() {
+        repository.getOwnerPreference()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { _streamScreenState.value = StreamScreenState.Error(it) },
+                onSuccess = { _owner.value = it }
+            )
+            .addTo(compositeDisposable)
     }
 
     fun showSubscribed(subscribed: Boolean) {
