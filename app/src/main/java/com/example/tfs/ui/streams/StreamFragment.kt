@@ -10,12 +10,17 @@ import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.domain.streams.StreamItemList
 import com.example.tfs.ui.streams.adapter.StreamViewAdapter
+import com.example.tfs.ui.streams.elm.Effect
+import com.example.tfs.ui.streams.elm.Event
+import com.example.tfs.ui.streams.elm.State
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.toast
 import com.example.tfs.util.viewbinding.viewBinding
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.core.store.Store
 
-class StreamFragment : Fragment(R.layout.fragment_stream) {
+class StreamFragment : ElmFragment<Event, Effect, State>(R.layout.fragment_stream_container)  {
 
     private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 
