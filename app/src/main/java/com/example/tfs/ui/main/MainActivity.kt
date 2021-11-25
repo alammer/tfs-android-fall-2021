@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.example.tfs.ui.contacts.ContactsFragment
 import com.example.tfs.ui.profile.ProfileFragment
-import com.example.tfs.ui.streams.viewpager.StreamContainer
+import com.example.tfs.ui.streams.viewpager.StreamContainerFragment
 import com.example.tfs.ui.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, StreamContainer())
+                .add(R.id.fragment_container, StreamContainerFragment())
                 .commitAllowingStateLoss()
         }
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_to_streams -> {
-                    loadFragment(StreamContainer())
+                    loadFragment(StreamContainerFragment())
                     return@setOnItemSelectedListener true
                 }
 
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.addOnBackStackChangedListener {
             when (supportFragmentManager.findFragmentById(R.id.fragment_container)) {
                 is TopicFragment -> bottomNavigationView.visibility = View.GONE
-                is StreamContainer -> {
+                is StreamContainerFragment -> {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked = true
                 }

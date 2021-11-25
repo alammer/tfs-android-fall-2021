@@ -8,16 +8,19 @@ import com.example.tfs.network.models.Stream
 import com.example.tfs.network.models.User
 import com.example.tfs.network.models.toLocalStream
 import com.example.tfs.network.models.toOwner
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 interface StreamRepository {
 
+    fun loadStreams(query: String, isSubscribed: Boolean): Completable
+
     fun fetchStreams(
         query: String,
         isSubscribed: Boolean,
-        expanded: List<Int>,
+        expanded: List<Int> = emptyList(),
     ): Observable<List<LocalStream>>
 
     fun getOwnerPreference(): Single<LocalOwner>
@@ -37,10 +40,27 @@ class StreamRepositoryImpl : StreamRepository {
             .switchIfEmpty(Single.defer { remoteSource }.flatMap { Single.just(it.toOwner()) })
     }
 
+    override fun loadStreams(
+        query: String,
+        isSubscribed: Boolean
+    ): Completable {
+        val remoteSource: Observable<List<LocalStream>> =
+            getRemoteStreams(query, isSubscribed, emptyList())
+
+        return database.getStreams(isSubscribed)
+            .subscribeOn(Schedulers.io())
+            .flatMapCompletable { localStreamList: List<LocalStream> ->
+                remoteSource
+                    .flatMapCompletable { remoteStreamList ->
+                        database.insertStreams(remoteStreamList)
+                    }
+            }
+    }
+
     override fun fetchStreams(
         query: String,
         isSubscribed: Boolean,
-        expanded: List<Int>,
+        expanded: List<Int>
     ): Observable<List<LocalStream>> {
         val remoteSource: Observable<List<LocalStream>> =
             getRemoteStreams(query, isSubscribed, expanded)

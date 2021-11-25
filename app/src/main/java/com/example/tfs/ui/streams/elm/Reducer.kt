@@ -1,35 +1,56 @@
 package com.example.tfs.ui.streams.elm
 
-import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
+import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
+import com.example.tfs.ui.streams.elm.Event.Ui
+import com.example.tfs.ui.streams.elm.Event.Internal
 
-class Reducer : DslReducer<Event, State, Effect, Command>(){
-    override fun Result.reduce(event: Event): Any? {
-        return when (event) {
-            is Event.Internal.StreamsFetchComplete -> {
-                if (state.items.isEmpty()) {
-                    state { copy(error = event.error, isLoading = false, isEmptyState = false) }
-                } else {
-                    state { copy(items = state.items.removeNextPageLoader(), isLoading = false, isEmptyState = false) }
-                    effects { Effect.NextPageLoadError(event.error) }
-                }
-            }
-            is Event.Internal.StreamsFetchError -> {
-                val itemsList = state.items.removeNextPageLoader() + event.items
-                state { copy(items = itemsList, isLoading = false, error = null, pageNumber = state.pageNumber + 1, isEmptyState = itemsList.isEmpty()) }
-            }
-            is Event.Ui.LoadFirstPage -> {
-                state { copy(isLoading = true, error = null, isEmptyState = false) }
-                commands { +Command.LoadPage(state.pageNumber) }
-            }
-            is Event.Ui.LoadNextPage -> {
-                if (state.items.contains(NextPageLoader)) {
-                    Any()
-                } else {
-                    state { copy(items = items + listOf(NextPageLoader), error = null, isLoading = false, isEmptyState = false) }
-                    commands { +Command.LoadPage(state.pageNumber) }
-                }
-            }
+class Reducer :
+    ScreenDslReducer<Event, Ui, Internal, State, Effect, Command>(Ui::class, Internal::class) {
+
+    override fun Result.internal(event: Internal) = when (event) {
+        is Internal.StreamsFetchComplete -> {
+            state { copy(isFetching = false) }
+        }
+        is Internal.StreamsFetchError -> {
+            state { copy(isFetching = false) }
+            effects { Effect.FetchError(event.error) }
         }
     }
+
+    override fun Result.ui(event: Ui) = when (event) {
+
+        is Ui.Init -> {
+            state { copy(isFetching = true, error = null) }
+            commands {
+                +Command.FetchStreams(isSubscribed = initialState.isSubscribed,
+                    query = initialState.query)
+            }
+        }
+        is Ui.ChangeSearchQuery -> {
+            state {
+                copy(isFetching = true,
+                    error = null,
+                    query = event.query)
+            }
+            commands { +Command.FetchStreams(state.isSubscribed, state.query) }
+        }
+
+        is Ui.FetchRawStreams -> {
+            if (!state.isSubscribed) {
+                Any()
+            } else {
+                state { copy(isSubscribed = false, isFetching = true, error = null)  }
+                commands { +Command.FetchStreams(state.isSubscribed, state.query) }
+            }
+        }
+
+        is Ui.FetchSubscribedStreams -> {
+            if (state.isSubscribed) {
+                Any()
+            } else {
+                state { copy(isSubscribed = true, isFetching = true, error = null) }
+                commands { +Command.FetchStreams(state.isSubscribed, state.query) }
+            }
+        }
     }
 }

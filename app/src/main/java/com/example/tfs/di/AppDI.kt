@@ -7,11 +7,11 @@ import com.example.tfs.ui.streams.elm.StreamStoreFactory
 
 class AppDI private constructor() {
 
-    val repository by lazy { StreamRepositoryImpl() }
+    private val repository by lazy { StreamRepositoryImpl() }
 
-    val fetchStreams by lazy { FetchStreams(repository) }
+    private val fetchStreams by lazy { FetchStreams(repository) }
 
-    val actor by lazy { StreamActor(fetchStreams) }
+    private val actor by lazy { StreamActor(fetchStreams) }
 
     val elmStoreFactory by lazy { StreamStoreFactory(actor) }
 

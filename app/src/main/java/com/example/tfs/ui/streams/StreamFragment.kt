@@ -20,7 +20,7 @@ import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
 
-class StreamFragment : ElmFragment<Event, Effect, State>(R.layout.fragment_stream_container)  {
+class StreamFragment : Fragment(R.layout.fragment_stream)  {
 
     private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 

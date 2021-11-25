@@ -4,7 +4,7 @@ import io.reactivex.Completable
 
 class FetchStreams (private val streamRepository: StreamRepository) {
 
-    fun getDomainStreamList(isSubcribed: Boolean, query: String) : Completable {
-        return Completable.complete()
+    fun fetch(query: String, isSubcribed: Boolean) : Completable {
+        return streamRepository.loadStreams(query, isSubcribed)
     }
 }

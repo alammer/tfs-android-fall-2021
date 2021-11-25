@@ -6,12 +6,7 @@ data class State(
     val isSubscribed: Boolean = true,
     val query: String = "",
     val tabPosition: Int = 0,
-) {
-
-    private companion object {
-        const val INITIAL_PAGE = 0
-    }
-}
+)
 
 sealed class Event {
 
@@ -19,9 +14,11 @@ sealed class Event {
 
         object Init : Ui()
 
-        object ChangeStreamPage : Ui()
+        object FetchSubscribedStreams : Ui()
 
-        object ChangeSearchQuery : Ui()
+        object FetchRawStreams : Ui()
+
+        data class ChangeSearchQuery(val query: String) : Ui()
     }
 
     sealed class Internal : Event() {
@@ -37,5 +34,5 @@ sealed class Effect {
 }
 
 sealed class Command {
-    data class StreamsFetch(val isSubscribed: Boolean, val query: String) : Command()
+    data class FetchStreams(val isSubscribed: Boolean, val query: String) : Command()
 }

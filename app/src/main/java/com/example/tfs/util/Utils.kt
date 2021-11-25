@@ -187,6 +187,13 @@ fun View.showSnackbar(
     Snackbar.make(this, stringRes, duration).show()
 }
 
+fun View.showSnackbarError(
+    error: String,
+    duration: Int = Snackbar.LENGTH_SHORT,
+) {
+    Snackbar.make(this, error, duration).show()
+}
+
 val Int.spToPx: Float
     get() = (this * Resources.getSystem().displayMetrics.scaledDensity)
 
