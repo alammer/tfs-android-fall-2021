@@ -23,12 +23,16 @@ data class LocalStream(
     @ColumnInfo(name = "is_subscribed")
     val isSubscribed: Boolean = false,
 
+    @NotNull
+    @ColumnInfo(name = "is_expanded")
+    val isExpanded: Boolean = false,
+
     @field:TypeConverters(Converters::class)
     @ColumnInfo(name = "topics")
     val topics: List<String>,
 )
 
-fun LocalStream.toDomainStream(isExpanded: Boolean = false) =
+fun LocalStream.toDomainStream() =
     StreamItemList.StreamItem(id = streamId,
         name = streamName,
         topics = topics,

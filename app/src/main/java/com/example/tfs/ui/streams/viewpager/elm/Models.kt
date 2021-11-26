@@ -1,6 +1,6 @@
-package com.example.tfs.ui.streams.elm
+package com.example.tfs.ui.streams.viewpager.elm
 
-data class State(
+data class ViewPagerState(
     val error: Throwable? = null,
     val isFetching: Boolean = false,
     val isSubscribed: Boolean = true,
@@ -8,9 +8,9 @@ data class State(
     val tabPosition: Int = 0,
 )
 
-sealed class Event {
+sealed class ViewPagerEvent {
 
-    sealed class Ui : Event() {
+    sealed class Ui : ViewPagerEvent() {
 
         object Init : Ui()
 
@@ -21,7 +21,7 @@ sealed class Event {
         data class ChangeSearchQuery(val query: String) : Ui()
     }
 
-    sealed class Internal : Event() {
+    sealed class Internal : ViewPagerEvent() {
 
         object StreamsFetchComplete : Internal()
 
@@ -29,10 +29,12 @@ sealed class Event {
     }
 }
 
-sealed class Effect {
-    data class FetchError(val error: Throwable) : Effect()
+sealed class ViewPagerEffect {
+
+    data class FetchError(val error: Throwable) : ViewPagerEffect()
 }
 
 sealed class Command {
+
     data class FetchStreams(val isSubscribed: Boolean, val query: String) : Command()
 }

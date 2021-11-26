@@ -1,11 +1,12 @@
 package com.example.tfs.ui.streams
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tfs.database.entity.LocalOwner
 import com.example.tfs.domain.streams.StreamRepositoryImpl
-import com.example.tfs.ui.streams.adapter.StreamToItemMapper
+import com.example.tfs.domain.streams.StreamToItemMapper
 import com.example.tfs.ui.streams.viewpager.StreamScreenState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -33,18 +34,7 @@ internal class StreamViewModel : ViewModel() {
     private var _owner: MutableLiveData<LocalOwner?> = MutableLiveData()
 
     init {
-        updateOwnerPreference()
         subscribeToSearchStreams()
-    }
-
-    private fun updateOwnerPreference() {
-        repository.getOwnerPreference()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onError = { _streamScreenState.value = StreamScreenState.Error(it) },
-                onSuccess = { _owner.value = it }
-            )
-            .addTo(compositeDisposable)
     }
 
     fun showSubscribed(subscribed: Boolean) {
@@ -76,10 +66,9 @@ internal class StreamViewModel : ViewModel() {
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .switchMap { query ->
                 repository.fetchStreams(query.queryString,
-                    query.isSubscribed,
-                    query.expandedStream)
+                    query.isSubscribed, )
             }
-            .map { streamToItemMapper(it, expandedStreams) }
+            .map(streamToItemMapper)
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = { _streamScreenState.value = StreamScreenState.Result(it) },

@@ -39,11 +39,13 @@ data class Topic(
 
 fun Stream.toLocalStream(
     isSubscribed: Boolean = false,
+    isExpanded: Boolean = false,
     topics: List<Topic> = emptyList(),
 ) = LocalStream(
     id,
     name,
     isSubscribed = isSubscribed,
+    isExpanded = isExpanded,
     topics = topics.map { it.name },
 )
 

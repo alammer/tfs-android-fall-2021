@@ -1,16 +1,15 @@
-package com.example.tfs.ui.streams.adapter
+package com.example.tfs.domain.streams
 
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.database.entity.toDomainStream
-import com.example.tfs.domain.streams.StreamItemList
 
-internal class StreamToItemMapper : (List<LocalStream>, List<Int>) -> (List<StreamItemList>) {
+internal class StreamToItemMapper : (List<LocalStream>) -> (List<StreamItemList>) {
 
-    override fun invoke(streams: List<LocalStream>, expanded: List<Int>): List<StreamItemList> {
+    override fun invoke(streams: List<LocalStream>): List<StreamItemList> {
         val domainStreamList = mutableListOf<StreamItemList>()
 
         streams.forEach { stream ->
-            domainStreamList.add(stream.toDomainStream(stream.streamId in expanded))
+            domainStreamList.add(stream.toDomainStream())
             stream.topics.forEach { topicName ->
                 domainStreamList.add(StreamItemList.TopicItem(topicName, stream.streamName ))
             }

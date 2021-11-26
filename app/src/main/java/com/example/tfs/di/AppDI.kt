@@ -2,8 +2,8 @@ package com.example.tfs.di
 
 import com.example.tfs.domain.streams.FetchStreams
 import com.example.tfs.domain.streams.StreamRepositoryImpl
-import com.example.tfs.ui.streams.elm.StreamActor
-import com.example.tfs.ui.streams.elm.StreamStoreFactory
+import com.example.tfs.ui.streams.viewpager.elm.StreamActor
+import com.example.tfs.ui.streams.viewpager.elm.StreamStoreFactory
 
 class AppDI private constructor() {
 

@@ -1,11 +1,12 @@
-package com.example.tfs.ui.streams.elm
+package com.example.tfs.ui.streams.viewpager.elm
+
 
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
-import com.example.tfs.ui.streams.elm.Event.Ui
-import com.example.tfs.ui.streams.elm.Event.Internal
+import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEvent.Ui
+import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEvent.Internal
 
 class Reducer :
-    ScreenDslReducer<Event, Ui, Internal, State, Effect, Command>(Ui::class, Internal::class) {
+    ScreenDslReducer<ViewPagerEvent, Ui, Internal, ViewPagerState, ViewPagerEffect, Command>(Ui::class, Internal::class) {
 
     override fun Result.internal(event: Internal) = when (event) {
         is Internal.StreamsFetchComplete -> {
@@ -13,7 +14,7 @@ class Reducer :
         }
         is Internal.StreamsFetchError -> {
             state { copy(isFetching = false) }
-            effects { Effect.FetchError(event.error) }
+            effects { +ViewPagerEffect.FetchError(event.error) }
         }
     }
 
