@@ -1,12 +1,15 @@
-package com.example.tfs.ui.streams.viewpager.elm
+package com.example.tfs.ui.stream.streamcontainer.elm
 
 
+import android.util.Log
+import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEvent.Internal
+import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEvent.Ui
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
-import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEvent.Ui
-import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEvent.Internal
 
-class Reducer :
-    ScreenDslReducer<ViewPagerEvent, Ui, Internal, ViewPagerState, ViewPagerEffect, Command>(Ui::class, Internal::class) {
+class StreamContainerReducer :
+    ScreenDslReducer<StreamContainerEvent, Ui, Internal, StreamContainerState, StreamContainerEffect, Command>(
+        Ui::class,
+        Internal::class) {
 
     override fun Result.internal(event: Internal) = when (event) {
         is Internal.StreamsFetchComplete -> {
@@ -14,7 +17,15 @@ class Reducer :
         }
         is Internal.StreamsFetchError -> {
             state { copy(isFetching = false) }
-            effects { +ViewPagerEffect.FetchError(event.error) }
+            effects { +StreamContainerEffect.FetchError(event.error) }
+        }
+        is Internal.StreamUpdate -> {
+            Log.i("StreamContainerReducer", "Function called: internal() ${event.streamId}")
+            Any()
+        }
+        is Internal.StreamUpdateComplete -> {
+            Log.i("StreamContainerReducer", "Function called: internal()")
+            Any()
         }
     }
 
@@ -26,6 +37,8 @@ class Reducer :
                 +Command.FetchStreams(isSubscribed = initialState.isSubscribed,
                     query = initialState.query)
             }
+            commands { +Command.UpdateStream }
+
         }
         is Ui.ChangeSearchQuery -> {
             state {
@@ -40,7 +53,7 @@ class Reducer :
             if (!state.isSubscribed) {
                 Any()
             } else {
-                state { copy(isSubscribed = false, isFetching = true, error = null)  }
+                state { copy(isSubscribed = false, isFetching = true, error = null) }
                 commands { +Command.FetchStreams(state.isSubscribed, state.query) }
             }
         }

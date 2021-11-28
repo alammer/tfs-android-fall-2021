@@ -1,9 +1,7 @@
-package com.example.tfs.ui.topic.adapter
+package com.example.tfs.domain.topic
 
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
-import com.example.tfs.domain.topic.DomainReaction
-import com.example.tfs.domain.topic.PostItem
 import com.example.tfs.ui.topic.getUnicodeGlyph
 import com.example.tfs.util.fullDate
 import com.example.tfs.util.shortDate

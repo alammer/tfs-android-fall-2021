@@ -1,7 +1,5 @@
 package com.example.tfs.domain.topic
 
-import com.example.tfs.ui.topic.adapter.ItemReaction
-
 sealed class PostItem {
 
     data class LocalDateItem(val postDate: String) : PostItem()

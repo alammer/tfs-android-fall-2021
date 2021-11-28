@@ -60,7 +60,7 @@ interface MessengerDataDao {
 
     @Transaction
     @Query("SELECT * FROM posts")
-    fun getPostWithReaction(): Single<List<PostWithReaction>>
+    fun getPostWithReaction(): Observable<List<PostWithReaction>>
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable

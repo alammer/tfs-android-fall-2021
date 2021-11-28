@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.tfs.domain.streams.StreamItemList
+import com.example.tfs.domain.streams.StreamListItem
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "streams")
@@ -33,7 +33,7 @@ data class LocalStream(
 )
 
 fun LocalStream.toDomainStream() =
-    StreamItemList.StreamItem(id = streamId,
+    StreamListItem.StreamItem(id = streamId,
         name = streamName,
         topics = topics,
         expanded = isExpanded)

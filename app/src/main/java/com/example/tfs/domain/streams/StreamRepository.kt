@@ -1,5 +1,6 @@
 package com.example.tfs.domain.streams
 
+import android.util.Log
 import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
@@ -8,7 +9,10 @@ import com.example.tfs.network.models.toLocalStream
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 
 interface StreamRepository {
 
@@ -20,12 +24,31 @@ interface StreamRepository {
     ): Observable<List<LocalStream>>
 
     fun getLocalList(isSubscribed: Boolean): Observable<List<LocalStream>>
+
+    fun selectStream(streamId: Int): Completable
+
+    fun updateStream(): Observable<Int>
 }
 
 class StreamRepositoryImpl : StreamRepository {
 
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val stream: PublishSubject<Int>
+        get() = PublishSubject.create()
+
+    override fun selectStream(streamId: Int): Completable {
+        Log.i("StreamRepository", "Function called: selectStream() $streamId")
+        return Completable.create{ stream.onNext(streamId)  }
+    }
+
+    override fun updateStream(): Observable<Int> {
+        Log.i("StreamRepository", "Function called: updateStream()")
+        return stream
+            .subscribeOn(Schedulers.io())
+    }
 
     override fun loadStreams(
         query: String,

@@ -1,10 +1,10 @@
-package com.example.tfs.ui.streams.adapter
+package com.example.tfs.ui.stream.adapter
 
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.streams.StreamItemList
+import com.example.tfs.domain.streams.StreamListItem
 
 class TopicItemViewHolder(private val topicView: View) : RecyclerView.ViewHolder(topicView) {
 
@@ -24,8 +24,8 @@ class TopicItemViewHolder(private val topicView: View) : RecyclerView.ViewHolder
     }
 
     fun setTopicClickListener(
-        selectTopic: (StreamItemList) -> Unit,
-        item: StreamItemList.TopicItem
+        selectTopic: (StreamListItem) -> Unit,
+        item: StreamListItem.TopicItem
     ) {
         topicView.setOnClickListener { selectTopic(item) }
     }

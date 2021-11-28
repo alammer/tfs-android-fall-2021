@@ -150,10 +150,10 @@ fun View.hideSoftKeyboard() {
         im.hideSoftInputFromWindow(windowToken, 0)
     } catch (ignored: RuntimeException) {
     }
-    if (this is EditText) {
-        text.clear()
-    }
     clearFocus()
+    /*if (this is EditText) { //move to topic elm
+        text.clear()
+    }*/
 }
 
 fun TextView.setUserState(userState: Int) {

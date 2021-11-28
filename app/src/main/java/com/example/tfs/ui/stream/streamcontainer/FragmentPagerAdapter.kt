@@ -1,9 +1,9 @@
-package com.example.tfs.ui.streams.viewpager
+package com.example.tfs.ui.stream.streamcontainer
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.tfs.ui.streams.StreamFragment
+import com.example.tfs.ui.stream.StreamFragment
 
 class FragmentPagerAdapter(
     fragmentActivity: FragmentActivity,

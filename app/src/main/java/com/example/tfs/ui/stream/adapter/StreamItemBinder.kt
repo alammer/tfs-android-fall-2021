@@ -1,11 +1,11 @@
-package com.example.tfs.ui.streams.adapter
+package com.example.tfs.ui.stream.adapter
 
 import com.example.tfs.R
-import com.example.tfs.domain.streams.StreamItemList
+import com.example.tfs.domain.streams.StreamListItem
 
-class StreamItemBinder(private val onClickItem: (StreamItemList) -> Unit) {
+class StreamItemBinder(private val onClickItem: (StreamListItem) -> Unit) {
 
-    fun bind(streamItemViewHolder: StreamItemViewHolder, item: StreamItemList.StreamItem) {
+    fun bind(streamItemViewHolder: StreamItemViewHolder, item: StreamListItem.StreamItem) {
 
         streamItemViewHolder.setStreamName(item.name)
 

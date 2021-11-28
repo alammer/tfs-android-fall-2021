@@ -1,4 +1,4 @@
-package com.example.tfs.ui.streams.viewpager
+package com.example.tfs.ui.stream.streamcontainer
 
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +9,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamContainerBinding
 import com.example.tfs.di.AppDI
-import com.example.tfs.ui.streams.StreamViewModel
-import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEffect
-import com.example.tfs.ui.streams.viewpager.elm.ViewPagerEvent
-import com.example.tfs.ui.streams.viewpager.elm.ViewPagerState
+import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEffect
+import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEvent
+import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerState
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -27,9 +26,9 @@ import vivid.money.elmslie.core.store.Store
 import java.util.concurrent.TimeUnit
 
 class StreamContainerFragment :
-    ElmFragment<ViewPagerEvent, ViewPagerEffect, ViewPagerState>(R.layout.fragment_stream_container) {
+    ElmFragment<StreamContainerEvent, StreamContainerEffect, StreamContainerState>(R.layout.fragment_stream_container) {
 
-    override val initEvent: ViewPagerEvent = ViewPagerEvent.Ui.Init
+    override val initEvent: StreamContainerEvent = StreamContainerEvent.Ui.Init
 
     private val viewBinding by viewBinding(FragmentStreamContainerBinding::bind)
 
@@ -40,8 +39,8 @@ class StreamContainerFragment :
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             when (position) {
-                0 -> store.accept(ViewPagerEvent.Ui.FetchSubscribedStreams)
-                1 -> store.accept(ViewPagerEvent.Ui.FetchRawStreams)
+                0 -> store.accept(StreamContainerEvent.Ui.FetchSubscribedStreams)
+                1 -> store.accept(StreamContainerEvent.Ui.FetchRawStreams)
             }
         }
     }
@@ -51,9 +50,9 @@ class StreamContainerFragment :
         initViews()
     }
 
-    override fun handleEffect(effect: ViewPagerEffect) {
+    override fun handleEffect(effect: StreamContainerEffect) {
         when (effect) {
-            is ViewPagerEffect.FetchError -> {
+            is StreamContainerEffect.FetchError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
@@ -62,10 +61,10 @@ class StreamContainerFragment :
         }
     }
 
-    override fun createStore(): Store<ViewPagerEvent, ViewPagerEffect, ViewPagerState> =
-        AppDI.INSTANCE.elmStoreFactory.provide()
+    override fun createStore(): Store<StreamContainerEvent, StreamContainerEffect, StreamContainerState> =
+        AppDI.INSTANCE.elmStreamContainerStoreFactory.provide()
 
-    override fun render(state: ViewPagerState) {
+    override fun render(state: StreamContainerState) {
         viewBinding.loading.root.isVisible = state.isFetching
         //state.error?.let { throwable ->  errorText.text = throwable.userMessage(requireContext()) }  //are we gonna need last error body?
     }
@@ -84,7 +83,7 @@ class StreamContainerFragment :
             .observeOn(AndroidSchedulers.mainThread(), true)
             .doOnNext { Log.i("StreamContainerFragment", "Function called: subscribeToSearchStreams() $it") }
             .subscribeBy(
-                onNext = { store.accept(ViewPagerEvent.Ui.ChangeSearchQuery(it)) }
+                onNext = { store.accept(StreamContainerEvent.Ui.ChangeSearchQuery(it)) }
             )
             .addTo(compositeDisposable)
     }

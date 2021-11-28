@@ -1,11 +1,11 @@
-package com.example.tfs.ui.streams.adapter
+package com.example.tfs.ui.stream.adapter
 
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
-import com.example.tfs.domain.streams.StreamItemList
+import com.example.tfs.domain.streams.StreamListItem
 
 class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamView) {
 
@@ -21,8 +21,8 @@ class StreamItemViewHolder(streamView: View) : RecyclerView.ViewHolder(streamVie
     }
 
     fun setStreamExpandClickListener(
-        changeExpandState: (StreamItemList.StreamItem) -> Unit,
-        item: StreamItemList.StreamItem,
+        changeExpandState: (StreamListItem.StreamItem) -> Unit,
+        item: StreamListItem.StreamItem,
     ) {
         btnTopicList.setOnClickListener { changeExpandState(item) }
     }
