@@ -30,7 +30,7 @@ interface ApiService {
     fun getAllUsers(): Single<UserListResponse>
 
     @GET("api/v1/users/me")
-    fun getOwner(): Single<User>
+    fun getOwner(): User
 
     @GET("api/v1/users/{user_id}")
     fun getUser(@Path("user_id") userId: Int): Single<UserResponse>
@@ -41,7 +41,7 @@ interface ApiService {
     @POST("api/v1/messages")
     fun sendMessage(
         @Query("to") streamName: String,
-        @Query("topic") topicName: String,
+        @Query("uiTopic") topicName: String,
         @Query("content") reaction_type: String,
         @Query("type") type: String = "stream",
     ): Completable

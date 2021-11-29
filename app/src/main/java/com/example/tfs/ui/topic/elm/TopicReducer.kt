@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.elm
 
+import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class TopicReducer :
@@ -9,12 +10,13 @@ class TopicReducer :
 
     override fun Result.internal(event: TopicEvent.Internal) = when (event) {
         is TopicEvent.Internal.TopicLoadingComplete -> {
+            Log.i("TopicReducer", "Function called: first load complete")
             state {
                 copy(isLoading = false,
                     isNewestPage = true,
-                    topicList = event.topic.itemList,
-                    upAnchor = event.topic.upAnchorId,
-                    downAnchor = event.topic.downAnchorId)
+                    topicList = event.uiTopic.itemList,
+                    upAnchor = event.uiTopic.upAnchorId,
+                    downAnchor = event.uiTopic.downAnchorId)
             }
         }
         is TopicEvent.Internal.TopicLoadingError -> {
@@ -27,9 +29,9 @@ class TopicReducer :
                     isNewestPage = false,
                     isNextPageLoading = false,
                     isPrevPageLoading = false,
-                    topicList = event.topic.itemList,
-                    upAnchor = event.topic.upAnchorId,
-                    downAnchor = event.topic.downAnchorId
+                    topicList = event.uiTopic.itemList,
+                    upAnchor = event.uiTopic.upAnchorId,
+                    downAnchor = event.uiTopic.downAnchorId
                 )
             }
         }
@@ -44,9 +46,9 @@ class TopicReducer :
                     isNewestPage = true,
                     isNextPageLoading = false,
                     isPrevPageLoading = false,
-                    topicList = event.topic.itemList,
-                    upAnchor = event.topic.upAnchorId,
-                    downAnchor = event.topic.downAnchorId
+                    topicList = event.uiTopic.itemList,
+                    upAnchor = event.uiTopic.upAnchorId,
+                    downAnchor = event.uiTopic.downAnchorId
                 )
             }
         }
@@ -55,9 +57,11 @@ class TopicReducer :
     override fun Result.ui(event: TopicEvent.Ui) = when (event) {
 
         is TopicEvent.Ui.Init -> {
+            Log.i("TopicReducer", "Function called: init")
             state { copy(isLoading = true, error = null) }
         }
         is TopicEvent.Ui.InitialLoad -> {
+            Log.i("TopicReducer", "Function called: first load start")
             state { copy(streamName = event.streamName, topicName = event.topicName) }
             commands { +Command.FetchTopic(event.streamName, event.topicName) }
         }
@@ -67,9 +71,8 @@ class TopicReducer :
         is TopicEvent.Ui.ReactionClicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(state.streamName,
-                    state.topicName,
-                    event.postId,
+                +Command.UpdateReaction(event.postId,
+                    event.emojiName,
                     event.emojiCode)
             }
         }
@@ -79,9 +82,8 @@ class TopicReducer :
         is TopicEvent.Ui.NewReactionPicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(state.streamName,
-                    state.topicName,
-                    event.postId,
+                +Command.UpdateReaction(event.postId,
+                    event.emojiName,
                     event.emojiCode)
             }
         }
@@ -94,6 +96,7 @@ class TopicReducer :
             commands { +Command.SendMessage(state.streamName, state.topicName, state.messageDraft) }
         }
         is TopicEvent.Ui.PageFetching -> {
+            Log.i("TopicReducer", "Function called: page fetching")
             state {
                 copy(isNextPageLoading = event.isDownScroll, isPrevPageLoading = event.isDownScroll.not(), error = null)
             }

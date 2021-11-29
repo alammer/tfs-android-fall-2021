@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.elm
 
+import android.util.Log
 import com.example.tfs.domain.topic.FetchTopics
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
@@ -9,10 +10,12 @@ class TopicActor(private val fetchTopics: FetchTopics) :
 {
     override fun execute(command: Command): Observable<TopicEvent.Internal> = when (command) {
         is Command.FetchTopic -> {
+            Log.i("Topic", "Function called: fetch")
             fetchTopics.topic(command.streamName, command.topicName)
                 .mapEvents(TopicEvent.Internal::TopicLoadingComplete, TopicEvent.Internal::TopicLoadingError)
         }
         is Command.FetchNextPage -> {
+            Log.i("Topic", "Function called: next")
             fetchTopics.nextPage(command.streamName, command.topicName, command.downAnchor)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
         }
@@ -25,7 +28,7 @@ class TopicActor(private val fetchTopics: FetchTopics) :
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.UpdateReaction -> {
-            fetchTopics.update(command.streamName, command.topicName, command.postId, command.emojiCode)
+            fetchTopics.update(command.postId, command.emojiName, command.emojiCode)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.AddReaction -> TODO()

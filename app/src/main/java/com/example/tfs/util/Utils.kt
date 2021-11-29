@@ -151,7 +151,7 @@ fun View.hideSoftKeyboard() {
     } catch (ignored: RuntimeException) {
     }
     clearFocus()
-    /*if (this is EditText) { //move to topic elm
+    /*if (this is EditText) { //move to uiTopic elm
         text.clear()
     }*/
 }
@@ -192,6 +192,12 @@ fun View.showSnackbarError(
     duration: Int = Snackbar.LENGTH_SHORT,
 ) {
     Snackbar.make(this, error, duration).show()
+}
+
+fun String.stripHtml(): String{
+    val htmlRegex = Regex("(<.*?>)|(&[^ а-я]{1,4}?;)")
+    val spaceRegex = Regex(" {2,}")
+    return this.replace(htmlRegex, "").replace(spaceRegex, " ")
 }
 
 val Int.spToPx: Float

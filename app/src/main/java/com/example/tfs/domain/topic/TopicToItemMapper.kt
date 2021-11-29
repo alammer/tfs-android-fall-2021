@@ -9,15 +9,14 @@ import com.example.tfs.util.startOfDay
 import com.example.tfs.util.year
 import java.util.*
 
-internal class TopicToItemMapper : (List<PostWithReaction>, Int) -> TopicListObject {
+internal class TopicToItemMapper : (List<PostWithReaction>) -> UiTopicListObject {
 
-    override fun invoke(postList: List<PostWithReaction>, ownerId: Int): TopicListObject =
-        createDomainPostItemList(postList, ownerId)
+    override fun invoke(postList: List<PostWithReaction>): UiTopicListObject =
+        createDomainPostItemList(postList)
 
     private fun createDomainPostItemList(
         rawList: List<PostWithReaction>,
-        ownerId: Int,
-    ): TopicListObject {
+    ): UiTopicListObject {
 
         val datedPostList = mutableListOf<PostItem>()
         var startTopicDate = 0L
@@ -36,14 +35,14 @@ internal class TopicToItemMapper : (List<PostWithReaction>, Int) -> TopicListObj
                     datedPostList.add(PostItem.LocalDateItem(startTopicDate.shortDate))
                 }
             }
-            if (post.post.senderId == ownerId) {
+            if (post.post.isSelf) {
                 datedPostList.add(post.toOwnerPostItem())
             } else {
-                datedPostList.add(post.toUserPostItem(ownerId))
+                datedPostList.add(post.toUserPostItem())
             }
         }
 
-        return TopicListObject(
+        return UiTopicListObject(
             itemList = datedPostList.toList(),
             upAnchorId = upAnchorId,
             downAnchorId = downAnchorId,
@@ -58,20 +57,19 @@ fun PostWithReaction.toOwnerPostItem() =
         timeStamp = post.timeStamp,
         reaction = createUiReactionList(reaction))
 
-fun PostWithReaction.toUserPostItem(ownerId: Int) =
+fun PostWithReaction.toUserPostItem() =
     PostItem.UserPostItem(id = post.postId,
         userId = post.senderId,
         userName = post.senderName,
         message = post.content,
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction, ownerId))
+        reaction = createUiReactionList(reaction))
 
 
 private fun createUiReactionList(
     reaction: List<LocalReaction>,
-    ownerId: Int = -1,
-): List<ItemReaction> {
+): List<UiItemReaction> {
 
 
     if (reaction.isNullOrEmpty()) {
@@ -79,22 +77,22 @@ private fun createUiReactionList(
     }
 
     val domainReaction = reaction
-        .associate { emoji -> emoji.name to reaction.count { it.name == emoji.name } }
+        .associate { item -> (item.name to item.isClicked) to reaction.count { it.name == item.name } }
         .toList()
-        .map { (name, count) ->
+        .map { (emoji, count) ->
             DomainReaction(
-                emojiName = name,
-                emojiCode = reaction.first { it.name == name }.run {
+                emojiName = emoji.first,
+                emojiCode = reaction.first { it.name == emoji.first }.run {
                     if (isCustom) name else code
                 },
-                emojiGlyph = reaction.first { it.name == name }.run {
+                unicodeGlyph = reaction.first { it.name == emoji.first }.run {
                     if (isCustom) "ZCE" else code.getUnicodeGlyph()
                 },
                 count = count,
-                isClicked = checkEmoji(reaction, name, ownerId))
+                isClicked = emoji.second)
         }
 
-    val itemReaction = mutableMapOf<String, ItemReaction>()
+    val itemReaction = mutableMapOf<String, UiItemReaction>()
 
     domainReaction.forEach { emoji ->
         if (itemReaction.keys.contains(emoji.emojiCode)) {
@@ -102,32 +100,27 @@ private fun createUiReactionList(
                 val newCount = emoji.count + count
                 val newClicked =
                     if (emoji.isClicked) true else isClicked
-                itemReaction[emoji.emojiCode] =
-                    ItemReaction(emoji.emojiCode, emoji.emojiGlyph, newCount, newClicked)
+                itemReaction[emojiCode] =
+                    UiItemReaction(emojiName, emojiCode, unicodeGlyph, newCount, newClicked)
             }
         } else {
             itemReaction[emoji.emojiCode] =
-                ItemReaction(emoji.emojiCode, emoji.emojiGlyph, emoji.count, emoji.isClicked)
+                UiItemReaction(emoji.emojiName, emoji.emojiCode, emoji.unicodeGlyph, emoji.count, emoji.isClicked)
         }
     }
 
     return itemReaction.toList().map { it.second }.sortedByDescending { it.count }
 }
 
-private fun checkEmoji(reaction: List<LocalReaction>, emojiName: String, ownerId: Int): Boolean {
-    reaction.asSequence().filter { it.code == emojiName }
-        .firstOrNull { it.userId == ownerId }
-        ?.let { return true } ?: return false
-}
-
-data class ItemReaction(
+data class UiItemReaction(
+    val emojiName: String,
     val emojiCode: String,
     val unicodeGlyph: String,
     val count: Int,
     val isClicked: Boolean = false,
 )
 
-data class TopicListObject(
+data class UiTopicListObject(
     val itemList: List<PostItem>,
     val upAnchorId: Int,
     val downAnchorId: Int,

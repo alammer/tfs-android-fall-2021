@@ -50,28 +50,30 @@ data class PostReaction(
     val userId: Int,
 )
 
-fun RemotePost.toLocalPostWithReaction() =
+fun RemotePost.toLocalPostWithReaction(ownerId: Int) =
     PostWithReaction(
         LocalPost(
             postId = id,
             topicName = topicName,
             streamName = streamName,
             senderId = senderId,
+            isSelf = senderId == ownerId,
             senderName = senderName,
             content = content,
             avatarUrl = avatar,
             timeStamp = timeStamp,
             postFlags = postStatus,
         ),
-        reaction = reaction.map { it.toLocalReaction(id) }
+        reaction = reaction.map { it.toLocalReaction(id, ownerId) }
     )
 
-fun PostReaction.toLocalReaction(postId: Int) =
+fun PostReaction.toLocalReaction(postId: Int, ownerId: Int) =
     LocalReaction(
         postId = postId,
         name = name,
         code = code,
         userId = userId,
+        isClicked = userId == ownerId,
         isCustom = type == "zulip_extra_emoji",
     )
 

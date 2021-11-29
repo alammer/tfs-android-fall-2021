@@ -5,7 +5,7 @@ import androidx.room.ForeignKey.CASCADE
 import org.jetbrains.annotations.NotNull
 
 
-@Entity(tableName = "posts")
+@Entity(tableName = "posts") //TODO UNIQUE KEY for backend replace self-sending posts
 data class LocalPost(
 
     @PrimaryKey
@@ -24,6 +24,10 @@ data class LocalPost(
     @NotNull
     @ColumnInfo(name = "sender_id")
     val senderId: Int,
+
+    @NotNull
+    @ColumnInfo(name = "is_self")
+    val isSelf: Boolean,
 
     @NotNull
     @ColumnInfo(name = "sender_name")
@@ -78,6 +82,10 @@ data class LocalReaction(
     @NotNull
     @ColumnInfo(name = "user_id")
     val userId: Int,
+
+    @NotNull
+    @ColumnInfo(name = "is_clicked")
+    val isClicked: Boolean,
 
     @NotNull
     @ColumnInfo(name = "is_custom")

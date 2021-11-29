@@ -45,7 +45,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             loading.root.isVisible = state.isLoading
             etMessage.setText(state.messageDraft)
             btnSendPost.setImageResource(if (state.messageDraft.isBlank()) R.drawable.ic_text_plus else R.drawable.ic_send_arrow)
-            if (state.isNewestPage) rvTopic.scrollToPosition(state.topicList.size - 1) //TODO("create relation with user scroll")
+            if (state.isNewestPage) rvTopic.scrollToPosition(state.topicList.size - 1) //TODO("set relations with user scroll")
         }
         topicListAdapter.submitList(state.topicList)
     }
@@ -65,7 +65,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
-                store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId, updatedEmojiCode))
+                store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId, updatedEmojiName, updatedEmojiCode))
             }
         }
     }
@@ -79,9 +79,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             tvStream.text = streamName
 
             topicListAdapter = TopicViewAdapter(
-                { messageId: Int, emojiCode: String ->
+                { messageId: Int, emojiName: String, emojiCode: String ->
                     updateReaction(messageId = messageId,
-                        emojiCode = emojiCode)
+                        emojiName = emojiName,emojiCode = emojiCode)
                 },
                 { messageId -> addReaction(messageId) }
             )
@@ -117,8 +117,8 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         EmojiDialogFragment.newInstance(messageId).show(childFragmentManager, tag)
     }
 
-    private fun updateReaction(messageId: Int, emojiName: String = "", emojiCode: String) {
-        store.accept(TopicEvent.Ui.ReactionClicked(messageId, emojiCode))
+    private fun updateReaction(messageId: Int, emojiName: String, emojiCode: String) {
+        store.accept(TopicEvent.Ui.ReactionClicked(messageId, emojiName, emojiCode))
     }
 
     companion object {

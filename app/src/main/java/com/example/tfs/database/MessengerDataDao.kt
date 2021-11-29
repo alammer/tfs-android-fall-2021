@@ -71,6 +71,9 @@ interface MessengerDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReaction(localReaction: LocalReaction): Completable
 
+    @Query("SELECT * FROM reactions WHERE owner_post_id = :postId AND emoji_code = :code AND user_id = :ownerId ")
+    fun getReactionForPost(postId: Int, code: String, ownerId: Int): Maybe<LocalReaction>
+
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId AND emoji_code = :code AND user_id = :ownerId ")
     fun deleteReaction(postId: Int, code: String, ownerId: Int): Completable
 

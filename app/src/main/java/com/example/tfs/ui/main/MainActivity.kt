@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, StreamContainerFragment())
+                //.add(R.id.fragment_container, StreamContainerFragment())
+                .add(R.id.fragment_container, TopicFragment.newInstance("swimming turtles", "general") )
                 .commitAllowingStateLoss()
         }
 
@@ -30,10 +31,10 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_to_streams -> {
+                /*R.id.nav_to_streams -> {
                     loadFragment(StreamContainerFragment())
                     return@setOnItemSelectedListener true
-                }
+                }*/
 
                 R.id.nav_to_contacts -> {
                     loadFragment(ContactsFragment())

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.domain.topic.UiItemReaction
 import com.example.tfs.ui.topic.customview.EmojisLayout
 import com.example.tfs.ui.topic.customview.addReaction
 import com.example.tfs.util.*
@@ -42,19 +43,20 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.toPx)
     }
 
-    fun createPostReaction(reaction: List<ItemReaction>) {
+    fun createPostReaction(reaction: List<UiItemReaction>) {
         emojiGroup.removeAllViews()
         if (reaction.isNotEmpty()) emojiGroup.addReaction(reaction)
     }
 
     fun addReactionListeners(
         itemId: Int,
-        onEmojiClick: (Int, String) -> Unit,
+        reaction: List<UiItemReaction>,
+        onEmojiClick: (Int, String, String) -> Unit,
         onAddReactionClick: (Int) -> Unit,
     ) {
         (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
             emojiGroup.getChildAt(emojiPosition).setOnClickListener {
-                onEmojiClick(itemId, it.tag as String)
+                onEmojiClick(itemId, reaction[emojiPosition].emojiName,reaction[emojiPosition].emojiCode)
             }
         }
         //click on "+"

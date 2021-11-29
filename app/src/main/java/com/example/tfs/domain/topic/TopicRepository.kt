@@ -1,5 +1,7 @@
 package com.example.tfs.domain.topic
 
+import android.content.SharedPreferences
+import android.util.Log
 import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
@@ -29,26 +31,21 @@ interface TopicRepository {
         content: String,
     ): Observable<List<PostWithReaction>>
 
-    fun addReaction(
+    fun updateReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-        ownerId: Int,
-    ): Observable<List<PostWithReaction>>
-
-    fun removeReaction(
-        messageId: Int,
-        emojiName: String,
-        emojiCode: String,
-        ownerId: Int,
     ): Observable<List<PostWithReaction>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class TopicRepositoryImpl : TopicRepository {
+class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
 
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
+    private val ownerId by lazy {
+        prefs.getInt(ZULIP_OWNER_ID_KEY, -1)
+    }
 
     override fun sendMessage(
         streamName: String,
@@ -57,12 +54,33 @@ class TopicRepositoryImpl : TopicRepository {
     ): Observable<List<PostWithReaction>> =
         networkService.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
-            .andThen(database.insertPost(LocalPost(senderId = 1,
+            .andThen(database.insertPost(LocalPost(
+                postId = -1,
+                topicName = topicName,
+                streamName = streamName,
+                isSelf = true,
+                senderId = ownerId,
                 timeStamp = System.currentTimeMillis() * 1000L,
                 content = content)))
             .andThen(getLocalTopic())
 
-    override fun addReaction(
+    override fun updateReaction(
+        messageId: Int,
+        emojiName: String,
+        emojiCode: String,
+    ): Observable<List<PostWithReaction>> {
+        return database.getReactionForPost(messageId, emojiCode, ownerId)
+            .defaultIfEmpty(emptyReaction)
+            .flatMapObservable { reaction ->
+                if (reaction.id == -1) {
+                    addReaction(messageId, emojiName, emojiCode)
+                } else {
+                    removeReaction(messageId, emojiName, emojiCode)
+                }
+            }
+    }
+
+    private fun addReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
@@ -72,18 +90,19 @@ class TopicRepositoryImpl : TopicRepository {
             .andThen(database.insertReaction(LocalReaction(postId = messageId,
                 name = emojiName,
                 code = emojiCode,
-                userId = 1)))
+                userId = ownerId,
+                isClicked = true)))
             .andThen(getLocalTopic())
 
 
-    override fun removeReaction(
+    private fun removeReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
     ): Observable<List<PostWithReaction>> =
         networkService.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
-            .andThen(database.deleteReaction(messageId, emojiCode, 1))
+            .andThen(database.deleteReaction(messageId, emojiCode, ownerId))
             .andThen(getLocalTopic())
 
     override fun fetchTopic(
@@ -166,7 +185,7 @@ class TopicRepositoryImpl : TopicRepository {
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         networkService.getRemotePostList(query)
-            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction() } }
+            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
             .toObservable()
 
 
@@ -209,5 +228,8 @@ class TopicRepositoryImpl : TopicRepository {
         val operand: String,
         val operator: String,
     )
-
 }
+
+private val emptyReaction = LocalReaction(id = -1, code = "", isClicked = false, name = "", postId = -1, userId = -1 )
+
+private const val ZULIP_OWNER_ID_KEY = "zulip_owner_key"

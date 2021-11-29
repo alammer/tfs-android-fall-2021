@@ -1,5 +1,6 @@
 package com.example.tfs.di
 
+import android.content.SharedPreferences
 import com.example.tfs.domain.streams.FetchStreams
 import com.example.tfs.domain.streams.StreamRepositoryImpl
 import com.example.tfs.domain.topic.FetchTopics
@@ -11,11 +12,11 @@ import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerStoreFactory
 import com.example.tfs.ui.topic.elm.TopicActor
 import com.example.tfs.ui.topic.elm.TopicStoreFactory
 
-class AppDI private constructor() {
+class AppDI private constructor(prefs: SharedPreferences) {
 
     private val streamRepository by lazy { StreamRepositoryImpl() }
 
-    private val topicRepository by lazy { TopicRepositoryImpl() }
+    private val topicRepository by lazy { TopicRepositoryImpl(prefs) }
 
     private val fetchStreams by lazy { FetchStreams(streamRepository) }
 
@@ -37,8 +38,8 @@ class AppDI private constructor() {
 
         lateinit var INSTANCE: AppDI
 
-        fun init() {
-            INSTANCE = AppDI()
+        fun init(prefs: SharedPreferences) {
+            INSTANCE = AppDI(prefs)
         }
     }
 }

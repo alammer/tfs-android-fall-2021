@@ -1,7 +1,7 @@
 package com.example.tfs.ui.topic.elm
 
 import com.example.tfs.domain.topic.PostItem
-import com.example.tfs.domain.topic.TopicListObject
+import com.example.tfs.domain.topic.UiTopicListObject
 
 data class TopicState(
     val topicList: List<PostItem> = emptyList(),
@@ -28,11 +28,11 @@ sealed class TopicEvent {
 
         object BackToStream : Ui()
 
-        data class ReactionClicked(val postId: Int, val emojiCode: String) : Ui()
+        data class ReactionClicked(val postId: Int,val emojiName: String, val emojiCode: String) : Ui()
 
         data class NewReactionAdding(val postId: Int) : Ui()
 
-        data class NewReactionPicked(val postId: Int, val emojiCode: String) : Ui()
+        data class NewReactionPicked(val postId: Int,val emojiName: String, val emojiCode: String) : Ui()
 
         data class MessageDraftChanging(val draft: String) : Ui()
 
@@ -43,15 +43,15 @@ sealed class TopicEvent {
 
     sealed class Internal : TopicEvent() {
 
-        data class TopicLoadingComplete(val topic: TopicListObject) : Internal()
+        data class TopicLoadingComplete(val uiTopic: UiTopicListObject) : Internal()
 
         data class TopicLoadingError(val error: Throwable) : Internal()
 
-        data class TopicUpdatingComplete(val topic: TopicListObject) : Internal()
+        data class TopicUpdatingComplete(val uiTopic: UiTopicListObject) : Internal()
 
         data class TopicUpdatingError(val error: Throwable) : Internal()
 
-        data class MessageSendingComplete(val topic: TopicListObject) : Internal()
+        data class MessageSendingComplete(val uiTopic: UiTopicListObject) : Internal()
 
         //data class MessageSendingError(val error: Throwable) : Internal()
 
@@ -76,7 +76,7 @@ sealed class Command {
 
     data class FetchTopic(val streamName: String, val topicName: String) : Command()
 
-    data class UpdateReaction(val streamName: String, val topicName: String, val postId: Int, val emojiCode: String) : Command()
+    data class UpdateReaction(val postId: Int, val emojiName: String, val emojiCode: String) : Command()
 
     data class AddReaction(val postId: Int) : Command()
 

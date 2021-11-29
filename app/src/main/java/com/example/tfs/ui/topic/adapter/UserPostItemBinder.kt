@@ -9,7 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class UserPostItemBinder(
-    private val onChangeReactionClick: (messageId: Int, emojiName: String) -> Unit,
+    private val onChangeReactionClick: (messageId: Int, emojiName: String, emojiCode: String) -> Unit,
     private val onAddReactionClick: (messageId: Int) -> Unit,
 ) {
 
@@ -37,6 +37,7 @@ class UserPostItemBinder(
 
         if (item.reaction.isNotEmpty()) {
             userPostViewHolder.addReactionListeners(item.id,
+                item.reaction,
                 onChangeReactionClick,
                 onAddReactionClick)
         }

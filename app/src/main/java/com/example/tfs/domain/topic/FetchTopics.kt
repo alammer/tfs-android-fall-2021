@@ -7,28 +7,28 @@ class FetchTopics(private val topicRepository: TopicRepository) {
 
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
 
-    fun topic(stream: String, topic: String): Observable<TopicListObject> {
+    fun topic(stream: String, topic: String): Observable<UiTopicListObject> {
         return topicRepository.fetchTopic(stream, topic)
-            .map{ topicToItemMapper(it, 1) }
+            .map(topicToItemMapper)
     }
 
-    fun nextPage(stream: String, topic: String, anchorId: Int): Observable<TopicListObject> {
+    fun nextPage(stream: String, topic: String, anchorId: Int): Observable<UiTopicListObject> {
         return topicRepository.fetchNextPage(stream, topic, anchorId)
-            .map{ topicToItemMapper(it, 1) }
+            .map(topicToItemMapper)
     }
 
-    fun previousPage(stream: String, topic: String, anchorId: Int): Observable<TopicListObject> {
+    fun previousPage(stream: String, topic: String, anchorId: Int): Observable<UiTopicListObject> {
         return topicRepository.fetchPrevPage(stream, topic, anchorId)
-            .map{ topicToItemMapper(it, 1) }
+            .map(topicToItemMapper)
     }
 
-    fun send(stream: String, topic: String, message: String): Observable<TopicListObject> {
+    fun send(stream: String, topic: String, message: String): Observable<UiTopicListObject> {
         return topicRepository.sendMessage(stream, topic, message)
-            .map{ topicToItemMapper(it, 1) }
+            .map(topicToItemMapper)
     }
 
-    fun update(stream: String, topic: String, postId: Int, emojiCode: String): Observable<TopicListObject> {
-        return topicRepository.changeReaction(stream, topic, postId, emojiCode)
-            .map{ topicToItemMapper(it, 1) }
+    fun update(postId: Int, emojiName: String, emojiCode: String): Observable<UiTopicListObject> {
+        return topicRepository.updateReaction(postId, emojiName, emojiCode)
+            .map(topicToItemMapper)
     }
 }
