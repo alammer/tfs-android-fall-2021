@@ -7,7 +7,6 @@ data class TopicState(
     val topicList: List<PostItem> = emptyList(),
     val error: Throwable? = null,
     val isLoading: Boolean = false,
-    val isNewestPage: Boolean = false,
     val isNextPageLoading: Boolean = false,
     val isPrevPageLoading: Boolean = false,
     val messageDraft: String = "",
@@ -53,9 +52,7 @@ sealed class TopicEvent {
 
         data class MessageSendingComplete(val uiTopic: UiTopicListObject) : Internal()
 
-        //data class MessageSendingError(val error: Throwable) : Internal()
-
-        //data class ReactionUpdatingError(val error: Throwable) : Internal()
+        data class MessageSendingError(val error: Throwable) : Internal()
     }
 }
 
@@ -64,6 +61,10 @@ sealed class TopicEffect {
     data class LoadError(val error: Throwable) : TopicEffect()
 
     data class UpdateError(val error: Throwable) : TopicEffect()
+
+    object LoadTopic : TopicEffect()
+
+    object UpdateTopic : TopicEffect()
 
     object NextPageLoad : TopicEffect()
 

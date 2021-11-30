@@ -72,4 +72,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProfileName" />
 
+    <include
+        android:id="@+id/loading"
+        android:visibility="gone"
+        layout="@layout/loading_state" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

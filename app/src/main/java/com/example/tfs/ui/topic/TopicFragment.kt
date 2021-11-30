@@ -1,6 +1,7 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -38,18 +39,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     private lateinit var topicListAdapter: TopicViewAdapter
 
-    override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
-        AppDI.INSTANCE.elmTopicStoreFactory.provide()
-
-
-    override fun render(state: TopicState) {
-        with(viewBinding) {
-            loading.root.isVisible = state.isLoading
-            if (state.isNewestPage) rvTopic.scrollToPosition(state.topicList.size - 1) //TODO("set relations with user scroll")
-        }
-        topicListAdapter.submitList(state.topicList)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -68,6 +57,17 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId, updatedEmojiName, updatedEmojiCode))
             }
         }
+    }
+
+    override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
+        AppDI.INSTANCE.elmTopicStoreFactory.provide()
+
+
+    override fun render(state: TopicState) {
+        with(viewBinding) {
+            loading.root.isVisible = state.isLoading
+        }
+        topicListAdapter.submitList(state.topicList)
     }
 
     override fun handleEffect(effect: TopicEffect) {
@@ -95,11 +95,17 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     clearFocus()
                 }
             }
+            is TopicEffect.LoadTopic -> {
+                viewBinding.rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
+            }
+            is TopicEffect.UpdateTopic -> {
+                //TODO("scrolling logic for new page")
+            }
             is TopicEffect.NextPageLoad -> {
-                //TODO("add progress item to bottom RV")
+                //TODO("show PB on bottom RV")
             }
             is TopicEffect.PrevPageLoad -> {
-                //TODO("add progress item to top RV")
+                //TODO("show PB on top RV")
             }
         }
     }
