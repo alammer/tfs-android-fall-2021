@@ -1,6 +1,8 @@
 package com.example.tfs.domain.topic
 
+import android.util.Log
 import io.reactivex.Observable
+import io.reactivex.Single
 
 
 class FetchTopics(private val topicRepository: TopicRepository) {
@@ -12,22 +14,23 @@ class FetchTopics(private val topicRepository: TopicRepository) {
             .map(topicToItemMapper)
     }
 
-    fun nextPage(stream: String, topic: String, anchorId: Int): Observable<UiTopicListObject> {
+    fun nextPage(stream: String, topic: String, anchorId: Int): Single<UiTopicListObject> {
+        Log.i("Topicsfetch", "Function called: nextPage()")
         return topicRepository.fetchNextPage(stream, topic, anchorId)
             .map(topicToItemMapper)
     }
 
-    fun previousPage(stream: String, topic: String, anchorId: Int): Observable<UiTopicListObject> {
+    fun previousPage(stream: String, topic: String, anchorId: Int): Single<UiTopicListObject> {
         return topicRepository.fetchPrevPage(stream, topic, anchorId)
             .map(topicToItemMapper)
     }
 
-    fun send(stream: String, topic: String, message: String): Observable<UiTopicListObject> {
+    fun send(stream: String, topic: String, message: String): Single<UiTopicListObject> {
         return topicRepository.sendMessage(stream, topic, message)
             .map(topicToItemMapper)
     }
 
-    fun update(postId: Int, emojiName: String, emojiCode: String): Observable<UiTopicListObject> {
+    fun update(postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
         return topicRepository.updateReaction(postId, emojiName, emojiCode)
             .map(topicToItemMapper)
     }

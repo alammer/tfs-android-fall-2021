@@ -5,6 +5,6 @@ data class DomainReaction(
     val emojiCode: String,
     val unicodeGlyph: String,
     val count: Int,
-    val isClicked: Boolean,
+    val isClicked: Boolean = false,
 )
 

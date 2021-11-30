@@ -1,5 +1,6 @@
 package com.example.tfs.domain.topic
 
+import android.util.Log
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.ui.topic.getUnicodeGlyph
@@ -77,19 +78,18 @@ private fun createUiReactionList(
     }
 
     val domainReaction = reaction
-        .associate { item -> (item.name to item.isClicked) to reaction.count { it.name == item.name } }
+        .associate { item -> item.name to reaction.count { it.name == item.name } }
         .toList()
-        .map { (emoji, count) ->
+        .map { (name, count) ->
             DomainReaction(
-                emojiName = emoji.first,
-                emojiCode = reaction.first { it.name == emoji.first }.run {
+                emojiName = name,
+                emojiCode = reaction.first { it.name == name }.run {
                     if (isCustom) name else code
                 },
-                unicodeGlyph = reaction.first { it.name == emoji.first }.run {
+                unicodeGlyph = reaction.first { it.name == name }.run {
                     if (isCustom) "ZCE" else code.getUnicodeGlyph()
                 },
-                count = count,
-                isClicked = emoji.second)
+                count = count,)
         }
 
     val itemReaction = mutableMapOf<String, UiItemReaction>()
@@ -98,26 +98,28 @@ private fun createUiReactionList(
         if (itemReaction.keys.contains(emoji.emojiCode)) {
             itemReaction[emoji.emojiCode]?.apply {
                 val newCount = emoji.count + count
-                val newClicked =
-                    if (emoji.isClicked) true else isClicked
-                itemReaction[emojiCode] =
-                    UiItemReaction(emojiName, emojiCode, unicodeGlyph, newCount, newClicked)
+                itemReaction[emoji.emojiCode] =
+                    UiItemReaction(emojiName, emojiCode, unicodeGlyph, newCount, isClicked)
             }
         } else {
             itemReaction[emoji.emojiCode] =
-                UiItemReaction(emoji.emojiName, emoji.emojiCode, emoji.unicodeGlyph, emoji.count, emoji.isClicked)
+                UiItemReaction(emoji.emojiName, emoji.emojiCode, emoji.unicodeGlyph, emoji.count, checkEmoji(reaction,emoji.emojiCode))
         }
     }
 
     return itemReaction.toList().map { it.second }.sortedByDescending { it.count }
 }
 
+private fun checkEmoji(reaction: List<LocalReaction>, emojiCode: String): Boolean =
+    reaction.asSequence().filter { it.code == emojiCode }
+        .firstOrNull{ it.isClicked }?.isClicked ?: false
+
 data class UiItemReaction(
     val emojiName: String,
     val emojiCode: String,
     val unicodeGlyph: String,
     val count: Int,
-    val isClicked: Boolean = false,
+    val isClicked: Boolean,
 )
 
 data class UiTopicListObject(

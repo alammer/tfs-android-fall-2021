@@ -51,7 +51,7 @@ data class LocalPost(
 
 @Entity(
     tableName = "reactions",
-    /*primaryKeys = ["owner_post_id", "emoji_code", "user_id"],*/
+    primaryKeys = ["owner_post_id", "emoji_code", "user_id"],
     foreignKeys = [
         ForeignKey(entity = LocalPost::class,
             parentColumns = ["post_id"],
@@ -61,11 +61,6 @@ data class LocalPost(
     /*indices = [Index(value = ["owner_post_id"], unique = true)]*/
 )
 data class LocalReaction(
-
-    @PrimaryKey(autoGenerate = true)
-    @NotNull
-    @ColumnInfo(name = "id")
-    val id: Int = 0,
 
     @NotNull
     @ColumnInfo(name = "owner_post_id")

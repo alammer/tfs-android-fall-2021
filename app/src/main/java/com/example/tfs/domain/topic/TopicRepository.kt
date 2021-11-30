@@ -21,21 +21,21 @@ interface TopicRepository {
 
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
 
-    fun fetchNextPage(streamName: String, topicName: String, anchorId: Int): Observable<List<PostWithReaction>>
+    fun fetchNextPage(streamName: String, topicName: String, anchorId: Int): Single<List<PostWithReaction>>
 
-    fun fetchPrevPage(streamName: String, topicName: String, anchorId: Int): Observable<List<PostWithReaction>>
+    fun fetchPrevPage(streamName: String, topicName: String, anchorId: Int): Single<List<PostWithReaction>>
 
     fun sendMessage(
         streamName: String,
         topicName: String,
         content: String,
-    ): Observable<List<PostWithReaction>>
+    ): Single<List<PostWithReaction>>
 
     fun updateReaction(
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Observable<List<PostWithReaction>>
+    ): Single<List<PostWithReaction>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -51,7 +51,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         streamName: String,
         topicName: String,
         content: String,
-    ): Observable<List<PostWithReaction>> =
+    ): Single<List<PostWithReaction>> =
         networkService.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
             .andThen(database.insertPost(LocalPost(
@@ -68,11 +68,11 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Observable<List<PostWithReaction>> {
+    ): Single<List<PostWithReaction>> {
         return database.getReactionForPost(messageId, emojiCode, ownerId)
             .defaultIfEmpty(emptyReaction)
-            .flatMapObservable { reaction ->
-                if (reaction.id == -1) {
+            .flatMapSingle { reaction ->
+                if (reaction.userId == -1) {
                     addReaction(messageId, emojiName, emojiCode)
                 } else {
                     removeReaction(messageId, emojiName, emojiCode)
@@ -84,7 +84,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Observable<List<PostWithReaction>> =
+    ): Single<List<PostWithReaction>> =
         networkService.addReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
             .andThen(database.insertReaction(LocalReaction(postId = messageId,
@@ -99,7 +99,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         messageId: Int,
         emojiName: String,
         emojiCode: String,
-    ): Observable<List<PostWithReaction>> =
+    ): Single<List<PostWithReaction>> =
         networkService.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
             .andThen(database.deleteReaction(messageId, emojiCode, ownerId))
@@ -111,12 +111,13 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
     ): Observable<List<PostWithReaction>> {
         val remoteSource: Observable<List<PostWithReaction>> =
             getRemoteTopic(latestTopicQuery(streamName, topicName))
+                .toObservable()
 
         return getLocalTopic()
             .subscribeOn(Schedulers.io())
-            .flatMap { localPostList: List<PostWithReaction> ->
+            .flatMapObservable{ localPostList: List<PostWithReaction> ->
                 remoteSource
-                    .flatMapSingle { remotePostList ->
+                    .flatMapSingle{ remotePostList ->
                         insertTopicToDB(remotePostList)
                             .andThen(Single.just(remotePostList))
                     }
@@ -128,28 +129,29 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         streamName: String,
         topicName: String,
         anchorId: Int,
-    ): Observable<List<PostWithReaction>> =
+    ): Single<List<PostWithReaction>> =
         fetchPage(nextPageQuery(streamName,topicName, anchorId))
 
     override fun fetchPrevPage(
         streamName: String,
         topicName: String,
         anchorId: Int
-    ): Observable<List<PostWithReaction>> =
+    ): Single<List<PostWithReaction>> =
         fetchPage(prevPageQuery(streamName,topicName, anchorId), isNext = false)
 
     private fun fetchPage(
        query: HashMap<String, Any>,
        isNext: Boolean = true
-    ): Observable<List<PostWithReaction>>  =
-        Observable.zip(getRemoteTopic(query), database.getTopicSize().toObservable(),
+    ): Single<List<PostWithReaction>> {
+        Log.i("TopicRepository", "Function called: fetchPage()")
+        return Single.zip(getRemoteTopic(query), database.getTopicSize(),
             { newPage, currentSize -> Pair(newPage, currentSize) })
             .subscribeOn(Schedulers.io())
             .flatMap { (page, size) ->
                 addPage(page, size, isNext)
                     .andThen(database.getPostWithReaction())
             }
-
+    }
     /*.subscribeOn(Schedulers.io())    //WTF???
      .map { (page, size) -> addNextPage(query, page, size) }
      .flatMapSingle { database.getPostWithReaction(query.streamName, query.topicName) }*/
@@ -179,14 +181,13 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         })
     }
 
-    private fun getLocalTopic(): Observable<List<PostWithReaction>> =
+    private fun getLocalTopic(): Single<List<PostWithReaction>> =
         database.getPostWithReaction()
 
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         networkService.getRemotePostList(query)
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
-            .toObservable()
 
 
     private fun insertTopicToDB(
@@ -230,6 +231,6 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
     )
 }
 
-private val emptyReaction = LocalReaction(id = -1, code = "", isClicked = false, name = "", postId = -1, userId = -1 )
+private val emptyReaction = LocalReaction(postId = -1, code = "", isClicked = false, name = "", userId = -1)
 
 private const val ZULIP_OWNER_ID_KEY = "zulip_owner_key"
