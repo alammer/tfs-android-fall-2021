@@ -47,7 +47,7 @@ class ContactsFragment :
         AppDI.INSTANCE.elmContactStoreFactory.provide()
 
     override fun render(state: ContactState) {
-        viewBinding.loading.root.isVisible = state.isFetching //не успевает отрабатывать если репо сразу возвращает кэш из БД, а она пустая
+        viewBinding.loading.root.isVisible = state.isFetching
         contactListAdapter.submitList(state.contactList)
     }
 

@@ -9,6 +9,8 @@ import com.example.tfs.domain.topic.FetchTopics
 import com.example.tfs.domain.topic.TopicRepositoryImpl
 import com.example.tfs.ui.contacts.elm.ContactActor
 import com.example.tfs.ui.contacts.elm.ContactStoreFactory
+import com.example.tfs.ui.profile.elm.ProfileActor
+import com.example.tfs.ui.profile.elm.ProfileStoreFactory
 import com.example.tfs.ui.stream.elm.StreamActor
 import com.example.tfs.ui.stream.elm.StreamStoreFactory
 import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerActor
@@ -38,6 +40,8 @@ class AppDI private constructor(prefs: SharedPreferences) {
 
     private val contactActor by lazy { ContactActor(fetchContacts) }
 
+    private val profileActor by lazy { ProfileActor(fetchContacts) }
+
     val elmStreamContainerStoreFactory by lazy { StreamContainerStoreFactory(streamContainerActor) }
 
     val elmStreamStoreFactory by lazy { StreamStoreFactory(streamActor) }
@@ -46,6 +50,7 @@ class AppDI private constructor(prefs: SharedPreferences) {
 
     val elmContactStoreFactory by lazy { ContactStoreFactory(contactActor) }
 
+    val elmProfileStoreFactory by lazy { ProfileStoreFactory(profileActor) }
     companion object {
 
         lateinit var INSTANCE: AppDI

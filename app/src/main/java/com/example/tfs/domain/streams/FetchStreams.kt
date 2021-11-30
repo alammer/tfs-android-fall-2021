@@ -23,6 +23,7 @@ class FetchStreams(private val streamRepository: StreamRepository) {
     }
 
     fun getLocalStreams(isSubcribed: Boolean): Observable<List<StreamListItem>> {
+        //TODO("return specific value from DB for empty local cache")
         return streamRepository.getLocalList(isSubcribed)
             .map(streamToItemMapper)
     }

@@ -12,6 +12,7 @@ class FetchTopics(private val topicRepository: TopicRepository) {
     fun topic(stream: String, topic: String): Observable<UiTopicListObject> {
         return topicRepository.fetchTopic(stream, topic)
             .map(topicToItemMapper)
+        //TODO("return specific value from DB for empty local cache")
     }
 
     fun nextPage(stream: String, topic: String, anchorId: Int): Single<UiTopicListObject> {
