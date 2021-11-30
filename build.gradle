@@ -10,6 +10,7 @@ buildscript {
     ext.kotlinx_json_serialization_version = "1.2.2"
     ext.kotlinx_json_converter_version = "0.8.0"
     ext.elmslie_version = "1.2.0"
+    ext.dagger_version = "2.40.1"
     
     repositories {
         google()
