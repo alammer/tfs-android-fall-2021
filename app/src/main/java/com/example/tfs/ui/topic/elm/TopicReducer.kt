@@ -94,6 +94,7 @@ class TopicReducer :
         is TopicEvent.Ui.MessageSending -> {
             state { copy(isNextPageLoading = true, isPrevPageLoading = false, error = null) }
             commands { +Command.SendMessage(state.streamName, state.topicName, state.messageDraft) }
+            effects { +TopicEffect.MessageSend }
         }
         is TopicEvent.Ui.PageFetching -> {
             Log.i("TopicReducer", "Function called: page fetching")

@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.AppDI
+import com.example.tfs.ui.stream.elm.StreamEffect
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
 import com.example.tfs.ui.topic.elm.TopicEffect
 import com.example.tfs.ui.topic.elm.TopicEvent
 import com.example.tfs.ui.topic.elm.TopicState
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
+import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
@@ -43,8 +45,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     override fun render(state: TopicState) {
         with(viewBinding) {
             loading.root.isVisible = state.isLoading
-            etMessage.setText(state.messageDraft)
-            btnSendPost.setImageResource(if (state.messageDraft.isBlank()) R.drawable.ic_text_plus else R.drawable.ic_send_arrow)
             if (state.isNewestPage) rvTopic.scrollToPosition(state.topicList.size - 1) //TODO("set relations with user scroll")
         }
         topicListAdapter.submitList(state.topicList)
@@ -66,6 +66,40 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
                 store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId, updatedEmojiName, updatedEmojiCode))
+            }
+        }
+    }
+
+    override fun handleEffect(effect: TopicEffect) {
+        when (effect) {
+            is TopicEffect.UpdateError -> {
+                with(requireView()) {
+                    effect.error.message?.let { showSnackbarError(it) }
+                        ?: showSnackbarError("Error on update topic")
+                }
+            }
+            is TopicEffect.LoadError -> {
+                with(requireView()) {
+                    effect.error.message?.let { showSnackbarError(it) }
+                        ?: showSnackbarError("Error on load topic")
+                }
+                //TODO("empty screen)
+            }
+            is TopicEffect.MessageDraftChange -> {
+                viewBinding.btnSendPost.setImageResource(if (effect.draft.isBlank()) R.drawable.ic_text_plus else R.drawable.ic_send_arrow)
+            }
+            is TopicEffect.MessageSend -> {
+                viewBinding.btnSendPost.setImageResource(R.drawable.ic_text_plus)
+                viewBinding.etMessage.apply {
+                    text.clear()
+                    clearFocus()
+                }
+            }
+            is TopicEffect.NextPageLoad -> {
+                //TODO("add progress item to bottom RV")
+            }
+            is TopicEffect.PrevPageLoad -> {
+                //TODO("add progress item to top RV")
             }
         }
     }

@@ -68,22 +68,6 @@
         app:layout_constraintTop_toBottomOf="@+id/rvTopic">
 
         <EditText
-            android:id="@+id/etTopicName"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginVertical="@dimen/edittext_vertical_margin"
-            android:background="@drawable/edittext_topic_bg"
-            android:hint="@string/channel_name_hint"
-            android:paddingHorizontal="@dimen/new_message_horizontal_padding"
-            android:textColor="@color/new_message_text"
-            android:textColorHint="@color/new_message_text"
-            android:textSize="@dimen/large_text_size"
-            app:layout_constraintBottom_toTopOf="@id/etMessage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
             android:id="@+id/etMessage"
             android:layout_width="0dp"
             android:layout_height="50dp"
@@ -97,7 +81,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnSendPost"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etTopicName" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/btnSendPost"
@@ -109,7 +93,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/etMessage"
-            app:layout_constraintTop_toBottomOf="@id/etTopicName" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

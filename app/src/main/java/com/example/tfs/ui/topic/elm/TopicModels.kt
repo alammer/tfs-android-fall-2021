@@ -69,6 +69,8 @@ sealed class TopicEffect {
 
     object PrevPageLoad : TopicEffect()
 
+    object MessageSend : TopicEffect()
+
     data class MessageDraftChange(val draft: String) : TopicEffect()
 }
 

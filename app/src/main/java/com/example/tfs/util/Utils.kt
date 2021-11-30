@@ -150,7 +150,7 @@ fun View.hideSoftKeyboard() {
         im.hideSoftInputFromWindow(windowToken, 0)
     } catch (ignored: RuntimeException) {
     }
-    clearFocus()
+    //clearFocus()
     /*if (this is EditText) { //move to uiTopic elm
         text.clear()
     }*/

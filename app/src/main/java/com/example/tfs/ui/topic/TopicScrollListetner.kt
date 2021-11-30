@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -20,10 +21,12 @@ abstract class TopicScrollListetner(
         val updateDownScrollPosition = totalItemCount - UPDATE_THRESHOLD
 
         if (lastVisibleItemPosition > updateDownScrollPosition && dy > 0 ) {
+            Log.i("TopicScrollListetner", "DownScroll last:$lastVisibleItemPosition updated:$updateDownScrollPosition")
             loadPage()
         }
 
         if (firstVisibleItemPosition < UPDATE_THRESHOLD && dy < 0) {
+            Log.i("TopicScrollListetner", "Upscroll last:$lastVisibleItemPosition updated:$updateDownScrollPosition")
             loadPage(false)
         }
     }
