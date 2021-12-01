@@ -13,8 +13,14 @@ interface MessengerDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertStreams(localStreams: List<LocalStream>): Completable
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertStream(localStream: LocalStream): Completable
+
     @Query("SELECT * FROM streams WHERE is_subscribed = :isSubscribed")
-    fun getStreams(isSubscribed: Boolean): Single<List<LocalStream>>
+    fun getStreams(isSubscribed: Boolean): Observable<List<LocalStream>>
+
+    @Query("SELECT * FROM streams WHERE stream_id = :streamId")
+    fun getStream(streamId: Int): Maybe<LocalStream>
 
     @Query("DELETE FROM streams")
     fun clearStreams(): Completable

@@ -1,7 +1,6 @@
 package com.example.tfs.ui.topic
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.AppDI
-import com.example.tfs.ui.stream.elm.StreamEffect
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
 import com.example.tfs.ui.topic.elm.TopicEffect
 import com.example.tfs.ui.topic.elm.TopicEvent
@@ -72,6 +70,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     override fun handleEffect(effect: TopicEffect) {
         when (effect) {
+            is TopicEffect.BackNavigation -> {
+                requireActivity().supportFragmentManager.popBackStack()
+            }
             is TopicEffect.UpdateError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
@@ -94,6 +95,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     text.clear()
                     clearFocus()
                 }
+            }
+            is TopicEffect.AddReactionDialog -> {
+                EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
             is TopicEffect.LoadTopic -> {
                 viewBinding.rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
@@ -144,7 +148,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             }
 
             btnTopicNavBack.setOnClickListener {
-                requireActivity().supportFragmentManager.popBackStack()
+                store.accept(TopicEvent.Ui.BackToStream)
             }
 
             etMessage.doAfterTextChanged {
@@ -154,7 +158,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     private fun addReaction(messageId: Int) {
-        EmojiDialogFragment.newInstance(messageId).show(childFragmentManager, tag)
+        store.accept(TopicEvent.Ui.NewReactionAdding(messageId))
     }
 
     private fun updateReaction(messageId: Int, emojiName: String, emojiCode: String) {

@@ -71,7 +71,11 @@ class TopicReducer :
             commands { +Command.FetchTopic(event.streamName, event.topicName) }
         }
         is TopicEvent.Ui.BackToStream -> {
-            commands { +Command.BackToStream }
+            state { copy(error = null, isLoading = false, isPrevPageLoading = false, isNextPageLoading = false) }
+            effects { +TopicEffect.BackNavigation }
+        }
+        is TopicEvent.Ui.NewReactionAdding -> {
+            effects { +TopicEffect.AddReactionDialog(event.postId) }
         }
         is TopicEvent.Ui.ReactionClicked -> {
             state { copy(error = null) }
@@ -80,9 +84,6 @@ class TopicReducer :
                     event.emojiName,
                     event.emojiCode)
             }
-        }
-        is TopicEvent.Ui.NewReactionAdding -> {
-            commands { +Command.AddReaction(event.postId) }
         }
         is TopicEvent.Ui.NewReactionPicked -> {
             state { copy(error = null) }

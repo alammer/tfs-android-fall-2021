@@ -1,5 +1,6 @@
 package com.example.tfs.ui.stream.elm
 
+import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :
@@ -39,8 +40,8 @@ class StreamReducer :
         }
 
         is StreamEvent.Ui.ClickOnTopic -> {
-            state { copy(isClicked = true, error = null) }
-            /*commands { +Command.SelectTopic(event.streamId, event.topicId) }*/
+            state { copy(isClicked = false, error = null) }
+            effects { +StreamEffect.ShowTopic(event.topicName, event.streamName) }
         }
     }
 }

@@ -72,6 +72,10 @@ sealed class TopicEffect {
 
     object MessageSend : TopicEffect()
 
+    object BackNavigation : TopicEffect()
+
+    data class AddReactionDialog(val postId: Int) : TopicEffect()
+
     data class MessageDraftChange(val draft: String) : TopicEffect()
 }
 
@@ -81,13 +85,9 @@ sealed class Command {
 
     data class UpdateReaction(val postId: Int, val emojiName: String, val emojiCode: String) : Command()
 
-    data class AddReaction(val postId: Int) : Command()
-
     data class SendMessage(val streamName: String, val topicName: String, val message: String) : Command()
 
     data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) : Command()
 
     data class FetchPrevPage(val streamName: String, val topicName: String, val upAnchor: Int) : Command()
-
-    object BackToStream : Command()
 }

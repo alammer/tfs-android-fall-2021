@@ -13,13 +13,8 @@ class StreamActor(private val fetchStreams: FetchStreams) :
                 .mapEvents(StreamEvent.Internal.UpdateStreamComplete, StreamEvent.Internal::LoadingError)
         }
         is Command.ObserveStreams -> {
-            fetchStreams.getLocalStreams(true)
+            fetchStreams.getLocalStreams()
                 .mapEvents(StreamEvent.Internal::LoadingComplete, StreamEvent.Internal::LoadingError)
         }
-       /* is Command.SelectTopic -> {
-            open(command.streamId, command.topicId)
-                .mapEvents(StreamEvent.Internal.UpdateStreamComplete, StreamEvent.Internal::OpenTopicError)
-        }*/
-
     }
 }

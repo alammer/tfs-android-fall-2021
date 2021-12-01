@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamBinding
@@ -33,6 +32,10 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
         initViews()
     }
 
+    override fun render(state: StreamState) {
+        streamViewAdapter.submitList(state.streamListItem)
+    }
+
     override fun handleEffect(effect: StreamEffect) {
         when (effect) {
             is StreamEffect.LoadingDataError -> {
@@ -40,6 +43,15 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
                 }
+            }
+            is StreamEffect.ShowTopic -> {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.fragment_container,
+                        TopicFragment.newInstance(effect.topicName, effect.streamName)
+                    )
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss()
             }
         }
     }
@@ -50,7 +62,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
     private fun initViews() {
         streamViewAdapter = StreamViewAdapter { item: StreamListItem ->
             when (item) {
-                is StreamListItem.StreamItem -> clickStreamView(item.id)
+                is StreamListItem.StreamItem -> clickOnStream(item.id)
                 is StreamListItem.TopicItem -> moveToTopicFragment(
                     item.name,
                     item.parentStreamName,
@@ -64,8 +76,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
         }
     }
 
-    private fun clickStreamView(streamId: Int) {
-        Log.i("StreamFragment", "Function called: clickStreamView() $streamId")
+    private fun clickOnStream(streamId: Int) {
         store.accept(StreamEvent.Ui.ClickOnStream(streamId))
     }
 
@@ -73,13 +84,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
         topicName: String,
         streamName: String,
     ) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(
-                R.id.fragment_container,
-                TopicFragment.newInstance(topicName, streamName)
-            )
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
+        store.accept(StreamEvent.Ui.ClickOnTopic(topicName, streamName))
     }
 
     companion object {
@@ -93,9 +98,5 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
                 )
             }
         }
-    }
-
-    override fun render(state: StreamState) {
-        streamViewAdapter.submitList(state.streamListItem)
     }
 }

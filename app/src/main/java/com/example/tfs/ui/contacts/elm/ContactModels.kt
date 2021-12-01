@@ -15,8 +15,6 @@ sealed class ContactEvent {
 
         object Init : Ui()
 
-        object BackToStack : Ui()
-
         data class SearchQueryChange(val query: String) : Ui()
 
         data class ContactClicked(val userId: Int) : Ui()
@@ -33,13 +31,10 @@ sealed class ContactEvent {
 sealed class ContactEffect {
 
     data class FetchError(val error: Throwable) : ContactEffect()
+    data class ShowUser(val userId: Int) : ContactEffect()
 }
 
 sealed class Command {
 
     data class FetchContacts(val query: String) : Command()
-
-    data class ShowContact(val userId: Int) : Command()
-
-    object GoAway : Command()
 }

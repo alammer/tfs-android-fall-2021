@@ -12,9 +12,9 @@ class StreamContainerActor(private val fetchStreams: FetchStreams) : ActorCompat
             fetchStreams.upload(command.query, command.isSubscribed)
                 .mapEvents(Internal.StreamsFetchComplete, Internal::StreamsFetchError)
         }
-        is Command.UpdateStream -> {
+        /*is Command.UpdateStream -> {
             fetchStreams.updateStream()
                 .mapEvents(Internal::StreamUpdate, Internal::StreamsFetchError)
-        }
+        }*/
     }
 }

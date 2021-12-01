@@ -14,6 +14,8 @@ interface ContactRepository {
     fun fetchUserList(query: String): Observable<List<LocalUser>>
 
     fun getUser(userId: Int): Maybe<LocalUser>
+
+    fun getOwner(): Single<LocalUser>
 }
 
 class ContactRepositoryImpl : ContactRepository {
@@ -60,12 +62,22 @@ class ContactRepositoryImpl : ContactRepository {
         database.getUser(userId)
             .subscribeOn(Schedulers.io())
 
+    override fun getOwner(): Single<LocalUser> {
+        return networkService.getOwner()
+            .subscribeOn(Schedulers.io())
+            .flatMap { user ->
+                getUserPresence(user.id)
+                    .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available", 0L))))
+                    .map { presence -> user.toLocalUser(presence.userPresence.state) }
+            }
+    }
+
     private fun getUserWithPresence(user: User) =
         Single.zip(networkService.getUser(user.id),
             getUserPresence(user.id),
             { userResponse, presenceResponse ->
                 Pair(userResponse.user,
-                    presenceResponse.userPresence.userPresence)
+                    presenceResponse.userPresence.state)
             })
             .map { (user, presence) ->
                 user.toLocalUser(presence)

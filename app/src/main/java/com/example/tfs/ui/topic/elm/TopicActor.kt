@@ -28,9 +28,5 @@ class TopicActor(private val fetchTopics: FetchTopics) :
             fetchTopics.update(command.postId, command.emojiName, command.emojiCode)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
         }
-        is Command.AddReaction -> TODO()
-        Command.BackToStream -> TODO()
-
-
     }
 }

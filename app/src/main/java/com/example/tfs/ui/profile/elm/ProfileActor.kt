@@ -8,10 +8,15 @@ class ProfileActor(private val fetchContacts: FetchContacts) :
     ActorCompat<Command, ProfileEvent.Internal> {
     override fun execute(command: Command): Observable<ProfileEvent.Internal> = when (command) {
         is Command.GetUser -> {
-            fetchContacts.get(command.userId)
-                .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
-                    ProfileEvent.Internal.ProfileFetchingError)
+            if (command.userId == -1) {
+                fetchContacts.getOwner()
+                    .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
+                        ProfileEvent.Internal.ProfileFetchingError)
+            } else {
+                fetchContacts.get(command.userId)
+                    .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
+                        ProfileEvent.Internal.ProfileFetchingError)
+            }
         }
-        Command.BackToContacts -> TODO()
     }
 }

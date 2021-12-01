@@ -10,8 +10,10 @@ internal class StreamToItemMapper : (List<LocalStream>) -> (List<StreamListItem>
 
         streams.forEach { stream ->
             domainStreamList.add(stream.toDomainStream())
-            stream.topics.forEach { topicName ->
-                domainStreamList.add(StreamListItem.TopicItem(topicName, stream.streamName ))
+            if (stream.isExpanded) {
+                stream.topics.forEach { topicName ->
+                    domainStreamList.add(StreamListItem.TopicItem(topicName, stream.streamName))
+                }
             }
         }
         return domainStreamList.toList()

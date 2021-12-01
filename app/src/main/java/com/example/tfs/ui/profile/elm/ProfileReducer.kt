@@ -34,7 +34,8 @@ class ProfileReducer :
         }
 
         is ProfileEvent.Ui.BackToContacts -> {
-            Any()
+            state { copy(error = null) }
+            effects { +ProfileEffect.BackNavigation }
         }
     }
 }
