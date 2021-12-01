@@ -52,7 +52,7 @@ data class UserPresence(
 @Serializable
 data class Presence(
     @SerialName("aggregated")
-    val userPresence: AggregatedStatus,
+    val state: AggregatedStatus,
 )
 
 @Serializable

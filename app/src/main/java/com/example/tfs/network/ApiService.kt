@@ -5,6 +5,7 @@ import com.example.tfs.network.utils.NetworkConstants.BASE_URL
 import com.example.tfs.network.utils.addJsonConverter
 import com.example.tfs.network.utils.setClient
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.Retrofit
@@ -30,7 +31,7 @@ interface ApiService {
     fun getAllUsers(): Single<UserListResponse>
 
     @GET("api/v1/users/me")
-    fun getOwner(): User
+    fun getOwner(): Single<User>
 
     @GET("api/v1/users/{user_id}")
     fun getUser(@Path("user_id") userId: Int): Single<UserResponse>
