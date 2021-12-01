@@ -77,12 +77,15 @@ class ProfileFragment :
                     showSnackbarError("User info unavailable")
                 }
             }
+            is ProfileEffect.BackNavigation -> {
+                requireActivity().supportFragmentManager.popBackStack()
+            }
         }
     }
 
     private fun initViews() {
         viewBinding.btnProfileNavBack.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            store.accept(ProfileEvent.Ui.BackToContacts)
         }
     }
 

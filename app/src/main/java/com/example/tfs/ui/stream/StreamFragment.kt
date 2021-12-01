@@ -41,6 +41,15 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
                         ?: showSnackbarError("Error on load stream list")
                 }
             }
+            is StreamEffect.ShowTopic -> {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.fragment_container,
+                        TopicFragment.newInstance(effect.topicName, effect.streamName)
+                    )
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss()
+            }
         }
     }
 
@@ -73,13 +82,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamEffect, StreamState>(R.lay
         topicName: String,
         streamName: String,
     ) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(
-                R.id.fragment_container,
-                TopicFragment.newInstance(topicName, streamName)
-            )
-            .addToBackStack(null)
-            .commitAllowingStateLoss()
+        store.accept(StreamEvent.Ui.ClickOnTopic(topicName, streamName))
     }
 
     companion object {

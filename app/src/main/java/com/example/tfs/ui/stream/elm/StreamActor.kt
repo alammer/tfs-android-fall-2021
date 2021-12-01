@@ -16,10 +16,5 @@ class StreamActor(private val fetchStreams: FetchStreams) :
             fetchStreams.getLocalStreams(true)
                 .mapEvents(StreamEvent.Internal::LoadingComplete, StreamEvent.Internal::LoadingError)
         }
-       /* is Command.SelectTopic -> {
-            open(command.streamId, command.topicId)
-                .mapEvents(StreamEvent.Internal.UpdateStreamComplete, StreamEvent.Internal::OpenTopicError)
-        }*/
-
     }
 }

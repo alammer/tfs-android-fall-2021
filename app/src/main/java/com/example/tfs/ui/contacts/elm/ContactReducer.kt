@@ -38,11 +38,8 @@ class ContactReducer :
         }
 
         is ContactEvent.Ui.ContactClicked -> {
-            Any()
-        }
-
-        is ContactEvent.Ui.BackToStack -> {
-            Any()
+            state { copy(error = null) }
+            effects { +ContactEffect.ShowUser(event.userId) }
         }
     }
 }

@@ -32,11 +32,10 @@ sealed class ProfileEvent {
 sealed class ProfileEffect {
 
     object FetchError : ProfileEffect()
+    object BackNavigation : ProfileEffect()
 }
 
 sealed class Command {
 
     data class GetUser(val userId: Int) : Command()
-
-    object BackToContacts : Command()
 }

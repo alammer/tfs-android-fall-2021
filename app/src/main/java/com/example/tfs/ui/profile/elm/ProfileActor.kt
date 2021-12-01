@@ -12,6 +12,5 @@ class ProfileActor(private val fetchContacts: FetchContacts) :
                 .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
                     ProfileEvent.Internal.ProfileFetchingError)
         }
-        Command.BackToContacts -> TODO()
     }
 }

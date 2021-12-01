@@ -59,6 +59,12 @@ class ContactsFragment :
                         ?: showSnackbarError("Error on fetch list of users")
                 }
             }
+            is ContactEffect.ShowUser -> {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, ProfileFragment.newInstance(effect.userId))
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss()
+            }
         }
     }
 
@@ -67,10 +73,7 @@ class ContactsFragment :
         subscribeToSearchContacts()
 
         contactListAdapter = ContactViewAdapter { contactId: Int ->
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ProfileFragment.newInstance(contactId))
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
+                store.accept(ContactEvent.Ui.ContactClicked(contactId))
         }
 
         with(viewBinding) {

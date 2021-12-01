@@ -12,7 +12,5 @@ class ContactActor(private val fetchContacts: FetchContacts) :
                 .mapEvents(ContactEvent.Internal::ContactFetchingComplete,
                     ContactEvent.Internal::ContactFetchingError)
         }
-        is Command.ShowContact -> TODO()
-        Command.GoAway -> TODO()
     }
 }
