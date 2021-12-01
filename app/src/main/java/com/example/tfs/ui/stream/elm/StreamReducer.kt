@@ -1,5 +1,6 @@
 package com.example.tfs.ui.stream.elm
 
+import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :

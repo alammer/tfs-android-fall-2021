@@ -25,7 +25,7 @@ sealed class StreamContainerEvent {
 
         object StreamsFetchComplete : Internal()
 
-        data class StreamUpdate(val streamId: Int) : Internal()
+        //data class StreamUpdate(val streamId: Int) : Internal()
 
         object StreamUpdateComplete : Internal()
 
@@ -42,5 +42,5 @@ sealed class Command {
 
     data class FetchStreams(val isSubscribed: Boolean, val query: String) : Command()
 
-    object UpdateStream : Command()
+    //object UpdateStream : Command()
 }

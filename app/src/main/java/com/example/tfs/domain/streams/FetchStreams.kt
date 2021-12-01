@@ -6,8 +6,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
 
-
-
 class FetchStreams(private val streamRepository: StreamRepository) {
 
     private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
@@ -18,13 +16,9 @@ class FetchStreams(private val streamRepository: StreamRepository) {
 
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
-    fun updateStream(): Observable<Int> {
-        return streamRepository.updateStream().doAfterNext {it -> Observable.just(it) }
-    }
-
-    fun getLocalStreams(isSubcribed: Boolean): Observable<List<StreamListItem>> {
+    fun getLocalStreams(): Observable<List<StreamListItem>> {
         //TODO("return specific value from DB for empty local cache")
-        return streamRepository.getLocalList(isSubcribed)
+        return streamRepository.getLocalList()
             .map(streamToItemMapper)
     }
 }

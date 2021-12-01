@@ -19,10 +19,10 @@ class StreamContainerReducer :
             state { copy(isFetching = false) }
             effects { +StreamContainerEffect.FetchError(event.error) }
         }
-        is Internal.StreamUpdate -> {
+        /*is Internal.StreamUpdate -> {
             Log.i("StreamContainerReducer", "Function called: internal() ${event.streamId}")
             Any()
-        }
+        }*/
         is Internal.StreamUpdateComplete -> {
             Log.i("StreamContainerReducer", "Function called: internal()")
             Any()
@@ -37,7 +37,7 @@ class StreamContainerReducer :
                 +Command.FetchStreams(isSubscribed = initialState.isSubscribed,
                     query = initialState.query)
             }
-            commands { +Command.UpdateStream }
+            //commands { +Command.UpdateStream }
 
         }
         is Ui.ChangeSearchQuery -> {
