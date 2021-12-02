@@ -12,6 +12,7 @@ class FragmentPagerAdapter(
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> StreamFragment.newInstance(true)
+
             else -> StreamFragment.newInstance(false)
         }
     }

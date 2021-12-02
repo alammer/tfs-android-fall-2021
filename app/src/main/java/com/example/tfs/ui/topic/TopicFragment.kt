@@ -134,7 +134,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             val layoutManager = LinearLayoutManager(context)
             rvTopic.layoutManager = layoutManager
 
-            rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) {
+            rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) { //TODO remove in onDestroy()
                 override fun loadPage(isDownScroll: Boolean) {
                     store.accept(TopicEvent.Ui.PageFetching(isDownScroll))
                 }

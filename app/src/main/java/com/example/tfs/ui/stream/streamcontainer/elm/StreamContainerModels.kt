@@ -3,7 +3,7 @@ package com.example.tfs.ui.stream.streamcontainer.elm
 data class StreamContainerState(
     val error: Throwable? = null,
     val isFetching: Boolean = false,
-    val isSubscribed: Boolean = true,
+    val isSubscribed: Boolean = false,
     val query: String = "",
     val tabPosition: Int = 0,
 )
@@ -25,8 +25,6 @@ sealed class StreamContainerEvent {
 
         object StreamsFetchComplete : Internal()
 
-        //data class StreamUpdate(val streamId: Int) : Internal()
-
         object StreamUpdateComplete : Internal()
 
         data class StreamsFetchError(val error: Throwable) : Internal()
@@ -41,6 +39,4 @@ sealed class StreamContainerEffect {
 sealed class Command {
 
     data class FetchStreams(val isSubscribed: Boolean, val query: String) : Command()
-
-    //object UpdateStream : Command()
 }

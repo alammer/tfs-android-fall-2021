@@ -20,13 +20,26 @@ class StreamReducer :
             state { copy(isLoading = false) }
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
+        is StreamEvent.Internal.QueryChange -> {
+            Log.i("StreamReducer", "Function called: internal() $event")
+            state { copy(isLoading = true, query = event.query) }
+            commands { +Command.ObserveStreams(event.query, state.isSubscribed) }
+        }
     }
 
     override fun Result.ui(event: StreamEvent.Ui) = when (event) {
 
         is StreamEvent.Ui.Init -> {
             state { copy(isLoading = true, isClicked = false, error = null) }
-            commands { +Command.ObserveStreams }
+        }
+
+        is StreamEvent.Ui.InitialLoad -> {
+            Log.i("StreamReducer", "Function called: Initial Load $event")
+            state { copy(isSubscribed = event.isSubcribed) }
+            commands {
+                +Command.ObserveStreams(initialState.query, event.isSubcribed)
+                +Command.ObserveQuery
+            }
         }
 
         is StreamEvent.Ui.ClickOnStream -> {

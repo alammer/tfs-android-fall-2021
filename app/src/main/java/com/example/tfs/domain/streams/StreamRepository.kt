@@ -1,6 +1,5 @@
 package com.example.tfs.domain.streams
 
-import android.util.Log
 import com.example.tfs.database.MessengerDB
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
@@ -14,12 +13,7 @@ interface StreamRepository {
 
     fun loadStreams(query: String, isSubscribed: Boolean): Completable
 
-    /* fun fetchStreams(
-         query: String,
-         isSubscribed: Boolean,
-     ): Observable<List<LocalStream>>*/
-
-    fun getLocalList(): Observable<List<LocalStream>>
+    fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>>
 
     fun selectStream(streamId: Int): Completable
 }
@@ -29,11 +23,7 @@ class StreamRepositoryImpl : StreamRepository {
     private val networkService = ApiService.create()
     private val database = MessengerDB.instance.localDataDao
 
-    private var subscribed = true
-    private var currentQuery = ""
-
     override fun selectStream(streamId: Int): Completable {
-        Log.i("StreamRepository", "Function called: selectStream() $streamId")
         return database.getStream(streamId)
             .flatMapCompletable { localStream ->
                 if (localStream.isExpanded) {
@@ -54,47 +44,36 @@ class StreamRepositoryImpl : StreamRepository {
         isSubscribed: Boolean,
     ): Completable {
 
-        subscribed = isSubscribed
-        currentQuery = query
+        val localSource =
+            if (isSubscribed) database.getSubscribedStreams() else database.getAllStreams()
 
-        return database.getStreams(isSubscribed)
+        return localSource
             .subscribeOn(Schedulers.io())
             .first(emptyList())
             .flatMapCompletable { localStreamList: List<LocalStream> ->
-                getRemoteStreams(localStreamList.filter { it.isExpanded }.map { it.streamId })
+                getRemoteStreams(isSubscribed,
+                    localStreamList.filter { it.isExpanded }.map { it.streamId })
                     .flatMapCompletable { remoteStreamList ->
                         database.insertStreams(remoteStreamList)
                     }
             }
     }
 
-    override fun getLocalList(): Observable<List<LocalStream>> =
-        database.getStreams(subscribed)
-            .subscribeOn(Schedulers.io())
-            .map { streamList -> streamList.filter { it.streamName.contains(currentQuery) } }
+    override fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>> {
 
-    /*override fun fetchStreams(
-        query: String,
-        isSubscribed: Boolean,
-    ): Observable<List<LocalStream>> {
+        val localSource =
+            if (isSubscribed) database.getSubscribedStreams() else database.getAllStreams()
 
-        return getLocalList()
+        return localSource
             .subscribeOn(Schedulers.io())
-            .flatMap { localStreamList: List<LocalStream> ->
-                getRemoteStreams(localStreamList.filter { it.isExpanded }.map { it.streamId })
-                    //DiffUtil?
-                    .flatMapSingle { remoteStreamList ->
-                        database.insertStreams(remoteStreamList)
-                            .andThen(Single.just(remoteStreamList))
-                    }
-                    .startWith(localStreamList)
-            }
-    }*/
+            .map { streamList -> streamList.filter { it.streamName.contains(query) } }
+    }
 
     private fun getRemoteStreams(
+        isSubscribed: Boolean,
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
-        if (subscribed) fetchSubscribedStreams(expanded) else fetchRawStreams(expanded)
+        if (isSubscribed) fetchSubscribedStreams(expanded) else fetchRawStreams(expanded)
 
     private fun fetchSubscribedStreams(
         expanded: List<Int>,

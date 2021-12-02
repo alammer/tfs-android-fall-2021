@@ -33,10 +33,10 @@ class StreamContainerReducer :
 
         is Ui.Init -> {
             state { copy(isFetching = true, error = null) }
-            commands {
+/*            commands {
                 +Command.FetchStreams(isSubscribed = initialState.isSubscribed,
                     query = initialState.query)
-            }
+            }*/
             //commands { +Command.UpdateStream }
 
         }
@@ -50,9 +50,12 @@ class StreamContainerReducer :
         }
 
         is Ui.FetchRawStreams -> {
-            if (!state.isSubscribed) {
+            Log.i("ContainerReducer", "Function called: ui()")
+            if (state.isSubscribed) {  //ignore duplicate tab clicks
+                Log.i("ContainerReducer", "Function called: Any")
                 Any()
             } else {
+                Log.i("ContainerReducer", "Function called: fetch $state")
                 state { copy(isSubscribed = false, isFetching = true, error = null) }
                 commands { +Command.FetchStreams(state.isSubscribed, state.query) }
             }

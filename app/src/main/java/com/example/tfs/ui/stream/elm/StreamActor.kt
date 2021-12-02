@@ -13,8 +13,12 @@ class StreamActor(private val fetchStreams: FetchStreams) :
                 .mapEvents(StreamEvent.Internal.UpdateStreamComplete, StreamEvent.Internal::LoadingError)
         }
         is Command.ObserveStreams -> {
-            fetchStreams.getLocalStreams()
+            fetchStreams.getLocalStreams(command.query, command.isSubscribed)
                 .mapEvents(StreamEvent.Internal::LoadingComplete, StreamEvent.Internal::LoadingError)
+        }
+        is Command.ObserveQuery -> {
+            fetchStreams.observeQuery()
+                .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::LoadingError)
         }
     }
 }

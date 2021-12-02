@@ -69,7 +69,6 @@ class StreamContainerFragment :
         //state.error?.let { throwable ->  errorText.text = throwable.userMessage(requireContext()) }  //are we gonna need last error body?
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
@@ -81,7 +80,6 @@ class StreamContainerFragment :
             .distinctUntilChanged()
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread(), true)
-            .doOnNext { Log.i("StreamContainerFragment", "Function called: subscribeToSearchStreams() $it") }
             .subscribeBy(
                 onNext = { store.accept(StreamContainerEvent.Ui.ChangeSearchQuery(it)) }
             )

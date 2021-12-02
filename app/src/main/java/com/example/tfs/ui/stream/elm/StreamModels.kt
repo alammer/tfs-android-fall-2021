@@ -5,6 +5,8 @@ import com.example.tfs.domain.streams.StreamListItem
 data class StreamState(
     val streamListItem: List<StreamListItem> = emptyList(),
     val error: Throwable? = null,
+    val query: String = "",
+    val isSubscribed: Boolean = true,
     val isClicked: Boolean = false,
     val isLoading: Boolean = false,
 )
@@ -15,6 +17,8 @@ sealed class StreamEvent {
 
         object Init : Ui()
 
+        data class InitialLoad(val isSubcribed: Boolean) : Ui()
+
         data class ClickOnStream(val streamId: Int) : Ui()
 
         data class ClickOnTopic(val topicName: String, val streamName: String) : Ui()
@@ -23,6 +27,8 @@ sealed class StreamEvent {
     sealed class Internal : StreamEvent() {
 
         object UpdateStreamComplete : Internal()
+
+        data class QueryChange(val query: String) : Internal()
 
         data class LoadingComplete(val streams: List<StreamListItem>) : Internal()
 
@@ -38,6 +44,7 @@ sealed class StreamEffect {
 
 sealed class Command {
 
-    object ObserveStreams : Command()
+    object ObserveQuery : Command()
+    data class ObserveStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class SelectStream(val streamId: Int) : Command()
 }

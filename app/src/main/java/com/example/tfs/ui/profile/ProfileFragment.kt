@@ -46,7 +46,6 @@ class ProfileFragment :
         AppDI.INSTANCE.elmProfileStoreFactory.provide()
 
     override fun render(state: ProfileState) {
-        Log.i("ProfileFragment", "Function called: render() ${state.user}")
         with(viewBinding) {
             loading.root.isVisible = state.isFetching
 

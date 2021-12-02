@@ -30,22 +30,8 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
         bottomNavigationView.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_to_streams -> {
-                    loadFragment(StreamContainerFragment())
-                    return@setOnItemSelectedListener true
-                }
-
-                R.id.nav_to_contacts -> {
-                    loadFragment(ContactsFragment())
-                    return@setOnItemSelectedListener true
-                }
-                R.id.nav_to_profile -> {
-                    loadFragment(ProfileFragment.newInstance())
-                    return@setOnItemSelectedListener true
-                }
-            }
-            return@setOnItemSelectedListener false
+            onNavItemSelected(it.itemId)
+            true
         }
 
         bottomNavigationView.setOnItemReselectedListener {
@@ -68,6 +54,23 @@ class MainActivity : AppCompatActivity() {
                     bottomNavigationView.menu.findItem(R.id.nav_to_profile).isChecked = true
                 }
             }
+        }
+    }
+
+/*    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1) {
+            super.onBackPressed()
+        } else {
+            finish()
+        }
+    }*/
+
+
+    private fun onNavItemSelected(itemId: Int) {
+        when (itemId) {
+            R.id.nav_to_streams -> loadFragment(StreamContainerFragment())
+            R.id.nav_to_contacts -> loadFragment(ContactsFragment())
+            R.id.nav_to_profile -> loadFragment(ProfileFragment.newInstance())
         }
     }
 
