@@ -57,15 +57,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-/*    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            super.onBackPressed()
-        } else {
-            finish()
-        }
-    }*/
-
-
     private fun onNavItemSelected(itemId: Int) {
         when (itemId) {
             R.id.nav_to_streams -> loadFragment(StreamContainerFragment())

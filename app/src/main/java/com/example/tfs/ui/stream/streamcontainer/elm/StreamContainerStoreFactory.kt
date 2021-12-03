@@ -4,13 +4,17 @@ import vivid.money.elmslie.core.ElmStoreCompat
 
 class StreamContainerStoreFactory(private val containerActor: StreamContainerActor) {
 
-    private val store by lazy {
+    /*private val store by lazy {
         ElmStoreCompat(
             initialState = StreamContainerState(),
             reducer = StreamContainerReducer(),
             actor = containerActor
         )
-    }
+    }*/
 
-    fun provide() = store
+    fun provide() = ElmStoreCompat(
+        initialState = StreamContainerState(),
+        reducer = StreamContainerReducer(),
+        actor = containerActor
+    )
 }

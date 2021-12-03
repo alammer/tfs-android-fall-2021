@@ -3,7 +3,6 @@ package com.example.tfs.util.viewbinding
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -27,7 +26,8 @@ internal class ViewBindingProperty<in F : Fragment, VB : ViewBinding>(
         val viewBinding = viewBinder(thisRef)
 
         if (lifecycle.currentState == Lifecycle.State.DESTROYED) {
-            Log.i("ViewBindingProperty", "Access to viewBinding after Lifecycle is destroyed or hasn't created yet")
+            Log.i("ViewBindingProperty",
+                "Access to viewBinding after Lifecycle is destroyed or hasn't created yet")
         } else {
             lifecycle.addObserver(ClearOnDestroyLifecycleObserver(this))
             this.viewBinding = viewBinding

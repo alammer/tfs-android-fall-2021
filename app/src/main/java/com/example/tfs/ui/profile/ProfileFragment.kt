@@ -2,21 +2,15 @@ package com.example.tfs.ui.profile
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentProfileBinding
 import com.example.tfs.di.AppDI
-import com.example.tfs.ui.contacts.elm.ContactEffect
 import com.example.tfs.ui.profile.elm.ProfileEffect
 import com.example.tfs.ui.profile.elm.ProfileEvent
 import com.example.tfs.ui.profile.elm.ProfileState
-import com.example.tfs.ui.topic.TopicFragment
-import com.example.tfs.ui.topic.elm.TopicEffect
-import com.example.tfs.ui.topic.elm.TopicEvent
-import com.example.tfs.ui.topic.elm.TopicState
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx

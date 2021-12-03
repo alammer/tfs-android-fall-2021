@@ -4,13 +4,17 @@ import vivid.money.elmslie.core.ElmStoreCompat
 
 class ContactStoreFactory(private val contactActor: ContactActor) {
 
-    private val store by lazy {
+/*    private val store by lazy {
         ElmStoreCompat(
             initialState = ContactState(),
             reducer = ContactReducer(),
             actor = contactActor
         )
-    }
+    }*/
 
-    fun provide() = store
+    fun provide() = ElmStoreCompat(
+        initialState = ContactState(),
+        reducer = ContactReducer(),
+        actor = contactActor
+    )
 }

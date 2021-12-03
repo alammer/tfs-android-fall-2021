@@ -1,7 +1,6 @@
 package com.example.tfs.ui.stream.streamcontainer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -69,10 +68,14 @@ class StreamContainerFragment :
         //state.error?.let { throwable ->  errorText.text = throwable.userMessage(requireContext()) }  //are we gonna need last error body?
     }
 
+    override fun onDestroyView() {
+        viewBinding.viewPager.unregisterOnPageChangeCallback(viewPagerPageChangeCallback)
+        super.onDestroyView()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
-        viewBinding.viewPager.unregisterOnPageChangeCallback(viewPagerPageChangeCallback)
     }
 
     private fun subscribeToSearchStreams() {
