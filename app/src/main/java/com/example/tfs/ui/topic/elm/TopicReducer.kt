@@ -1,6 +1,7 @@
 package com.example.tfs.ui.topic.elm
 
 
+import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class TopicReducer :
@@ -99,12 +100,12 @@ class TopicReducer :
         }
         is TopicEvent.Ui.MessageSending -> {
             state {
-                copy(messageDraft = "",
-                    isNextPageLoading = true,
+                copy(isNextPageLoading = true,
                     isPrevPageLoading = false,
                     error = null)
             }
             commands { +Command.SendMessage(state.streamName, state.topicName, state.messageDraft) }
+            state { copy(messageDraft = "") }
             effects { +TopicEffect.MessageSend }
         }
         is TopicEvent.Ui.PageFetching -> {

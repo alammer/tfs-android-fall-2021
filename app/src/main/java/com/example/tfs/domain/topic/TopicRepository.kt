@@ -55,7 +55,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         networkService.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
             .andThen(database.insertPost(LocalPost(
-                postId = -1,
+                postId = -(System.currentTimeMillis() * 1000).toInt() % 10000,
                 topicName = topicName,
                 streamName = streamName,
                 isSelf = true,
@@ -110,7 +110,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         topicName: String,
     ): Observable<List<PostWithReaction>> {
         val remoteSource: Observable<List<PostWithReaction>> =
-            getRemoteTopic(latestTopicQuery(streamName, topicName))
+            getRemoteTopic(newestTopicQuery(streamName, topicName))
                 .toObservable()
 
         return getLocalTopic()
@@ -118,7 +118,8 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
             .flatMapObservable{ localPostList: List<PostWithReaction> ->
                 remoteSource
                     .flatMapSingle{ remotePostList ->
-                        insertTopicToDB(remotePostList)
+                        database.deleteDraftPosts()
+                            .andThen(insertTopicToDB(remotePostList))
                             .andThen(Single.just(remotePostList))
                     }
                     .startWith(localPostList)
@@ -196,7 +197,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         database.deleteTopic()
             .andThen(insertPostList(remotePostList))
 
-    private fun latestTopicQuery(streamName: String, topicName: String) =
+    private fun newestTopicQuery(streamName: String, topicName: String) =
         hashMapOf<String, Any>(
             "anchor" to "newest",
             "num_before" to 50,

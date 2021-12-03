@@ -43,7 +43,7 @@ interface ApiService {
     fun sendMessage(
         @Query("to") streamName: String,
         @Query("topic") topicName: String,
-        @Query("content") reaction_type: String,
+        @Query("content") content: String,
         @Query("type") type: String = "stream",
     ): Completable
 

@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.elm
 
+import android.util.Log
 import com.example.tfs.domain.topic.FetchTopics
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat

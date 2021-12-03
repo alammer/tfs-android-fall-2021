@@ -58,7 +58,7 @@ interface MessengerDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPost(localPost: LocalPost): Completable
 
-    @Query("SELECT count(post_id) FROM posts")
+    @Query("SELECT count(post_id) FROM posts WHERE post_id > 0")
     fun getTopicSize(): Single<Int>
 
     @Query("DELETE FROM posts WHERE post_id IN (SELECT post_id FROM posts ORDER BY post_id ASC LIMIT :newPageSize)")
@@ -73,6 +73,9 @@ interface MessengerDataDao {
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable
+
+    @Query("DELETE FROM posts WHERE post_id < 1")
+    fun deleteDraftPosts(): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReactions(localReaction: List<LocalReaction>): Completable
