@@ -22,7 +22,7 @@ class FetchStreams(private val streamRepository: StreamRepository) {
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
     fun getLocalStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
-        //TODO("return specific value from DB for empty local cache")
+        //TODO("return specific value from DB if local cache is empty ")
         return streamRepository.getLocalList(query, isSubscribed)
             .map(streamToItemMapper)
     }

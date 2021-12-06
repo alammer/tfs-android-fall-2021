@@ -7,6 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.AppDI
@@ -53,7 +54,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
-                store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId, updatedEmojiName, updatedEmojiCode))
+                store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId,
+                    updatedEmojiName,
+                    updatedEmojiCode))
             }
         }
     }
@@ -126,16 +129,20 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             topicListAdapter = TopicViewAdapter(
                 { messageId: Int, emojiName: String, emojiCode: String ->
                     updateReaction(messageId = messageId,
-                        emojiName = emojiName,emojiCode = emojiCode)
+                        emojiName = emojiName, emojiCode = emojiCode)
                 },
                 { messageId -> addReaction(messageId) }
             )
+            topicListAdapter.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             rvTopic.adapter = topicListAdapter
 
             val layoutManager = LinearLayoutManager(context)
             rvTopic.layoutManager = layoutManager
+            rvTopic.setHasFixedSize(true)
 
-            rvTopic.addOnScrollListener(object : TopicScrollListetner(layoutManager) { //TODO remove in onDestroyView()
+            rvTopic.addOnScrollListener(object :
+                TopicScrollListetner(layoutManager) { //TODO remove in onDestroyView()
                 override fun loadPage(isDownScroll: Boolean) {
                     store.accept(TopicEvent.Ui.PageFetching(isDownScroll))
                 }

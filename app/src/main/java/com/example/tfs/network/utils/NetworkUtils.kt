@@ -25,7 +25,7 @@ fun Retrofit.Builder.setClient() = apply {
     this.client(okHttpClient)
 }
 
-private fun OkHttpClient.Builder.addHeaderInterceptor() = apply {
+fun OkHttpClient.Builder.addHeaderInterceptor() = apply {
     val interceptor = Interceptor { chain ->
         val request = chain.request()
             .newBuilder()
@@ -39,7 +39,7 @@ private fun OkHttpClient.Builder.addHeaderInterceptor() = apply {
     this.addInterceptor(interceptor)
 }
 
-private fun OkHttpClient.Builder.addHttpLoggingInterceptor() = apply {
+fun OkHttpClient.Builder.addHttpLoggingInterceptor() = apply {
     if (BuildConfig.DEBUG) {
         val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         this.addNetworkInterceptor(interceptor)

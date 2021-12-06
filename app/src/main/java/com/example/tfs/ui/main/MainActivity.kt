@@ -5,11 +5,14 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
+import com.example.tfs.appComponent
+import com.example.tfs.database.MessengerDB
 import com.example.tfs.ui.contacts.ContactsFragment
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.ui.stream.streamcontainer.StreamContainerFragment
 import com.example.tfs.ui.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
