@@ -8,7 +8,7 @@ import com.example.tfs.network.models.toLocalStream
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
+
 
 interface StreamRepository {
 
@@ -19,9 +19,9 @@ interface StreamRepository {
     fun selectStream(streamId: Int): Completable
 }
 
-class StreamRepositoryImpl @Inject constructor(
+class StreamRepositoryImpl /*@Inject constructor*/(
     private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao
+    private val localDao: MessengerDataDao,
 ) : StreamRepository {
 
 

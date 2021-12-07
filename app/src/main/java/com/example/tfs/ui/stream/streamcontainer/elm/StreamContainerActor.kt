@@ -4,10 +4,9 @@ import com.example.tfs.domain.streams.StreamInteractor
 import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEvent.Internal
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
-import vivid.money.elmslie.core.switcher.Switcher
-import javax.inject.Inject
 
-class StreamContainerActor @Inject constructor(
+
+class StreamContainerActor /*@Inject constructor*/(
     private val streamInteractor: StreamInteractor,
 ) : ActorCompat<Command, Internal> {
 

@@ -1,4 +1,4 @@
-package com.example.tfs.di
+package com.example.tfs.di.core
 
 import dagger.Module
 

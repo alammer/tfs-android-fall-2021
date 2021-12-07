@@ -3,9 +3,9 @@ package com.example.tfs.ui.contacts.elm
 import com.example.tfs.domain.contacts.ContactInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
-import javax.inject.Inject
 
-class ContactActor @Inject constructor(
+
+class ContactActor /*@Inject constructor*/(
     private val contactInteractor: ContactInteractor,
 ) :
     ActorCompat<Command, ContactEvent.Internal> {

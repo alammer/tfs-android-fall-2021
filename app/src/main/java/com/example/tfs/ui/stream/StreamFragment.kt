@@ -1,11 +1,14 @@
 package com.example.tfs.ui.stream
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
+import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentStreamBinding
+import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.streams.StreamListItem
 import com.example.tfs.ui.stream.adapter.StreamViewAdapter
 import com.example.tfs.ui.stream.elm.*
@@ -26,7 +29,7 @@ class StreamFragment :
     private lateinit var streamViewAdapter: StreamViewAdapter
 
     @Inject
-    private lateinit var streamActor: StreamActor
+    lateinit var streamActor: StreamActor
 
     private val isSubscribed by lazy {
         requireArguments().getBoolean(SUBSCRIBED_KEY, true)
@@ -68,6 +71,13 @@ class StreamFragment :
             }
         }
     }
+
+    override fun onAttach(context: Context) {
+        DaggerStreamComponent.builder().appComponent(context.appComponent).build()
+            .inject(this)
+        super.onAttach(context)
+    }
+
 
     private fun initViews() {
         streamViewAdapter = StreamViewAdapter { item: StreamListItem ->

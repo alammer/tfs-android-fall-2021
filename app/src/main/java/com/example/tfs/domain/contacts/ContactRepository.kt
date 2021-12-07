@@ -8,7 +8,6 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
 interface ContactRepository {
 
@@ -19,9 +18,10 @@ interface ContactRepository {
     fun getOwner(): Single<LocalUser>
 }
 
-class ContactRepositoryImpl @Inject constructor(
+
+class ContactRepositoryImpl /*@Inject constructor*/(
     private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao
+    private val localDao: MessengerDataDao,
 ) : ContactRepository {
 
     override fun fetchUserList(
@@ -68,7 +68,8 @@ class ContactRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .flatMap { user ->
                 getUserPresence(user.id)
-                    .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available", 0L))))
+                    .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available",
+                        0L))))
                     .map { presence -> user.toLocalUser(presence.userPresence.state) }
             }
     }

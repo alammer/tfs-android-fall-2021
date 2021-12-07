@@ -1,6 +1,5 @@
 package com.example.tfs.domain.topic
 
-import android.content.SharedPreferences
 import android.util.Log
 import com.example.tfs.database.MessengerDataDao
 import com.example.tfs.database.entity.LocalPost
@@ -16,15 +15,22 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 interface TopicRepository {
 
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
 
-    fun fetchNextPage(streamName: String, topicName: String, anchorId: Int): Single<List<PostWithReaction>>
+    fun fetchNextPage(
+        streamName: String,
+        topicName: String,
+        anchorId: Int,
+    ): Single<List<PostWithReaction>>
 
-    fun fetchPrevPage(streamName: String, topicName: String, anchorId: Int): Single<List<PostWithReaction>>
+    fun fetchPrevPage(
+        streamName: String,
+        topicName: String,
+        anchorId: Int,
+    ): Single<List<PostWithReaction>>
 
     fun sendMessage(
         streamName: String,
@@ -40,9 +46,9 @@ interface TopicRepository {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class TopicRepositoryImpl@Inject constructor(
+class TopicRepositoryImpl/*@Inject constructor*/(
     private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao
+    private val localDao: MessengerDataDao,
 ) : TopicRepository {
 
     override fun sendMessage(
@@ -57,7 +63,7 @@ class TopicRepositoryImpl@Inject constructor(
                 topicName = topicName,
                 streamName = streamName,
                 isSelf = true,
-                senderId = ownerId,
+                senderId = -1/*ownerId*/,
                 timeStamp = System.currentTimeMillis() * 1000L,
                 content = content)))
             .andThen(getLocalTopic())
@@ -67,7 +73,7 @@ class TopicRepositoryImpl@Inject constructor(
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> {
-        return localDao.getReactionForPost(messageId, emojiCode, ownerId)
+        return localDao.getReactionForPost(messageId, emojiCode, -1/*ownerId*/)
             .defaultIfEmpty(emptyReaction)
             .flatMapSingle { reaction ->
                 if (reaction.userId == -1) {
@@ -88,7 +94,7 @@ class TopicRepositoryImpl@Inject constructor(
             .andThen(localDao.insertReaction(LocalReaction(postId = messageId,
                 name = emojiName,
                 code = emojiCode,
-                userId = ownerId,
+                userId = -1/*ownerId*/,
                 isClicked = true)))
             .andThen(getLocalTopic())
 
@@ -100,7 +106,7 @@ class TopicRepositoryImpl@Inject constructor(
     ): Single<List<PostWithReaction>> =
         remoteApi.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
-            .andThen(localDao.deleteReaction(messageId, emojiCode, ownerId))
+            .andThen(localDao.deleteReaction(messageId, emojiCode, -1/*ownerId*/))
             .andThen(getLocalTopic())
 
     override fun fetchTopic(
@@ -113,9 +119,9 @@ class TopicRepositoryImpl@Inject constructor(
 
         return getLocalTopic()
             .subscribeOn(Schedulers.io())
-            .flatMapObservable{ localPostList: List<PostWithReaction> ->
+            .flatMapObservable { localPostList: List<PostWithReaction> ->
                 remoteSource
-                    .flatMapSingle{ remotePostList ->
+                    .flatMapSingle { remotePostList ->
                         localDao.deleteDraftPosts()
                             .andThen(insertTopicToDB(remotePostList))
                             .andThen(Single.just(remotePostList))
@@ -129,18 +135,18 @@ class TopicRepositoryImpl@Inject constructor(
         topicName: String,
         anchorId: Int,
     ): Single<List<PostWithReaction>> =
-        fetchPage(nextPageQuery(streamName,topicName, anchorId))
+        fetchPage(nextPageQuery(streamName, topicName, anchorId))
 
     override fun fetchPrevPage(
         streamName: String,
         topicName: String,
-        anchorId: Int
+        anchorId: Int,
     ): Single<List<PostWithReaction>> =
-        fetchPage(prevPageQuery(streamName,topicName, anchorId), isNext = false)
+        fetchPage(prevPageQuery(streamName, topicName, anchorId), isNext = false)
 
     private fun fetchPage(
-       query: HashMap<String, Any>,
-       isNext: Boolean = true
+        query: HashMap<String, Any>,
+        isNext: Boolean = true,
     ): Single<List<PostWithReaction>> {
         Log.i("TopicRepository", "Function called: fetchPage()")
         return Single.zip(getRemoteTopic(query), localDao.getTopicSize(),
@@ -158,7 +164,7 @@ class TopicRepositoryImpl@Inject constructor(
     private fun addPage(
         newPage: List<PostWithReaction>,
         currentSize: Int,
-        isNext: Boolean = true
+        isNext: Boolean = true,
     ): Completable {
         return if (newPage.size + currentSize <= 51) {
             insertPostList(newPage)
@@ -186,7 +192,7 @@ class TopicRepositoryImpl@Inject constructor(
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         remoteApi.getRemotePostList(query)
-            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
+            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(-1/*ownerId*/) } }
 
 
     private fun insertTopicToDB(
@@ -205,22 +211,22 @@ class TopicRepositoryImpl@Inject constructor(
         )
 
     private fun prevPageQuery(streamName: String, topicName: String, anchorId: Int) =
-            hashMapOf<String, Any>(
-                "anchor" to anchorId,
-                "num_before" to 20,
-                "num_after" to 0,
-                "narrow" to Json.encodeToString(listOf(NarrowObject(streamName, "stream"),
-                    NarrowObject(topicName, "topic")))
-            )
+        hashMapOf<String, Any>(
+            "anchor" to anchorId,
+            "num_before" to 20,
+            "num_after" to 0,
+            "narrow" to Json.encodeToString(listOf(NarrowObject(streamName, "stream"),
+                NarrowObject(topicName, "topic")))
+        )
 
     private fun nextPageQuery(streamName: String, topicName: String, anchorId: Int) =
-            hashMapOf<String, Any>(
-                "anchor" to anchorId,
-                "num_before" to 0,
-                "num_after" to 20,
-                "narrow" to Json.encodeToString(listOf(NarrowObject(streamName, "stream"),
-                    NarrowObject(topicName, "topic")))
-            )
+        hashMapOf<String, Any>(
+            "anchor" to anchorId,
+            "num_before" to 0,
+            "num_after" to 20,
+            "narrow" to Json.encodeToString(listOf(NarrowObject(streamName, "stream"),
+                NarrowObject(topicName, "topic")))
+        )
 
 
     @Serializable
@@ -230,6 +236,7 @@ class TopicRepositoryImpl@Inject constructor(
     )
 }
 
-private val emptyReaction = LocalReaction(postId = -1, code = "", isClicked = false, name = "", userId = -1)
+private val emptyReaction =
+    LocalReaction(postId = -1, code = "", isClicked = false, name = "", userId = -1)
 
 private const val ZULIP_OWNER_ID_KEY = "zulip_owner_key"

@@ -1,12 +1,15 @@
 package com.example.tfs.ui.profile
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.example.tfs.R
+import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentProfileBinding
+import com.example.tfs.di.DaggerProfileComponent
 import com.example.tfs.ui.profile.elm.*
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.showSnackbarError
@@ -25,7 +28,7 @@ class ProfileFragment :
     private val viewBinding by viewBinding(FragmentProfileBinding::bind)
 
     @Inject
-    private lateinit var profileActor: ProfileActor
+    lateinit var profileActor: ProfileActor
 
     private val userId by lazy {
         requireArguments().getInt(USER_ID, -1)
@@ -75,6 +78,12 @@ class ProfileFragment :
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        DaggerProfileComponent.builder().appComponent(context.appComponent).build()
+            .inject(this)
+        super.onAttach(context)
     }
 
     private fun initViews() {

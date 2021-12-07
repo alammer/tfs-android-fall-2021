@@ -2,32 +2,24 @@ package com.example.tfs
 
 import android.app.Application
 import android.content.Context
-import com.example.tfs.di.AppComponent
-import com.example.tfs.di.AppDI
-import com.example.tfs.di.DaggerAppComponent
+import com.example.tfs.di.core.AppComponent
+import com.example.tfs.di.core.DaggerAppComponent
 
 
 class MessengerApp : Application() {
 
-    private lateinit var appComponent: AppComponent
+    lateinit var appComponent: AppComponent
+        private set
 
     override fun onCreate() {
         super.onCreate()
-        appContext = applicationContext
         appComponent = DaggerAppComponent.builder()
-            .context(context = this)
+            .context(this)
             .build()
-
-        appComponent
         /*val preferences = appContext.getSharedPreferences(ZULIP_PREFERENCES_NAME, Context.MODE_PRIVATE)
         if (!preferences.contains(ZULIP_OWNER_ID_KEY)) {
             preferences.edit().putInt(ZULIP_OWNER_ID_KEY, ZULIP_OWNER_ID).apply()
-        }
-        AppDI.init(preferences)*/
-    }
-
-    companion object {
-        lateinit var appContext: Context
+        }*/
     }
 }
 

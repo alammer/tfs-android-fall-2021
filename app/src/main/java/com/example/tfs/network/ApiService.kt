@@ -1,15 +1,9 @@
 package com.example.tfs.network
 
 import com.example.tfs.network.models.*
-import com.example.tfs.network.utils.NetworkConstants.BASE_URL
-import com.example.tfs.network.utils.addJsonConverter
-import com.example.tfs.network.utils.setClient
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.http.*
 
 
@@ -62,17 +56,4 @@ interface ApiService {
         @Query("emoji_code") emoji_code: String,
         @Query("reaction_type") reaction_type: String = "unicode_emoji",
     ): Completable
-
-    companion object {
-
-        fun create(): ApiService {
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .setClient()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addJsonConverter()
-                .build()
-                .create(ApiService::class.java)
-        }
-    }
 }

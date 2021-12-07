@@ -3,9 +3,9 @@ package com.example.tfs.ui.topic.elm
 import com.example.tfs.domain.topic.TopicInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
-import javax.inject.Inject
 
-class TopicActor @Inject constructor(
+
+class TopicActor /*@Inject constructor*/(
     private val topicInteractor: TopicInteractor,
 ) :
     ActorCompat<Command, TopicEvent.Internal> {

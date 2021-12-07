@@ -3,9 +3,9 @@ package com.example.tfs.ui.profile.elm
 import com.example.tfs.domain.contacts.ContactInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
-import javax.inject.Inject
 
-class ProfileActor @Inject constructor(
+//@ProfileScope are we need scope here?
+class ProfileActor /*@Inject constructor*/(
     private val contactInteractor: ContactInteractor,
 ) :
     ActorCompat<Command, ProfileEvent.Internal> {

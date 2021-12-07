@@ -1,12 +1,15 @@
 package com.example.tfs.ui.stream.streamcontainer
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.tfs.R
+import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentStreamContainerBinding
+import com.example.tfs.di.DaggerStreamContainerComponent
 import com.example.tfs.ui.stream.streamcontainer.elm.*
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
@@ -33,7 +36,7 @@ class StreamContainerFragment :
     private val searchStream: PublishSubject<String> = PublishSubject.create()
 
     @Inject
-    private lateinit var streamContainerActor: StreamContainerActor
+    lateinit var streamContainerActor: StreamContainerActor
 
     private val viewPagerPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -77,6 +80,12 @@ class StreamContainerFragment :
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
+    }
+
+    override fun onAttach(context: Context) {
+        DaggerStreamContainerComponent.builder().appComponent(context.appComponent).build()
+            .inject(this)
+        super.onAttach(context)
     }
 
     private fun subscribeToSearchStreams() {

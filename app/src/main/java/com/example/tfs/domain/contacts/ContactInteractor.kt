@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
+
 class ContactInteractor @Inject constructor(private val contactRepository: ContactRepository) {
 
     fun fetch(query: String): Observable<List<LocalUser>> {

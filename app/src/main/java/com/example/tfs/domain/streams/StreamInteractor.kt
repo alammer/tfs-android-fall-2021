@@ -5,7 +5,6 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
-
 class StreamInteractor @Inject constructor(private val streamRepository: StreamRepository) {
 
     private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()

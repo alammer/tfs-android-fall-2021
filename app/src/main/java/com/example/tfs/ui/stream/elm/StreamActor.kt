@@ -3,9 +3,9 @@ package com.example.tfs.ui.stream.elm
 import com.example.tfs.domain.streams.StreamInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
-import javax.inject.Inject
 
-class StreamActor @Inject constructor(
+
+class StreamActor /*@Inject constructor*/(
     private val streamInteractor: StreamInteractor,
 ) :
     ActorCompat<Command, StreamEvent.Internal> {

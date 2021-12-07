@@ -1,4 +1,4 @@
-package com.example.tfs.di
+package com.example.tfs.di.core
 
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.utils.addJsonConverter
@@ -14,7 +14,7 @@ class NetworkModule {
 
     @Provides
     @Reusable
-    internal  fun provideRetorfitInterface(): Retrofit = Retrofit.Builder()
+    internal fun provideRetorfitInterface(): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .setClient()
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

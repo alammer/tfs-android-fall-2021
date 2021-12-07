@@ -1,13 +1,15 @@
 package com.example.tfs.ui.contacts
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
+import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentContactsBinding
-import com.example.tfs.di.AppDI
+import com.example.tfs.di.DaggerContactsComponent
 import com.example.tfs.ui.contacts.adapter.ContactViewAdapter
 import com.example.tfs.ui.contacts.elm.*
 import com.example.tfs.ui.profile.ProfileFragment
@@ -32,7 +34,7 @@ class ContactsFragment :
     private val viewBinding by viewBinding(FragmentContactsBinding::bind)
 
     @Inject
-    private lateinit var contactActor: ContactActor
+    lateinit var contactActor: ContactActor
 
     private lateinit var contactListAdapter: ContactViewAdapter
 
@@ -69,12 +71,18 @@ class ContactsFragment :
         }
     }
 
+    override fun onAttach(context: Context) {
+        DaggerContactsComponent.builder().appComponent(context.appComponent).build()
+            .inject(this)
+        super.onAttach(context)
+    }
+
     private fun initViews() {
 
         subscribeToSearchContacts()
 
         contactListAdapter = ContactViewAdapter { contactId: Int ->
-                store.accept(ContactEvent.Ui.ContactClicked(contactId))
+            store.accept(ContactEvent.Ui.ContactClicked(contactId))
         }
 
         with(viewBinding) {

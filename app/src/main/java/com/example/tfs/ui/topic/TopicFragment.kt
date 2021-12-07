@@ -1,7 +1,7 @@
 package com.example.tfs.ui.topic
 
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -9,8 +9,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
+import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentTopicBinding
-import com.example.tfs.di.AppDI
+import com.example.tfs.di.DaggerTopicComponent
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
 import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
@@ -27,7 +28,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     override val initEvent: TopicEvent = TopicEvent.Ui.Init
 
     @Inject
-    private lateinit var topicActor: TopicActor
+    lateinit var topicActor: TopicActor
 
     private val topicName by lazy {
         requireArguments().getString(TOPIC_NAME, "")
@@ -118,6 +119,12 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 //TODO("show PB on top RV")
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        DaggerTopicComponent.builder().appComponent(context.appComponent).build()
+            .inject(this)
+        super.onAttach(context)
     }
 
     private fun initViews() {
