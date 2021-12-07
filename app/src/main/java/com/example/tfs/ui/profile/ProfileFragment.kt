@@ -7,10 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentProfileBinding
-import com.example.tfs.di.AppDI
-import com.example.tfs.ui.profile.elm.ProfileEffect
-import com.example.tfs.ui.profile.elm.ProfileEvent
-import com.example.tfs.ui.profile.elm.ProfileState
+import com.example.tfs.ui.profile.elm.*
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx
@@ -18,6 +15,7 @@ import com.example.tfs.util.viewbinding.viewBinding
 import com.squareup.picasso.Picasso
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 
 class ProfileFragment :
     ElmFragment<ProfileEvent, ProfileEffect, ProfileState>(R.layout.fragment_profile) {
@@ -25,6 +23,9 @@ class ProfileFragment :
     override val initEvent: ProfileEvent = ProfileEvent.Ui.Init
 
     private val viewBinding by viewBinding(FragmentProfileBinding::bind)
+
+    @Inject
+    private lateinit var profileActor: ProfileActor
 
     private val userId by lazy {
         requireArguments().getInt(USER_ID, -1)
@@ -37,7 +38,7 @@ class ProfileFragment :
     }
 
     override fun createStore(): Store<ProfileEvent, ProfileEffect, ProfileState> =
-        AppDI.INSTANCE.elmProfileStoreFactory.provide()
+        ProfileStore.provide(profileActor)
 
     override fun render(state: ProfileState) {
         with(viewBinding) {

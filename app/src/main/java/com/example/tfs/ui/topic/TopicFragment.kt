@@ -12,20 +12,22 @@ import com.example.tfs.R
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.AppDI
 import com.example.tfs.ui.topic.adapter.TopicViewAdapter
-import com.example.tfs.ui.topic.elm.TopicEffect
-import com.example.tfs.ui.topic.elm.TopicEvent
-import com.example.tfs.ui.topic.elm.TopicState
+import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 
 
 class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.fragment_topic) {
 
     override val initEvent: TopicEvent = TopicEvent.Ui.Init
+
+    @Inject
+    private lateinit var topicActor: TopicActor
 
     private val topicName by lazy {
         requireArguments().getString(TOPIC_NAME, "")
@@ -62,7 +64,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
-        AppDI.INSTANCE.elmTopicStoreFactory.provide()
+        TopicStore.provide(topicActor)
 
 
     override fun render(state: TopicState) {

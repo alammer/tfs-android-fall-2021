@@ -9,9 +9,7 @@ import com.example.tfs.R
 import com.example.tfs.databinding.FragmentContactsBinding
 import com.example.tfs.di.AppDI
 import com.example.tfs.ui.contacts.adapter.ContactViewAdapter
-import com.example.tfs.ui.contacts.elm.ContactEffect
-import com.example.tfs.ui.contacts.elm.ContactEvent
-import com.example.tfs.ui.contacts.elm.ContactState
+import com.example.tfs.ui.contacts.elm.*
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
@@ -24,6 +22,7 @@ import io.reactivex.subjects.PublishSubject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class ContactsFragment :
     ElmFragment<ContactEvent, ContactEffect, ContactState>(R.layout.fragment_contacts) {
@@ -31,6 +30,9 @@ class ContactsFragment :
     override val initEvent: ContactEvent = ContactEvent.Ui.Init
 
     private val viewBinding by viewBinding(FragmentContactsBinding::bind)
+
+    @Inject
+    private lateinit var contactActor: ContactActor
 
     private lateinit var contactListAdapter: ContactViewAdapter
 
@@ -43,7 +45,7 @@ class ContactsFragment :
     }
 
     override fun createStore(): Store<ContactEvent, ContactEffect, ContactState> =
-        AppDI.INSTANCE.elmContactStoreFactory.provide()
+        ContactStore.provide(contactActor)
 
     override fun render(state: ContactState) {
         viewBinding.loading.root.isVisible = state.isFetching

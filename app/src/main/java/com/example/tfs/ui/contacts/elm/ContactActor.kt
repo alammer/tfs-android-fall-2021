@@ -1,14 +1,17 @@
 package com.example.tfs.ui.contacts.elm
 
-import com.example.tfs.domain.contacts.FetchContacts
+import com.example.tfs.domain.contacts.ContactInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
+import javax.inject.Inject
 
-class ContactActor(private val fetchContacts: FetchContacts) :
+class ContactActor @Inject constructor(
+    private val contactInteractor: ContactInteractor,
+) :
     ActorCompat<Command, ContactEvent.Internal> {
     override fun execute(command: Command): Observable<ContactEvent.Internal> = when (command) {
         is Command.FetchContacts -> {
-            fetchContacts.fetch(command.query)
+            contactInteractor.fetch(command.query)
                 .mapEvents(ContactEvent.Internal::ContactFetchingComplete,
                     ContactEvent.Internal::ContactFetchingError)
         }

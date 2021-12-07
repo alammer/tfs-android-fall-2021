@@ -3,9 +3,10 @@ package com.example.tfs.domain.topic
 import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 
 
-class FetchTopics(private val topicRepository: TopicRepository) {
+class TopicInteractor @Inject constructor(private val topicRepository: TopicRepository) {
 
     private val topicToItemMapper: TopicToItemMapper = TopicToItemMapper()
 

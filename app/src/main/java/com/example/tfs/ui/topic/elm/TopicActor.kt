@@ -1,33 +1,39 @@
 package com.example.tfs.ui.topic.elm
 
-import android.util.Log
-import com.example.tfs.domain.topic.FetchTopics
+import com.example.tfs.domain.topic.TopicInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
+import javax.inject.Inject
 
-class TopicActor(private val fetchTopics: FetchTopics) :
-    ActorCompat<Command, TopicEvent.Internal>
-{
+class TopicActor @Inject constructor(
+    private val topicInteractor: TopicInteractor,
+) :
+    ActorCompat<Command, TopicEvent.Internal> {
     override fun execute(command: Command): Observable<TopicEvent.Internal> = when (command) {
         is Command.FetchTopic -> {
-            fetchTopics.topic(command.streamName, command.topicName)
-                .mapEvents(TopicEvent.Internal::TopicLoadingComplete, TopicEvent.Internal::TopicLoadingError)
+            topicInteractor.topic(command.streamName, command.topicName)
+                .mapEvents(TopicEvent.Internal::TopicLoadingComplete,
+                    TopicEvent.Internal::TopicLoadingError)
         }
         is Command.FetchNextPage -> {
-            fetchTopics.nextPage(command.streamName, command.topicName, command.downAnchor)
-                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
+            topicInteractor.nextPage(command.streamName, command.topicName, command.downAnchor)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.FetchPrevPage -> {
-            fetchTopics.previousPage(command.streamName, command.topicName, command.upAnchor)
-                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
+            topicInteractor.previousPage(command.streamName, command.topicName, command.upAnchor)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.SendMessage -> {
-            fetchTopics.send(command.streamName, command.topicName, command.message)
-                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
+            topicInteractor.send(command.streamName, command.topicName, command.message)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.UpdateReaction -> {
-            fetchTopics.update(command.postId, command.emojiName, command.emojiCode)
-                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete, TopicEvent.Internal::TopicUpdatingError)
+            topicInteractor.update(command.postId, command.emojiName, command.emojiCode)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
         }
     }
 }

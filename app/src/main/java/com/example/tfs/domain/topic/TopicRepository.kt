@@ -2,7 +2,7 @@ package com.example.tfs.domain.topic
 
 import android.content.SharedPreferences
 import android.util.Log
-import com.example.tfs.database.MessengerDB
+import com.example.tfs.database.MessengerDataDao
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -16,6 +16,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 interface TopicRepository {
 
@@ -39,22 +40,19 @@ interface TopicRepository {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
-
-    private val networkService = ApiService.create()
-    private val database = MessengerDB.instance.localDataDao
-    private val ownerId by lazy {
-        prefs.getInt(ZULIP_OWNER_ID_KEY, -1)
-    }
+class TopicRepositoryImpl@Inject constructor(
+    private val remoteApi: ApiService,
+    private val localDao: MessengerDataDao
+) : TopicRepository {
 
     override fun sendMessage(
         streamName: String,
         topicName: String,
         content: String,
     ): Single<List<PostWithReaction>> =
-        networkService.sendMessage(streamName, topicName, content)
+        remoteApi.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
-            .andThen(database.insertPost(LocalPost(
+            .andThen(localDao.insertPost(LocalPost(
                 postId = -(System.currentTimeMillis() * 1000).toInt() % 10000,
                 topicName = topicName,
                 streamName = streamName,
@@ -69,7 +67,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> {
-        return database.getReactionForPost(messageId, emojiCode, ownerId)
+        return localDao.getReactionForPost(messageId, emojiCode, ownerId)
             .defaultIfEmpty(emptyReaction)
             .flatMapSingle { reaction ->
                 if (reaction.userId == -1) {
@@ -85,9 +83,9 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> =
-        networkService.addReaction(messageId, emojiName, emojiCode)
+        remoteApi.addReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
-            .andThen(database.insertReaction(LocalReaction(postId = messageId,
+            .andThen(localDao.insertReaction(LocalReaction(postId = messageId,
                 name = emojiName,
                 code = emojiCode,
                 userId = ownerId,
@@ -100,9 +98,9 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> =
-        networkService.removeReaction(messageId, emojiName, emojiCode)
+        remoteApi.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
-            .andThen(database.deleteReaction(messageId, emojiCode, ownerId))
+            .andThen(localDao.deleteReaction(messageId, emojiCode, ownerId))
             .andThen(getLocalTopic())
 
     override fun fetchTopic(
@@ -118,7 +116,7 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
             .flatMapObservable{ localPostList: List<PostWithReaction> ->
                 remoteSource
                     .flatMapSingle{ remotePostList ->
-                        database.deleteDraftPosts()
+                        localDao.deleteDraftPosts()
                             .andThen(insertTopicToDB(remotePostList))
                             .andThen(Single.just(remotePostList))
                     }
@@ -145,17 +143,17 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
        isNext: Boolean = true
     ): Single<List<PostWithReaction>> {
         Log.i("TopicRepository", "Function called: fetchPage()")
-        return Single.zip(getRemoteTopic(query), database.getTopicSize(),
+        return Single.zip(getRemoteTopic(query), localDao.getTopicSize(),
             { newPage, currentSize -> Pair(newPage, currentSize) })
             .subscribeOn(Schedulers.io())
             .flatMap { (page, size) ->
                 addPage(page, size, isNext)
-                    .andThen(database.getPostWithReaction())
+                    .andThen(localDao.getPostWithReaction())
             }
     }
     /*.subscribeOn(Schedulers.io())    //WTF???
      .map { (page, size) -> addNextPage(query, page, size) }
-     .flatMapSingle { database.getPostWithReaction(query.streamName, query.topicName) }*/
+     .flatMapSingle { localDao.getPostWithReaction(query.streamName, query.topicName) }*/
 
     private fun addPage(
         newPage: List<PostWithReaction>,
@@ -166,10 +164,10 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
             insertPostList(newPage)
         } else {
             if (isNext) {
-                database.removeFirstPage(newPage.size - (51 - currentSize))
+                localDao.removeFirstPage(newPage.size - (51 - currentSize))
                     .andThen(insertPostList(newPage))
             } else {
-                database.removeLastPage(newPage.size - (51 - currentSize))
+                localDao.removeLastPage(newPage.size - (51 - currentSize))
                     .andThen(insertPostList(newPage))
             }
         }
@@ -177,24 +175,24 @@ class TopicRepositoryImpl(prefs: SharedPreferences) : TopicRepository {
 
     private fun insertPostList(remotePostList: List<PostWithReaction>): Completable {
         return Completable.concat(remotePostList.map { post ->
-            database.insertPost(post.post)
-                .andThen(database.insertReactions(post.reaction))
+            localDao.insertPost(post.post)
+                .andThen(localDao.insertReactions(post.reaction))
         })
     }
 
     private fun getLocalTopic(): Single<List<PostWithReaction>> =
-        database.getPostWithReaction()
+        localDao.getPostWithReaction()
 
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
-        networkService.getRemotePostList(query)
+        remoteApi.getRemotePostList(query)
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
 
 
     private fun insertTopicToDB(
         remotePostList: List<PostWithReaction>,
     ): Completable =
-        database.deleteTopic()
+        localDao.deleteTopic()
             .andThen(insertPostList(remotePostList))
 
     private fun newestTopicQuery(streamName: String, topicName: String) =

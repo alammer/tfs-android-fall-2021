@@ -1,6 +1,6 @@
 package com.example.tfs.domain.streams
 
-import com.example.tfs.database.MessengerDB
+import com.example.tfs.database.MessengerDataDao
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.Stream
@@ -8,6 +8,7 @@ import com.example.tfs.network.models.toLocalStream
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 interface StreamRepository {
 
@@ -18,21 +19,22 @@ interface StreamRepository {
     fun selectStream(streamId: Int): Completable
 }
 
-class StreamRepositoryImpl : StreamRepository {
+class StreamRepositoryImpl @Inject constructor(
+    private val remoteApi: ApiService,
+    private val localDao: MessengerDataDao
+) : StreamRepository {
 
-    private val networkService = ApiService.create()
-    private val database = MessengerDB.instance.localDataDao
 
     override fun selectStream(streamId: Int): Completable {
-        return database.getStream(streamId)
+        return localDao.getStream(streamId)
             .flatMapCompletable { localStream ->
                 if (localStream.isExpanded) {
-                    database.insertStream(localStream.copy(isExpanded = false))
+                    localDao.insertStream(localStream.copy(isExpanded = false))
                 } else {
-                    networkService.getStreamRelatedTopicList(streamId)
+                    remoteApi.getStreamRelatedTopicList(streamId)
                         .map { topicsResponse -> topicsResponse.topicResponseList.map { it.name } }
                         .flatMapCompletable { topicList ->
-                            database.insertStream(localStream.copy(isExpanded = true,
+                            localDao.insertStream(localStream.copy(isExpanded = true,
                                 topics = topicList))
                         }
                 }
@@ -45,7 +47,7 @@ class StreamRepositoryImpl : StreamRepository {
     ): Completable {
 
         val localSource =
-            if (isSubscribed) database.getSubscribedStreams() else database.getAllStreams()
+            if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
 
         return localSource
             .subscribeOn(Schedulers.io())
@@ -54,7 +56,7 @@ class StreamRepositoryImpl : StreamRepository {
                 getRemoteStreams(isSubscribed,
                     localStreamList.filter { it.isExpanded }.map { it.streamId })
                     .flatMapCompletable { remoteStreamList ->
-                        database.insertStreams(remoteStreamList)
+                        localDao.insertStreams(remoteStreamList)
                     }
             }
     }
@@ -62,7 +64,7 @@ class StreamRepositoryImpl : StreamRepository {
     override fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>> {
 
         val localSource =
-            if (isSubscribed) database.getSubscribedStreams() else database.getAllStreams()
+            if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
 
         return localSource
             .subscribeOn(Schedulers.io())
@@ -78,7 +80,7 @@ class StreamRepositoryImpl : StreamRepository {
     private fun fetchSubscribedStreams(
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
-        networkService.getSubscribedStreams()
+        remoteApi.getSubscribedStreams()
             .map { response -> response.streams }
             .toObservable()
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -92,7 +94,7 @@ class StreamRepositoryImpl : StreamRepository {
     private fun fetchRawStreams(
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
-        networkService.getRawStreams()
+        remoteApi.getRawStreams()
             .map { response -> response.streams }
             .toObservable()
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -107,7 +109,7 @@ class StreamRepositoryImpl : StreamRepository {
         isSubscribed: Boolean = false,
     ): Observable<LocalStream> =
         Observable.zip(Observable.just(stream),
-            networkService.getStreamRelatedTopicList(stream.id),
+            remoteApi.getStreamRelatedTopicList(stream.id),
             { expandedStream, topicList -> Pair(expandedStream, topicList) })
             .map { (stream, topicList) ->
                 stream.toLocalStream(

@@ -1,7 +1,6 @@
 package com.example.tfs.di
 
 import android.content.Context
-import com.example.tfs.ui.main.MainActivity
 import dagger.BindsInstance
 import dagger.Component
 
@@ -16,3 +15,4 @@ interface AppComponent {
         fun build(): AppComponent
     }
 }
+

@@ -3,9 +3,10 @@ package com.example.tfs.domain.streams
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 
 
-class FetchStreams(private val streamRepository: StreamRepository) {
+class StreamInteractor @Inject constructor(private val streamRepository: StreamRepository) {
 
     private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
     private val queryCache = PublishSubject.create<String>()

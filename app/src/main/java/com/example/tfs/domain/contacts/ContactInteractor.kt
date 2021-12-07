@@ -4,12 +4,13 @@ import com.example.tfs.database.entity.LocalUser
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
+import javax.inject.Inject
 
-class FetchContacts(private val contactRepository: ContactRepository) {
+class ContactInteractor @Inject constructor(private val contactRepository: ContactRepository) {
 
     fun fetch(query: String): Observable<List<LocalUser>> {
         return contactRepository.fetchUserList(query)
-        //TODO("return specific value from DB for empty local cache")
+        //TODO("return specific value from DB for empty local cache for turn MVI effects")
     }
 
     fun get(userId: Int): Maybe<LocalUser> {

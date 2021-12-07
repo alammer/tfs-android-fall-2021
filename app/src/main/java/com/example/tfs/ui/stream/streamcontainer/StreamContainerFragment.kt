@@ -7,10 +7,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.viewpager2.widget.ViewPager2
 import com.example.tfs.R
 import com.example.tfs.databinding.FragmentStreamContainerBinding
-import com.example.tfs.di.AppDI
-import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEffect
-import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerEvent
-import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerState
+import com.example.tfs.ui.stream.streamcontainer.elm.*
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.viewbinding.viewBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -23,6 +20,7 @@ import io.reactivex.subjects.PublishSubject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class StreamContainerFragment :
     ElmFragment<StreamContainerEvent, StreamContainerEffect, StreamContainerState>(R.layout.fragment_stream_container) {
@@ -33,6 +31,9 @@ class StreamContainerFragment :
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val searchStream: PublishSubject<String> = PublishSubject.create()
+
+    @Inject
+    private lateinit var streamContainerActor: StreamContainerActor
 
     private val viewPagerPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -61,7 +62,7 @@ class StreamContainerFragment :
     }
 
     override fun createStore(): Store<StreamContainerEvent, StreamContainerEffect, StreamContainerState> =
-        AppDI.INSTANCE.elmStreamContainerStoreFactory.provide()
+        StreamContainerStore.provide(actor = streamContainerActor)
 
     override fun render(state: StreamContainerState) {
         viewBinding.loading.root.isVisible = state.isFetching

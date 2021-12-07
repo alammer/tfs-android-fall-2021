@@ -34,7 +34,7 @@ class StreamContainerReducer :
         is Ui.Init -> {
             state { copy(isFetching = true, error = null) }
 /*            commands {
-                +Command.FetchStreams(isSubscribed = initialState.isSubscribed,
+                +Command.StreamInteractor(isSubscribed = initialState.isSubscribed,
                     query = initialState.query)
             }*/
             //commands { +Command.UpdateStream }

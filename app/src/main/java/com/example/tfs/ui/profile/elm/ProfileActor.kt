@@ -1,19 +1,22 @@
 package com.example.tfs.ui.profile.elm
 
-import com.example.tfs.domain.contacts.FetchContacts
+import com.example.tfs.domain.contacts.ContactInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
+import javax.inject.Inject
 
-class ProfileActor(private val fetchContacts: FetchContacts) :
+class ProfileActor @Inject constructor(
+    private val contactInteractor: ContactInteractor,
+) :
     ActorCompat<Command, ProfileEvent.Internal> {
     override fun execute(command: Command): Observable<ProfileEvent.Internal> = when (command) {
         is Command.GetUser -> {
             if (command.userId == -1) {
-                fetchContacts.getOwner()
+                contactInteractor.getOwner()
                     .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
                         ProfileEvent.Internal.ProfileFetchingError)
             } else {
-                fetchContacts.get(command.userId)
+                contactInteractor.get(command.userId)
                     .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
                         ProfileEvent.Internal.ProfileFetchingError)
             }

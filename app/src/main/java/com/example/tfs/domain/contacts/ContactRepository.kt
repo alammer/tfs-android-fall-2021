@@ -1,6 +1,6 @@
 package com.example.tfs.domain.contacts
 
-import com.example.tfs.database.MessengerDB
+import com.example.tfs.database.MessengerDataDao
 import com.example.tfs.database.entity.LocalUser
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
@@ -8,6 +8,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 interface ContactRepository {
 
@@ -18,10 +19,10 @@ interface ContactRepository {
     fun getOwner(): Single<LocalUser>
 }
 
-class ContactRepositoryImpl : ContactRepository {
-
-    private val networkService = ApiService.create()
-    private val database = MessengerDB.instance.localDataDao
+class ContactRepositoryImpl @Inject constructor(
+    private val remoteApi: ApiService,
+    private val localDao: MessengerDataDao
+) : ContactRepository {
 
     override fun fetchUserList(
         query: String,
@@ -38,7 +39,7 @@ class ContactRepositoryImpl : ContactRepository {
                         remoteStreamList != localStreamList
                     }*/
                     .flatMapSingle { remoteUserList ->
-                        database.insertAllUsers(remoteUserList)
+                        localDao.insertAllUsers(remoteUserList)
                             .andThen(Single.just(remoteUserList.filter { it.userName.contains(query) }))
                     }
                     .startWith(localUserList.filter { it.userName.contains(query) })
@@ -46,11 +47,11 @@ class ContactRepositoryImpl : ContactRepository {
     }
 
     private fun getLocalUserList(): Single<List<LocalUser>> =
-        database.getAllUsers()
+        localDao.getAllUsers()
             .subscribeOn(Schedulers.io())
 
     private fun getRemoteUserList(): Observable<List<LocalUser>> =
-        networkService.getAllUsers()
+        remoteApi.getAllUsers()
             .map { response -> response.userList }
             .toObservable()
             .concatMap { userList -> Observable.fromIterable(userList) }
@@ -59,11 +60,11 @@ class ContactRepositoryImpl : ContactRepository {
             .toObservable()
 
     override fun getUser(userId: Int): Maybe<LocalUser> =
-        database.getUser(userId)
+        localDao.getUser(userId)
             .subscribeOn(Schedulers.io())
 
     override fun getOwner(): Single<LocalUser> {
-        return networkService.getOwner()
+        return remoteApi.getOwner()
             .subscribeOn(Schedulers.io())
             .flatMap { user ->
                 getUserPresence(user.id)
@@ -73,7 +74,7 @@ class ContactRepositoryImpl : ContactRepository {
     }
 
     private fun getUserWithPresence(user: User) =
-        Single.zip(networkService.getUser(user.id),
+        Single.zip(remoteApi.getUser(user.id),
             getUserPresence(user.id),
             { userResponse, presenceResponse ->
                 Pair(userResponse.user,
@@ -85,7 +86,7 @@ class ContactRepositoryImpl : ContactRepository {
             .toObservable()
 
     private fun getUserPresence(userId: Int): Single<UserPresence> {
-        return networkService.getUserPresence(userId)
+        return remoteApi.getUserPresence(userId)
             .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available", 0L))))
     }
 
