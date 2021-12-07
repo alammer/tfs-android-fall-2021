@@ -15,13 +15,23 @@ class MessengerApp : Application() {
         super.onCreate()
         appComponent = DaggerAppComponent.builder()
             .context(this)
+            .owner(getOwner())
             .build()
-        /*val preferences = appContext.getSharedPreferences(ZULIP_PREFERENCES_NAME, Context.MODE_PRIVATE)
-        if (!preferences.contains(ZULIP_OWNER_ID_KEY)) {
+
+    }
+
+    private fun getOwner(): Int {
+        val preferences = getSharedPreferences(ZULIP_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        return if (!preferences.contains(ZULIP_OWNER_ID_KEY)) {
             preferences.edit().putInt(ZULIP_OWNER_ID_KEY, ZULIP_OWNER_ID).apply()
-        }*/
+            ZULIP_OWNER_ID
+        } else {
+            preferences.getInt(ZULIP_OWNER_ID_KEY, -1)
+        }
     }
 }
+
+
 
 val Context.appComponent: AppComponent
     get() = when (this) {

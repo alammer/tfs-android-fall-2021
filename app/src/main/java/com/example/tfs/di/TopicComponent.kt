@@ -37,8 +37,8 @@ interface TopicComponent {
 class TopicModule {
 
     @Provides
-    fun provideTopicRepository(service: ApiService, database: MessengerDataDao): TopicRepository {
-        return TopicRepositoryImpl(service, database)
+    fun provideTopicRepository(service: ApiService, database: MessengerDataDao, owner: Int): TopicRepository {
+        return TopicRepositoryImpl(service, database, owner)
     }
 
     @Provides

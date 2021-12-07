@@ -13,12 +13,16 @@ interface AppComponent {
 
     fun localSource(): MessengerDataDao
     fun remoteSource(): ApiService
+    fun owner(): Int
 
     @Component.Builder
     interface Builder {
 
         @BindsInstance
         fun context(context: Context): Builder
+
+        @BindsInstance
+        fun owner(id: Int): Builder
 
         fun build(): AppComponent
     }

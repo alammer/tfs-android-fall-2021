@@ -49,6 +49,7 @@ interface TopicRepository {
 class TopicRepositoryImpl/*@Inject constructor*/(
     private val remoteApi: ApiService,
     private val localDao: MessengerDataDao,
+    private val ownerId: Int
 ) : TopicRepository {
 
     override fun sendMessage(
@@ -63,7 +64,7 @@ class TopicRepositoryImpl/*@Inject constructor*/(
                 topicName = topicName,
                 streamName = streamName,
                 isSelf = true,
-                senderId = -1/*ownerId*/,
+                senderId = ownerId,
                 timeStamp = System.currentTimeMillis() * 1000L,
                 content = content)))
             .andThen(getLocalTopic())
@@ -73,7 +74,7 @@ class TopicRepositoryImpl/*@Inject constructor*/(
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> {
-        return localDao.getReactionForPost(messageId, emojiCode, -1/*ownerId*/)
+        return localDao.getReactionForPost(messageId, emojiCode, ownerId)
             .defaultIfEmpty(emptyReaction)
             .flatMapSingle { reaction ->
                 if (reaction.userId == -1) {
@@ -94,7 +95,7 @@ class TopicRepositoryImpl/*@Inject constructor*/(
             .andThen(localDao.insertReaction(LocalReaction(postId = messageId,
                 name = emojiName,
                 code = emojiCode,
-                userId = -1/*ownerId*/,
+                userId = ownerId,
                 isClicked = true)))
             .andThen(getLocalTopic())
 
@@ -106,7 +107,7 @@ class TopicRepositoryImpl/*@Inject constructor*/(
     ): Single<List<PostWithReaction>> =
         remoteApi.removeReaction(messageId, emojiName, emojiCode)
             .subscribeOn(Schedulers.io())
-            .andThen(localDao.deleteReaction(messageId, emojiCode, -1/*ownerId*/))
+            .andThen(localDao.deleteReaction(messageId, emojiCode, ownerId))
             .andThen(getLocalTopic())
 
     override fun fetchTopic(
@@ -192,7 +193,7 @@ class TopicRepositoryImpl/*@Inject constructor*/(
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         remoteApi.getRemotePostList(query)
-            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(-1/*ownerId*/) } }
+            .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
 
 
     private fun insertTopicToDB(
