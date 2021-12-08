@@ -4,6 +4,7 @@ import com.example.tfs.database.dao.ContactDataDao
 import com.example.tfs.database.entity.LocalUser
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
+import com.example.tfs.util.retryWhenError
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -46,6 +47,21 @@ class ContactRepositoryImpl /*@Inject constructor*/(
             }
     }
 
+    override fun getUser(userId: Int): Maybe<LocalUser> =
+            localDao.getUser(userId)
+                    .subscribeOn(Schedulers.io())
+
+    override fun getOwner(): Single<LocalUser> {
+        return remoteApi.getOwner()
+                .subscribeOn(Schedulers.io())
+                .flatMap { user ->
+                    getUserPresence(user.id)
+                            .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available",
+                                    0L))))
+                            .map { presence -> user.toLocalUser(presence.userPresence.state) }
+                }
+    }
+
     private fun getLocalUserList(): Single<List<LocalUser>> =
         localDao.getAllUsers()
             .subscribeOn(Schedulers.io())
@@ -54,25 +70,11 @@ class ContactRepositoryImpl /*@Inject constructor*/(
         remoteApi.getAllUsers()
             .map { response -> response.userList }
             .toObservable()
+            .retryWhenError(3, 1)
             .concatMap { userList -> Observable.fromIterable(userList) }
             .flatMap { user -> getUserWithPresence(user) }
             .toList()
             .toObservable()
-
-    override fun getUser(userId: Int): Maybe<LocalUser> =
-        localDao.getUser(userId)
-            .subscribeOn(Schedulers.io())
-
-    override fun getOwner(): Single<LocalUser> {
-        return remoteApi.getOwner()
-            .subscribeOn(Schedulers.io())
-            .flatMap { user ->
-                getUserPresence(user.id)
-                    .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available",
-                        0L))))
-                    .map { presence -> user.toLocalUser(presence.userPresence.state) }
-            }
-    }
 
     private fun getUserWithPresence(user: User) =
         Single.zip(remoteApi.getUser(user.id),

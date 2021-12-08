@@ -12,7 +12,7 @@ class StreamInteractor @Inject constructor(private val streamRepository: StreamR
 
     fun upload(query: String, isSubcribed: Boolean): Completable {
         queryCache.onNext(query)
-        return streamRepository.loadStreams(query, isSubcribed)
+        return streamRepository.fetchStreams(query, isSubcribed)
     }
 
     fun observeQuery(): Observable<String> {
