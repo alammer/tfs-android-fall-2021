@@ -23,8 +23,6 @@ sealed class TopicEvent {
 
         object Init : Ui()
 
-        data class InitialLoad(val streamName: String, val topicName: String) : Ui()
-
         object BackToStream : Ui()
 
         data class ReactionClicked(val postId: Int,val emojiName: String, val emojiCode: String) : Ui()

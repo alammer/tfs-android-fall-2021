@@ -37,11 +37,10 @@ class ProfileFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        store.accept(ProfileEvent.Ui.InitialLoad(userId))
     }
 
     override fun createStore(): Store<ProfileEvent, ProfileEffect, ProfileState> =
-        ProfileStore.provide(profileActor)
+        ProfileStore.provide(ProfileState(userId = userId),profileActor)
 
     override fun render(state: ProfileState) {
         with(viewBinding) {

@@ -26,11 +26,7 @@ class ProfileReducer :
 
         is ProfileEvent.Ui.Init -> {
             state { copy(isFetching = true, error = null) }
-        }
-
-        is ProfileEvent.Ui.InitialLoad -> {
-            state { copy(userId = event.userId) }
-            commands { +Command.GetUser(event.userId) }
+            commands { +Command.GetUser(initialState.userId) }
         }
 
         is ProfileEvent.Ui.BackToContacts -> {

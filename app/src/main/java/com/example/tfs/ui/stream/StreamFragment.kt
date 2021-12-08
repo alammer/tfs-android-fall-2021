@@ -38,11 +38,10 @@ class StreamFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        store.accept(StreamEvent.Ui.InitialLoad(isSubscribed))
     }
 
     override fun createStore(): Store<StreamEvent, StreamEffect, StreamState> =
-        StreamStore.provide(StreamState(), streamActor)
+        StreamStore.provide(StreamState(isSubscribed = isSubscribed), streamActor)
 
 
     override fun render(state: StreamState) {

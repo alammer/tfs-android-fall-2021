@@ -16,12 +16,9 @@ sealed class ProfileEvent {
         object Init : Ui()
 
         object BackToContacts : Ui()
-
-        data class InitialLoad(val userId: Int) : Ui()
     }
 
     sealed class Internal : ProfileEvent() {
-
 
         data class ProfileFetchingComplete(val user: LocalUser) : Internal()
 

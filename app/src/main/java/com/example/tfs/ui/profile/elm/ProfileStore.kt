@@ -5,8 +5,8 @@ import vivid.money.elmslie.core.ElmStoreCompat
 
 object ProfileStore  {
 
-    fun provide(actor: ProfileActor) = ElmStoreCompat(
-        initialState = ProfileState(),
+    fun provide(state: ProfileState, actor: ProfileActor) = ElmStoreCompat(
+        initialState = state,
         reducer = ProfileReducer(),
         actor = actor
     )

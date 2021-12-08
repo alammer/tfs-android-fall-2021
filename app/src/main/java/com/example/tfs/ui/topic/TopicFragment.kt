@@ -45,7 +45,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        store.accept(TopicEvent.Ui.InitialLoad(streamName, topicName))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +64,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
-        TopicStore.provide(topicActor)
+        TopicStore.provide(TopicState(topicName = topicName, streamName = streamName), topicActor)
 
 
     override fun render(state: TopicState) {

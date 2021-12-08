@@ -17,8 +17,6 @@ sealed class StreamEvent {
 
         object Init : Ui()
 
-        data class InitialLoad(val isSubcribed: Boolean) : Ui()
-
         data class ClickOnStream(val streamId: Int) : Ui()
 
         data class ClickOnTopic(val topicName: String, val streamName: String) : Ui()

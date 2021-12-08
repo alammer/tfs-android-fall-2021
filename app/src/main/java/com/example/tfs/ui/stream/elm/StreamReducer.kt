@@ -1,12 +1,12 @@
 package com.example.tfs.ui.stream.elm
 
-import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :
     ScreenDslReducer<StreamEvent, StreamEvent.Ui, StreamEvent.Internal, StreamState, StreamEffect, Command>(
         StreamEvent.Ui::class,
-        StreamEvent.Internal::class) {
+        StreamEvent.Internal::class
+    ) {
 
     override fun Result.internal(event: StreamEvent.Internal) = when (event) {
         is StreamEvent.Internal.UpdateStreamComplete -> {
@@ -21,7 +21,6 @@ class StreamReducer :
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
         is StreamEvent.Internal.QueryChange -> {
-            Log.i("StreamReducer", "Function called: internal() $event")
             state { copy(isLoading = true, query = event.query) }
             commands { +Command.ObserveStreams(event.query, state.isSubscribed) }
         }
@@ -31,13 +30,8 @@ class StreamReducer :
 
         is StreamEvent.Ui.Init -> {
             state { copy(isLoading = true, isClicked = false, error = null) }
-        }
-
-        is StreamEvent.Ui.InitialLoad -> {
-            Log.i("StreamReducer", "Function called: Initial Load $event")
-            state { copy(isSubscribed = event.isSubcribed) }
             commands {
-                +Command.ObserveStreams(initialState.query, event.isSubcribed)
+                +Command.ObserveStreams(initialState.query, initialState.isSubscribed)
                 +Command.ObserveQuery
             }
         }

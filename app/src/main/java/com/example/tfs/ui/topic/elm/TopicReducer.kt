@@ -1,21 +1,23 @@
 package com.example.tfs.ui.topic.elm
 
 
-import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class TopicReducer :
     ScreenDslReducer<TopicEvent, TopicEvent.Ui, TopicEvent.Internal, TopicState, TopicEffect, Command>(
         TopicEvent.Ui::class,
-        TopicEvent.Internal::class) {
+        TopicEvent.Internal::class
+    ) {
 
     override fun Result.internal(event: TopicEvent.Internal) = when (event) {
         is TopicEvent.Internal.TopicLoadingComplete -> {
             state {
-                copy(isLoading = false,
+                copy(
+                    isLoading = false,
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId)
+                    downAnchor = event.uiTopic.downAnchorId
+                )
             }
             effects { +TopicEffect.LoadTopic }
         }
@@ -66,13 +68,17 @@ class TopicReducer :
 
         is TopicEvent.Ui.Init -> {
             state { copy(isLoading = true, error = null) }
-        }
-        is TopicEvent.Ui.InitialLoad -> {
-            state { copy(streamName = event.streamName, topicName = event.topicName) }
-            commands { +Command.FetchTopic(event.streamName, event.topicName) }
+            commands { +Command.FetchTopic(initialState.streamName, initialState.topicName) }
         }
         is TopicEvent.Ui.BackToStream -> {
-            state { copy(error = null, isLoading = false, isPrevPageLoading = false, isNextPageLoading = false) }
+            state {
+                copy(
+                    error = null,
+                    isLoading = false,
+                    isPrevPageLoading = false,
+                    isNextPageLoading = false
+                )
+            }
             effects { +TopicEffect.BackNavigation }
         }
         is TopicEvent.Ui.NewReactionAdding -> {
@@ -81,17 +87,21 @@ class TopicReducer :
         is TopicEvent.Ui.ReactionClicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(event.postId,
+                +Command.UpdateReaction(
+                    event.postId,
                     event.emojiName,
-                    event.emojiCode)
+                    event.emojiCode
+                )
             }
         }
         is TopicEvent.Ui.NewReactionPicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(event.postId,
+                +Command.UpdateReaction(
+                    event.postId,
                     event.emojiName,
-                    event.emojiCode)
+                    event.emojiCode
+                )
             }
         }
         is TopicEvent.Ui.MessageDraftChanging -> {
@@ -100,24 +110,27 @@ class TopicReducer :
         }
         is TopicEvent.Ui.MessageSending -> {
             state {
-                copy(isNextPageLoading = true,
+                copy(
+                    isNextPageLoading = true,
                     isPrevPageLoading = false,
-                    error = null)
+                    error = null
+                )
             }
             commands { +Command.SendMessage(state.streamName, state.topicName, state.messageDraft) }
             state { copy(messageDraft = "") }
             effects { +TopicEffect.MessageSend }
         }
         is TopicEvent.Ui.PageFetching -> {
-            //Log.i("TopicReducer", "Function called: page fetching")
             if (event.isDownScroll && state.isNextPageLoading.not()) {
                 state {
                     copy(isNextPageLoading = true, isPrevPageLoading = false, error = null)
                 }
                 commands {
-                    +Command.FetchNextPage(state.streamName,
+                    +Command.FetchNextPage(
+                        state.streamName,
                         state.topicName,
-                        state.downAnchor)
+                        state.downAnchor
+                    )
                 }
             } else {
                 if (event.isDownScroll.not() && state.isPrevPageLoading.not()) {
@@ -125,9 +138,11 @@ class TopicReducer :
                         copy(isNextPageLoading = false, isPrevPageLoading = true, error = null)
                     }
                     commands {
-                        +Command.FetchPrevPage(state.streamName,
+                        +Command.FetchPrevPage(
+                            state.streamName,
                             state.topicName,
-                            state.upAnchor)
+                            state.upAnchor
+                        )
                     }
                 } else {
                     Any()
