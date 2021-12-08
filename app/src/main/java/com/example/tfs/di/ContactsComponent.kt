@@ -1,6 +1,6 @@
 package com.example.tfs.di
 
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.ContactDataDao
 import com.example.tfs.di.core.AppComponent
 import com.example.tfs.domain.contacts.ContactInteractor
 import com.example.tfs.domain.contacts.ContactRepository
@@ -38,8 +38,8 @@ class ContactsModule {
 
     @Provides
     fun provideContactRepository(
-        service: ApiService,
-        database: MessengerDataDao,
+            service: ApiService,
+            database: ContactDataDao,
     ): ContactRepository {
         return ContactRepositoryImpl(service, database)
     }

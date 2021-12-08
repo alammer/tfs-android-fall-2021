@@ -1,6 +1,6 @@
 package com.example.tfs.di
 
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.StreamDataDao
 import com.example.tfs.di.core.AppComponent
 import com.example.tfs.domain.streams.StreamInteractor
 import com.example.tfs.domain.streams.StreamRepository
@@ -37,7 +37,7 @@ interface StreamComponent {
 class StreamModule {
 
     @Provides
-    fun provideStreamRepository(service: ApiService, database: MessengerDataDao): StreamRepository {
+    fun provideStreamRepository(service: ApiService, database: StreamDataDao): StreamRepository {
         return StreamRepositoryImpl(service, database)
     }
 

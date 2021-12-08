@@ -15,7 +15,7 @@ class MessengerApp : Application() {
         super.onCreate()
         appComponent = DaggerAppComponent.builder()
             .context(this)
-            .owner(getOwner())
+            .ownerId(getOwner())
             .build()
 
     }

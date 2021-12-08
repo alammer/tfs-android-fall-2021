@@ -1,7 +1,9 @@
 package com.example.tfs.di.core
 
 import android.content.Context
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.StreamDataDao
+import com.example.tfs.database.dao.TopicDataDao
+import com.example.tfs.database.dao.ContactDataDao
 import com.example.tfs.network.ApiService
 import dagger.BindsInstance
 import dagger.Component
@@ -11,9 +13,11 @@ import javax.inject.Scope
 @AppScope
 interface AppComponent {
 
-    fun localSource(): MessengerDataDao
+    fun localStreamSource(): StreamDataDao
+    fun localTopicSource(): TopicDataDao
+    fun localUserSource(): ContactDataDao
     fun remoteSource(): ApiService
-    fun owner(): Int
+    fun ownerId(): Int
 
     @Component.Builder
     interface Builder {
@@ -22,7 +26,7 @@ interface AppComponent {
         fun context(context: Context): Builder
 
         @BindsInstance
-        fun owner(id: Int): Builder
+        fun ownerId(id: Int): Builder
 
         fun build(): AppComponent
     }

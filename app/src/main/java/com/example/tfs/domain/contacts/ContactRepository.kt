@@ -1,6 +1,6 @@
 package com.example.tfs.domain.contacts
 
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.ContactDataDao
 import com.example.tfs.database.entity.LocalUser
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.*
@@ -20,8 +20,8 @@ interface ContactRepository {
 
 
 class ContactRepositoryImpl /*@Inject constructor*/(
-    private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao,
+        private val remoteApi: ApiService,
+        private val localDao: ContactDataDao,
 ) : ContactRepository {
 
     override fun fetchUserList(

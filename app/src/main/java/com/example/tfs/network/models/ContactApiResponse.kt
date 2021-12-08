@@ -73,25 +73,3 @@ fun User.toLocalUser(presence: AggregatedStatus) = LocalUser(
     lastVisit = presence.userTimestamp
 )
 
-fun User.toOwner() =
-    LocalOwner(id,
-        name,
-        email,
-        role,
-        dateJoined,
-        isActive,
-        avatarUrl,
-        isAdmin,
-        isOwner,
-        isGuest,
-        isBot)
-
-/*fun UserResponse.toDomainUser(presence: AggregatedStatus): DomainUser =
-    DomainUser(
-        id = user.id,
-        name = user.name,
-        email = user.email,
-        isActive = user.isActive,
-        avatarUrl = user.avatarUrl,
-        presenceData = UserPresence(presence.userStatus, presence.userTimestamp)
-    )*/

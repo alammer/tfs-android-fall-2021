@@ -1,6 +1,6 @@
 package com.example.tfs.di
 
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.TopicDataDao
 import com.example.tfs.di.core.AppComponent
 import com.example.tfs.domain.topic.TopicInteractor
 import com.example.tfs.domain.topic.TopicRepository
@@ -37,7 +37,7 @@ interface TopicComponent {
 class TopicModule {
 
     @Provides
-    fun provideTopicRepository(service: ApiService, database: MessengerDataDao, owner: Int): TopicRepository {
+    fun provideTopicRepository(service: ApiService, database: TopicDataDao, owner: Int): TopicRepository {
         return TopicRepositoryImpl(service, database, owner)
     }
 
@@ -45,9 +45,4 @@ class TopicModule {
     fun provideTopicActor(interactor: TopicInteractor): TopicActor {
         return TopicActor(interactor)
     }
-
-/*    @Provides
-    fun provideTopicInteractor(repository: TopicRepository): TopicInteractor {
-        return TopicInteractor(repository)
-    }*/
 }

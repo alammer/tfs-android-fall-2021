@@ -1,7 +1,7 @@
 package com.example.tfs.domain.topic
 
 import android.util.Log
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.TopicDataDao
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -47,9 +47,9 @@ interface TopicRepository {
 
 @OptIn(ExperimentalSerializationApi::class)
 class TopicRepositoryImpl/*@Inject constructor*/(
-    private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao,
-    private val ownerId: Int
+        private val remoteApi: ApiService,
+        private val localDao: TopicDataDao,
+        private val ownerId: Int
 ) : TopicRepository {
 
     override fun sendMessage(

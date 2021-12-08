@@ -1,6 +1,6 @@
 package com.example.tfs.domain.streams
 
-import com.example.tfs.database.MessengerDataDao
+import com.example.tfs.database.dao.StreamDataDao
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.Stream
@@ -20,8 +20,8 @@ interface StreamRepository {
 }
 
 class StreamRepositoryImpl /*@Inject constructor*/(
-    private val remoteApi: ApiService,
-    private val localDao: MessengerDataDao,
+        private val remoteApi: ApiService,
+        private val localDao: StreamDataDao,
 ) : StreamRepository {
 
 
