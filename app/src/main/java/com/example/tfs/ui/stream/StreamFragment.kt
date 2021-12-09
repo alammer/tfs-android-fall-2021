@@ -48,8 +48,6 @@ class StreamFragment :
         streamViewAdapter.submitList(state.streamListItem)
     }
 
-    //override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
-
     override fun handleEffect(effect: StreamEffect) {
         when (effect) {
             is StreamEffect.LoadingDataError -> {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.example.tfs.R
@@ -52,16 +53,9 @@ class ProfileFragment :
                     Picasso.get().load(userImage)
                         .resize(PROFILE_AVATAR_WIDTH.toPx, PROFILE_AVATAR_WIDTH.toPx)
                         .centerCrop().into(imgProfileUser)
-                } ?: imgProfileUser.drawUserInitials(
-                    userName,
-                    PROFILE_USER_IMAGE_WIDTH.toPx
-                )  //быдловатый вариант с размером
-                when (userState) {
-                    "active" -> tvProfileState.setTextColor(Color.GREEN)
-                    "idle" -> tvProfileState.setTextColor(Color.YELLOW)
-                    "offline" -> tvProfileState.setTextColor(Color.RED)
-                }
-                tvProfileState.text = userState
+                } ?: imgProfileUser.drawUserInitials(userName)
+
+                tvProfileState.setUserState(userState)
             } ?: { tvProfileName.text = "User info not available" }
         }
     }
@@ -94,7 +88,6 @@ class ProfileFragment :
     companion object {
 
         private const val USER_ID = "user_id"
-        private const val PROFILE_USER_IMAGE_WIDTH = 185
 
         fun newInstance(userId: Int = -1): ProfileFragment {
             return ProfileFragment().apply {
@@ -104,6 +97,16 @@ class ProfileFragment :
             }
         }
     }
+}
+
+fun TextView.setUserState(userState: String) {
+
+    when (userState) {
+        "active" -> setTextColor(Color.GREEN)
+        "idle" -> setTextColor(Color.YELLOW)
+        "offline" -> setTextColor(Color.RED)
+    }
+    text = userState
 }
 
 private const val PROFILE_AVATAR_WIDTH = 185

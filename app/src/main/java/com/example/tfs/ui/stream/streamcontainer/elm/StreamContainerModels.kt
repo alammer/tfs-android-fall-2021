@@ -14,9 +14,9 @@ sealed class StreamContainerEvent {
 
         object Init : Ui()
 
-        object FetchSubscribedStreams : Ui()
+        object ShowSubscribedStreams : Ui()
 
-        object FetchRawStreams : Ui()
+        object ShowRawStreams : Ui()
 
         data class ChangeSearchQuery(val query: String) : Ui()
     }
@@ -24,8 +24,6 @@ sealed class StreamContainerEvent {
     sealed class Internal : StreamContainerEvent() {
 
         object StreamsFetchComplete : Internal()
-
-        object StreamUpdateComplete : Internal()
 
         data class StreamsFetchError(val error: Throwable) : Internal()
     }

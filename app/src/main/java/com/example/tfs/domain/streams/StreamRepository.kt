@@ -21,38 +21,37 @@ interface StreamRepository {
 }
 
 class StreamRepositoryImpl /*@Inject constructor*/(
-        private val remoteApi: ApiService,
-        private val localDao: StreamDataDao,
+    private val remoteApi: ApiService,
+    private val localDao: StreamDataDao,
 ) : StreamRepository {
 
     override fun fetchStreams(
-            query: String,
-            isSubscribed: Boolean,
+        query: String,
+        isSubscribed: Boolean,
     ): Completable {
+        //val localSource = if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
+        //TODO("leave as is or create separate table for subscribed streams")
 
-        val localSource =
-                if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
-
-        return localSource
-                .subscribeOn(Schedulers.io())
-                .first(emptyList())
-                .flatMapCompletable { localStreamList: List<LocalStream> ->
-                    getRemoteStreams(isSubscribed,
-                            localStreamList.filter { it.isExpanded }.map { it.streamId })
-                            .flatMapCompletable { remoteStreamList ->
-                                localDao.insertStreams(remoteStreamList)
-                            }
-                }
+        return localDao.getAllStreams()
+            .subscribeOn(Schedulers.io())
+            .first(emptyList())
+            .flatMapCompletable { localStreamList: List<LocalStream> ->
+                getRemoteStreams(isSubscribed,
+                    localStreamList.filter { it.isExpanded }.map { it.streamId })
+                    .flatMapCompletable { remoteStreamList ->
+                        localDao.insertStreams(remoteStreamList)
+                    }
+            }
     }
 
     override fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>> {
 
         val localSource =
-                if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
+            if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
 
         return localSource
-                .subscribeOn(Schedulers.io())
-                .map { streamList -> streamList.filter { it.streamName.contains(query) } }
+            .subscribeOn(Schedulers.io())
+            .map { streamList -> streamList.filter { it.streamName.contains(query) } }
     }
 
     override fun selectStream(streamId: Int): Completable {
@@ -63,8 +62,10 @@ class StreamRepositoryImpl /*@Inject constructor*/(
                 } else {
                     getRelatedTopics(streamId)
                         .flatMapCompletable { topicList ->
-                            localDao.insertStream(localStream.copy(isExpanded = true,
-                                topics = topicList.map { it.name }))
+                            localDao.insertStream(
+                                localStream.copy(isExpanded = true,
+                                    topics = topicList.map { it.name })
+                            )
                         }
                 }
             }
@@ -85,8 +86,10 @@ class StreamRepositoryImpl /*@Inject constructor*/(
             .retryWhenError(3, 1)
             .concatMap { streamList -> Observable.fromIterable(streamList) }
             .flatMap { stream ->
-                if (stream.id in expanded) getStreamWithTopics(stream, true) else getStream(stream,
-                    true)
+                if (stream.id in expanded) getStreamWithTopics(stream, true) else getStream(
+                    stream,
+                    true
+                )
             }
             .toList()
             .toObservable()
@@ -124,7 +127,7 @@ class StreamRepositoryImpl /*@Inject constructor*/(
         remoteApi.getStreamRelatedTopicList(streamId)
             .retry(1)
             .map { response -> response.topicResponseList }
-            .onErrorReturn { emptyList()}  //error don't throw now
+            .onErrorReturn { emptyList() }  //error don't throw down now
 
     private fun getStream(stream: Stream, isSubscribed: Boolean = false): Observable<LocalStream> =
         Observable.just(stream.toLocalStream(isSubscribed))

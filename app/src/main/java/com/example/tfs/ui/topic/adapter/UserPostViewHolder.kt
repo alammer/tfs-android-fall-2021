@@ -40,7 +40,7 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setUserInitilas(userName: String) {
-        userAvatar.drawUserInitials(userName, USER_AVATAR_WIDTH.toPx)
+        userAvatar.drawUserInitials(userName)
     }
 
     fun createPostReaction(reaction: List<UiItemReaction>) {

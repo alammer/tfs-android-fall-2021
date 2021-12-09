@@ -18,7 +18,7 @@ interface StreamDataDao {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun insertStream(localStream: LocalStream): Completable
 
-        @Query("SELECT * FROM streams WHERE is_subscribed = 1")
+        @Query("SELECT * FROM streams WHERE is_subscribed")
         fun getSubscribedStreams(): Observable<List<LocalStream>>
 
         @Query("SELECT * FROM streams")

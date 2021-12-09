@@ -42,8 +42,8 @@ class StreamContainerFragment :
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             when (position) {
-                0 -> store.accept(StreamContainerEvent.Ui.FetchSubscribedStreams)
-                1 -> store.accept(StreamContainerEvent.Ui.FetchRawStreams)
+                0 -> store.accept(StreamContainerEvent.Ui.ShowSubscribedStreams)
+                1 -> store.accept(StreamContainerEvent.Ui.ShowRawStreams)
             }
         }
     }

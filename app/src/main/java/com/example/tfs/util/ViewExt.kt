@@ -1,9 +1,6 @@
 package com.example.tfs.util
 
-import android.app.Activity
-import android.content.Context
 import android.content.res.Resources
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,31 +8,23 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.provider.ContactsContract
 import android.text.Html
 import android.text.SpannableStringBuilder
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.toSpannable
-import androidx.fragment.app.Fragment
 import com.example.tfs.R
 import com.example.tfs.network.utils.NetworkConstants
 import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
-import java.util.*
 
 
-fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
+fun ShapeableImageView.drawUserInitials(name: String) {
+
+    val width = layoutParams.width
     val config = Bitmap.Config.ARGB_8888 // see other conf types
-    val bitmap = Bitmap.createBitmap(size, size, config) // this creates a MUTABLE bitmap
+    val bitmap = Bitmap.createBitmap(width, width, config) // this creates a MUTABLE bitmap
     val canvas = Canvas(bitmap)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -45,11 +34,11 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
         style = Paint.Style.FILL
     }
 
-    canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+    canvas.drawCircle(width / 2f, width / 2f, width / 2f, paint)
 
     paint.apply {
         textAlign = Paint.Align.CENTER
-        textSize = size / 2.5f
+        textSize = width / 2.5f
         color = Color.WHITE
     }
 
@@ -58,7 +47,7 @@ fun ShapeableImageView.drawUserInitials(name: String, size: Int) {
         .mapNotNull { it.firstOrNull()?.toString() }
         .reduce { acc, s -> acc + s }
 
-    canvas.drawText(userInitials, size / 2f, size / 2f - offset, paint)
+    canvas.drawText(userInitials, width / 2f, width / 2f - offset, paint)
     setImageBitmap(bitmap)
 }
 
@@ -142,59 +131,7 @@ private fun trimSpannable(spannable: SpannableStringBuilder): SpannableStringBui
     return spannable.delete(0, trimStart).delete(spannable.length - trimEnd, spannable.length)
 }
 
-
-fun View.hideSoftKeyboard() {
-    try {
-        val im: InputMethodManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        im.hideSoftInputFromWindow(windowToken, 0)
-    } catch (ignored: RuntimeException) {
-    }
-    //clearFocus()
-    /*if (this is EditText) { //move to uiTopic elm
-        text.clear()
-    }*/
-}
-
-fun TextView.setUserState(userState: Int) {
-    text = if (userState == 1) {
-        setTextColor(ContextCompat.getColor(context, R.color.state_color_green))
-        context.getString(R.string.profile_user_online_state)
-    } else {
-        setTextColor(ContextCompat.getColor(context, R.color.user_status_text_color))
-        context.getString(R.string.profile_user_offline_state)
-    }
-}
-
-fun Activity.showSystemMessage(text: String, longDuration: Boolean = false) =
-    Toast.makeText(this, text, if (longDuration) Toast.LENGTH_LONG else Toast.LENGTH_SHORT)
-        .show()
-
-fun Fragment.showSystemMessage(text: String, longDuration: Boolean = false) {
-    activity?.showSystemMessage(text, longDuration)
-}
-
-fun Context?.toast(message: String?) {
-    message?.let {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-}
-
-fun View.showSnackbar(
-    @StringRes stringRes: Int,
-    duration: Int = Snackbar.LENGTH_SHORT,
-) {
-    Snackbar.make(this, stringRes, duration).show()
-}
-
-fun View.showSnackbarError(
-    error: String,
-    duration: Int = Snackbar.LENGTH_SHORT,
-) {
-    Snackbar.make(this, error, duration).show()
-}
-
-fun String.stripHtml(): String{
+fun String.stripHtml(): String {
     val htmlRegex = Regex("(<.*?>)|(&[^ а-я]{1,4}?;)")
     val spaceRegex = Regex(" {2,}")
     return this.replace(htmlRegex, "").replace(spaceRegex, " ")
@@ -206,34 +143,5 @@ val Int.spToPx: Float
 val Int.toPx: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-val Long.shortDate
-    get() = SimpleDateFormat("d MMM", Locale("ru", "RU"))
-        .format(this * 1000L).replace(".", "")
-
-val Long.fullDate
-    get() = SimpleDateFormat("d MMMM',' ' 'yyyy", Locale("ru", "RU"))
-        .format(this * 1000L).replace(".", "")
-
-val Long.postDate
-    get() = SimpleDateFormat("HH:mm d MMMM',' ' 'yyyy", Locale("ru", "RU"))
-        .format(this * 1000L).replace(".", "")
-
-val Long.year
-    get() = SimpleDateFormat("yyyy", Locale("ru", "RU"))
-        .format(this * 1000L).toInt()
-
-fun Long.startOfDay(localOffset: Long) = (this + localOffset) - (this + localOffset) % 86400L
-
-fun Cursor.getContactId() =
-    getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-
-fun Cursor.getContactName() =
-    getString(getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-
-fun Cursor.hasPhoneNumber() =
-    getString(getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)).isNotEmpty()
-
-fun Cursor.getPhoneNumber() =
-    getString(getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
 

@@ -30,7 +30,7 @@ class ContactViewHolder(private val contactItemView: View) :
     }
 
     fun setContactInitials(userName: String) {
-        contactAvatar.drawUserInitials(userName, CONTACT_AVATAR_WIDTH.toPx)
+        contactAvatar.drawUserInitials(userName)
     }
 
     fun setContactName(userName: String) {
