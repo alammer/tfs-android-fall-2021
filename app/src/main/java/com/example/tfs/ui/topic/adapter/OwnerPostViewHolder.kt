@@ -10,11 +10,18 @@ import com.example.tfs.ui.topic.customview.addReaction
 
 class OwnerPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val textMessage = itemView.findViewById<TextView>(R.id.tvPostMessage)
+    private val postMessage = itemView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = itemView.findViewById<EmojisLayout>(R.id.lEmojis)
 
     fun setMessageText(message: CharSequence) {
-        textMessage.text = message
+        postMessage.text = message
+    }
+
+    fun setPostTapListener(postId: Int, postClick: (postId: Int, isOwner: Boolean) -> Unit) {
+        itemView.setOnLongClickListener {
+            postClick(postId, true)
+            return@setOnLongClickListener true
+        }
     }
 
     fun createPostReaction(reaction: List<UiItemReaction>) {

@@ -9,37 +9,39 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class UserPostItemBinder(
-    private val onChangeReactionClick: (messageId: Int, emojiName: String, emojiCode: String) -> Unit,
-    private val onAddReactionClick: (messageId: Int) -> Unit,
+    private val onChangeReactionClick: (postId: Int, emojiName: String, emojiCode: String) -> Unit,
+    private val onAddReactionClick: (postId: Int) -> Unit,
+    private val onPostTap: (postId: Int, isOwner: Boolean) -> Unit,
 ) {
 
-    fun bind(userPostViewHolder: UserPostViewHolder, item: PostItem.UserPostItem) {
+    fun bind(userPostViewHolder: UserPostViewHolder, post: PostItem.UserPostItem) {
 
-        Single.fromCallable { item.message.tryToParseContentImage(Resources.getSystem()) }
+        Single.fromCallable { post.message.tryToParseContentImage(Resources.getSystem()) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { userPostViewHolder.setMessageText(it) },
-                { userPostViewHolder.setMessageText(item.message.rawContent()) }
+                { userPostViewHolder.setMessageText(post.message.rawContent()) }
             )
 
-        userPostViewHolder.setUserName(item.userName)
+        userPostViewHolder.setUserName(post.userName)
 
-        userPostViewHolder.setMessageText(item.message)
+        userPostViewHolder.setMessageText(post.message)
 
-        userPostViewHolder.setMessageClickListener(item.id, onAddReactionClick)
+        userPostViewHolder.setPostTapListener(post.id, onPostTap)
 
-        item.avatar?.let {
+        post.avatar?.let {
             userPostViewHolder.setUserAvatarImage(it)
-        } ?: userPostViewHolder.setUserInitilas(item.userName)
+        } ?: userPostViewHolder.setUserInitilas(post.userName)
 
-        userPostViewHolder.createPostReaction(item.reaction)
+        userPostViewHolder.createPostReaction(post.reaction)
 
-        if (item.reaction.isNotEmpty()) {
-            userPostViewHolder.addReactionListeners(item.id,
-                item.reaction,
+        if (post.reaction.isNotEmpty()) {
+            userPostViewHolder.addReactionListeners(post.id,
+                post.reaction,
                 onChangeReactionClick,
-                onAddReactionClick)
+                onAddReactionClick,
+            )
         }
 
     }

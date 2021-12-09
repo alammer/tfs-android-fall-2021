@@ -9,20 +9,22 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class OwnerPostItemBinder() {
+class OwnerPostItemBinder(
+    private val onPostTap: (postId: Int, isOwner: Boolean) -> Unit
+) {
 
-    fun bind(ownerPostViewHolder: OwnerPostViewHolder, item: PostItem.OwnerPostItem) {
+    fun bind(ownerPostViewHolder: OwnerPostViewHolder, post: PostItem.OwnerPostItem) {
 
-        Single.fromCallable { item.message.tryToParseContentImage(Resources.getSystem()) }
+        Single.fromCallable { post.message.tryToParseContentImage(Resources.getSystem()) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { Log.i("DoOnSuccess", "Function called: $it") }
-            .doOnError { Log.i("DoOnError", "Function called: ${it.message}") }
             .subscribe(
                 { ownerPostViewHolder.setMessageText(it) },
-                { ownerPostViewHolder.setMessageText(item.message.rawContent()) }
+                { ownerPostViewHolder.setMessageText(post.message.rawContent()) }
             )
 
-        ownerPostViewHolder.createPostReaction(item.reaction)
+        ownerPostViewHolder.setPostTapListener(post.id, onPostTap)
+
+        ownerPostViewHolder.createPostReaction(post.reaction)
     }
 }

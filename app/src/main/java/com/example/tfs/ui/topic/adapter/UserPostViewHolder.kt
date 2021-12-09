@@ -16,7 +16,7 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val userAvatar = itemView.findViewById<ShapeableImageView>(R.id.imgPostAvatar)
     private val userName = itemView.findViewById<TextView>(R.id.tvPostUserName)
-    private val textMessage = itemView.findViewById<TextView>(R.id.tvPostMessage)
+    private val postMessage = itemView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = itemView.findViewById<EmojisLayout>(R.id.lEmojis)
 
     fun setUserName(name: String) {
@@ -24,12 +24,12 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setMessageText(message: CharSequence) {
-        textMessage.text = message
+        postMessage.text = message
     }
 
-    fun setMessageClickListener(item: Int, postClick: (Int) -> Unit) {
-        textMessage.setOnLongClickListener {
-            postClick(item)
+    fun setPostTapListener(postId: Int, postClick: (postId: Int, isOwner: Boolean) -> Unit) {
+        itemView.setOnLongClickListener {
+            postClick(postId, false)
             return@setOnLongClickListener true
         }
     }
@@ -49,19 +49,19 @@ class UserPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun addReactionListeners(
-        itemId: Int,
+        postId: Int,
         reaction: List<UiItemReaction>,
-        onEmojiClick: (Int, String, String) -> Unit,
-        onAddReactionClick: (Int) -> Unit,
+        onEmojiClick: (postId: Int, emojiName: String, emojiCode: String) -> Unit,
+        onAddReactionClick: (postId: Int) -> Unit,
     ) {
         (0 until emojiGroup.childCount - 1).forEach { emojiPosition ->
             emojiGroup.getChildAt(emojiPosition).setOnClickListener {
-                onEmojiClick(itemId, reaction[emojiPosition].emojiName,reaction[emojiPosition].emojiCode)
+                onEmojiClick(postId, reaction[emojiPosition].emojiName,reaction[emojiPosition].emojiCode)
             }
         }
         //click on "+"
         emojiGroup.getChildAt(emojiGroup.childCount - 1).setOnClickListener {
-            onAddReactionClick(itemId)
+            onAddReactionClick(postId)
         }
     }
 }

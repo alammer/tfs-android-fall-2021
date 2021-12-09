@@ -9,19 +9,20 @@ import com.example.tfs.R
 import com.example.tfs.domain.topic.PostItem
 
 class TopicViewAdapter(
-    onChangeReactionClick: (messageId: Int, emojiName: String, emojiCode: String) -> Unit,
-    onAddReactionClick: (messageId: Int) -> Unit,
+    onChangeReactionClick: (postId: Int, emojiName: String, emojiCode: String) -> Unit,
+    onAddreactionClick: (postId: Int) -> Unit,
+    onPostTap: (postId: Int, isOwner: Boolean) -> Unit,
 ) : ListAdapter<PostItem, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private val userPostItemBinder =
-        UserPostItemBinder(onChangeReactionClick, onAddReactionClick)
+        UserPostItemBinder(onChangeReactionClick, onAddreactionClick, onPostTap)
     private val ownerPostItemBinder =
-        OwnerPostItemBinder()
+        OwnerPostItemBinder(onPostTap)
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is PostItem.UserPostItem -> R.layout.item_user_message
-        is PostItem.OwnerPostItem -> R.layout.item_owner_message
-        is PostItem.LocalDateItem -> R.layout.item_topic_rv_date
+        is PostItem.UserPostItem -> R.layout.item_user_post
+        is PostItem.OwnerPostItem -> R.layout.item_owner_post
+        is PostItem.LocalDateItem -> R.layout.item_topic_date
         else -> throw IllegalStateException("Unknown view")
     }
 
@@ -29,9 +30,9 @@ class TopicViewAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.item_user_message -> UserPostViewHolder(v)
-            R.layout.item_owner_message -> OwnerPostViewHolder(v)
-            R.layout.item_topic_rv_date -> DateViewHolder(v)
+            R.layout.item_user_post -> UserPostViewHolder(v)
+            R.layout.item_owner_post -> OwnerPostViewHolder(v)
+            R.layout.item_topic_date -> DateViewHolder(v)
             else -> throw IllegalStateException("Unknown viewType")
         }
     }

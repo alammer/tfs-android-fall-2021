@@ -2,6 +2,7 @@ package com.example.tfs.ui.topic
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -135,11 +136,12 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             tvStream.text = streamName
 
             topicListAdapter = TopicViewAdapter(
-                { messageId: Int, emojiName: String, emojiCode: String ->
-                    updateReaction(messageId = messageId,
+                { postId: Int, emojiName: String, emojiCode: String ->
+                    updateReaction(postId = postId,
                         emojiName = emojiName, emojiCode = emojiCode)
                 },
-                { messageId -> addReaction(messageId) }
+                { postId -> addReaction(postId) },
+                { postId, isOwner ->  selectPost(postId, isOwner)}
             )
             topicListAdapter.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -173,12 +175,17 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         }
     }
 
+    private fun selectPost(postId: Int, isOwner: Boolean) {
+        Log.i("TopicFragment", "Function called: selectPost() $postId $isOwner")
+        //TODO("BSD for selected post")
+    }
+
     private fun addReaction(messageId: Int) {
         store.accept(TopicEvent.Ui.NewReactionAdding(messageId))
     }
 
-    private fun updateReaction(messageId: Int, emojiName: String, emojiCode: String) {
-        store.accept(TopicEvent.Ui.ReactionClicked(messageId, emojiName, emojiCode))
+    private fun updateReaction(postId: Int, emojiName: String, emojiCode: String) {
+        store.accept(TopicEvent.Ui.ReactionClicked(postId, emojiName, emojiCode))
     }
 
     override fun onDestroyView() {

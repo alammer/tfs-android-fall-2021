@@ -24,8 +24,8 @@ class TopicItemViewHolder(private val topicView: View) : RecyclerView.ViewHolder
     }
 
     fun setTopicClickListener(
-        selectTopic: (StreamListItem) -> Unit,
-        item: StreamListItem.TopicItem
+        item: StreamListItem.TopicItem,
+        selectTopic: (StreamListItem) -> Unit
     ) {
         topicView.setOnClickListener { selectTopic(item) }
     }

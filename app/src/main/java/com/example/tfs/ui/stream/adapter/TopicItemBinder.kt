@@ -14,6 +14,6 @@ class TopicItemBinder(private val onClickItem: (StreamListItem) -> Unit) {
             topicItemViewHolder.itemView.context,
             if(item.max_id in 0..100) R.color.topic_bg_color else R.color.hot_topic_bg_color))*/
 
-        topicItemViewHolder.setTopicClickListener(onClickItem, item)
+        topicItemViewHolder.setTopicClickListener(item, onClickItem)
     }
 }
