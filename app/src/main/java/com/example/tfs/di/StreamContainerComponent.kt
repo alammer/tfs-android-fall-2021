@@ -19,7 +19,7 @@ annotation class StreamContainerScope
 
 @StreamContainerScope
 @Component(
-    modules = [StreamContainerModule::class, StreamContainerBindings::class],
+    modules = [StreamContainerModule::class, StreamBindings::class],
     dependencies = [AppComponent::class]
 )
 interface StreamContainerComponent {
@@ -38,8 +38,9 @@ interface StreamContainerComponent {
 @Module
 class StreamContainerModule {
 
+    @StreamContainerScope
     @Provides
-    fun provideStreamContainerActor(interactor: StreamInteractor): StreamContainerActor {
+    internal fun provideStreamContainerActor(interactor: StreamInteractor): StreamContainerActor {
         return StreamContainerActor(interactor)
     }
 }
@@ -48,5 +49,5 @@ class StreamContainerModule {
 interface StreamContainerBindings {
 
     @Binds
-    fun bindStreamContainerRepository_to_Impl(impl: StreamRepositoryImpl): StreamRepository
+    fun bindStreamRepository_to_Impl(impl: StreamRepositoryImpl): StreamRepository
 }

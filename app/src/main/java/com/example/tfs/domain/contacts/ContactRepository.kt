@@ -22,8 +22,8 @@ interface ContactRepository {
 
 
 class ContactRepositoryImpl @Inject constructor(
-        private val remoteApi: ApiService,
-        private val localDao: ContactDataDao,
+    private val remoteApi: ApiService,
+    private val localDao: ContactDataDao,
 ) : ContactRepository {
 
     override fun fetchUserList(
@@ -49,18 +49,26 @@ class ContactRepositoryImpl @Inject constructor(
     }
 
     override fun getUser(userId: Int): Maybe<LocalUser> =
-            localDao.getUser(userId)
-                    .subscribeOn(Schedulers.io())
+        localDao.getUser(userId)
+            .subscribeOn(Schedulers.io())
 
     override fun getOwner(): Single<LocalUser> {
         return remoteApi.getOwner()
-                .subscribeOn(Schedulers.io())
-                .flatMap { user ->
-                    getUserPresence(user.id)
-                            .onErrorReturnItem(UserPresence(Presence(AggregatedStatus("Info not available",
-                                    0L))))
-                            .map { presence -> user.toLocalUser(presence.userPresence.state) }
-                }
+            .subscribeOn(Schedulers.io())
+            .flatMap { user ->
+                getUserPresence(user.id)
+                    .onErrorReturnItem(
+                        UserPresence(
+                            Presence(
+                                AggregatedStatus(
+                                    "Info not available",
+                                    0L
+                                )
+                            )
+                        )
+                    )
+                    .map { presence -> user.toLocalUser(presence.userPresence.state) }
+            }
     }
 
     private fun getLocalUserList(): Single<List<LocalUser>> =
@@ -81,8 +89,10 @@ class ContactRepositoryImpl @Inject constructor(
         Single.zip(remoteApi.getUser(user.id),
             getUserPresence(user.id),
             { userResponse, presenceResponse ->
-                Pair(userResponse.user,
-                    presenceResponse.userPresence.state)
+                Pair(
+                    userResponse.user,
+                    presenceResponse.userPresence.state
+                )
             })
             .map { (user, presence) ->
                 user.toLocalUser(presence)

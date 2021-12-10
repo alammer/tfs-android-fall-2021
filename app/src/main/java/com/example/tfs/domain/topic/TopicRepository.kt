@@ -54,6 +54,7 @@ class TopicRepositoryImpl @Inject constructor(
     private val ownerId: Int
 ) : TopicRepository {
 
+
     override fun fetchTopic(
         streamName: String,
         topicName: String,

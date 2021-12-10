@@ -37,8 +37,9 @@ interface StreamComponent {
 @Module
 class StreamModule {
 
+    @StreamScope
     @Provides
-    fun provideStreamActor(interactor: StreamInteractor): StreamActor {
+    internal fun provideStreamActor(interactor: StreamInteractor): StreamActor {
         return StreamActor(interactor)
     }
 }

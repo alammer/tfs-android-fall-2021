@@ -14,7 +14,7 @@ class DatabaseModule {
 
     @Provides
     @AppScope
-    fun provideMessengerDatabase(context: Context): MessengerDB {
+    internal fun provideMessengerDatabase(context: Context): MessengerDB {
         return Room.databaseBuilder(context, MessengerDB::class.java,
             DB_NAME)
             .fallbackToDestructiveMigration()
@@ -22,11 +22,11 @@ class DatabaseModule {
     }
 
     @Provides
-    fun provideStreamDao(database: MessengerDB): StreamDataDao = database.streamDataDao
+    internal fun provideStreamDao(database: MessengerDB): StreamDataDao = database.streamDataDao
     @Provides
-    fun provideTopicDao(database: MessengerDB): TopicDataDao = database.topicDataDao
+    internal fun provideTopicDao(database: MessengerDB): TopicDataDao = database.topicDataDao
     @Provides
-    fun provideContactDao(database: MessengerDB): ContactDataDao = database.contactDataDao
+    internal fun provideContactDao(database: MessengerDB): ContactDataDao = database.contactDataDao
 
 }
 

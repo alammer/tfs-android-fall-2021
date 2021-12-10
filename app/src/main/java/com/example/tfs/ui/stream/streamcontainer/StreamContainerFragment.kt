@@ -3,9 +3,7 @@ package com.example.tfs.ui.stream.streamcontainer
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.viewpager2.widget.ViewPager2
 import com.example.tfs.R
 import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentStreamContainerBinding
@@ -38,15 +36,6 @@ class StreamContainerFragment :
     @Inject
     lateinit var streamContainerActor: StreamContainerActor
 
-    private val viewPagerPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            super.onPageSelected(position)
-            when (position) {
-                0 -> store.accept(StreamContainerEvent.Ui.ShowSubscribedStreams)
-                1 -> store.accept(StreamContainerEvent.Ui.ShowRawStreams)
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +44,7 @@ class StreamContainerFragment :
 
     override fun handleEffect(effect: StreamContainerEffect) {
         when (effect) {
-            is StreamContainerEffect.FetchError -> {
+            is StreamContainerEffect.QueryError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
@@ -68,14 +57,8 @@ class StreamContainerFragment :
         StreamContainerStore.provide(actor = streamContainerActor)
 
     override fun render(state: StreamContainerState) {
-        viewBinding.loading.root.isVisible = state.isFetching
-        //state.error?.let { throwable ->  errorText.text = throwable.userMessage(requireContext()) }  //are we gonna need last error body?
     }
 
-    override fun onDestroyView() {
-        viewBinding.viewPager.unregisterOnPageChangeCallback(viewPagerPageChangeCallback)
-        super.onDestroyView()
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -113,8 +96,6 @@ class StreamContainerFragment :
                 val tabNames = listOf("Subscribed", "All streams")
                 tab.text = tabNames[position]
             }.attach()
-
-            viewPager.registerOnPageChangeCallback(viewPagerPageChangeCallback)
 
             appbar.etSearchInput.doAfterTextChanged {
                 searchStream.onNext(it.toString())

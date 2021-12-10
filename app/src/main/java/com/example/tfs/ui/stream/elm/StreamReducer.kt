@@ -13,15 +13,21 @@ class StreamReducer :
             state { copy(isClicked = false) }
         }
         is StreamEvent.Internal.LoadingComplete -> {
-            state { copy(streamListItem = event.streams) }
+            state { copy(streamListItem = event.streams, isLoading = false) }
         }
 
         is StreamEvent.Internal.LoadingError -> {
+            state { copy(isLoading = false) }
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
         is StreamEvent.Internal.QueryChange -> {
             state { copy(query = event.query) }
-            commands { +Command.ObserveStreams(event.query, state.isSubscribed) }
+            if (state.isShowing) {
+                state { copy(isLoading = true) }
+                commands { +Command.ObserveStreams(event.query, state.isSubscribed) }
+            } else {
+                Any()
+            }
         }
     }
 
@@ -30,9 +36,17 @@ class StreamReducer :
         is StreamEvent.Ui.Init -> {
             state { copy(isClicked = false, error = null) }
             commands {
-                +Command.ObserveStreams(initialState.query, initialState.isSubscribed)
                 +Command.ObserveQuery
             }
+        }
+
+        is StreamEvent.Ui.ShowFragment -> {
+            state { copy(isShowing = true, /*isLoading = true,*/ error = null) }
+            commands { +Command.ObserveStreams(state.query, state.isSubscribed) }
+        }
+
+        is StreamEvent.Ui.HideFragment -> {
+            state { copy(isShowing = false, isLoading = false, error = null) }
         }
 
         is StreamEvent.Ui.ClickOnStream -> {

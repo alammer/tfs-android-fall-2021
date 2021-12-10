@@ -7,6 +7,7 @@ import com.example.tfs.database.dao.ContactDataDao
 import com.example.tfs.network.ApiService
 import dagger.BindsInstance
 import dagger.Component
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Scope
 
 @Component(modules = [AppModule::class])
@@ -17,6 +18,7 @@ interface AppComponent {
     fun localTopicSource(): TopicDataDao
     fun localUserSource(): ContactDataDao
     fun remoteSource(): ApiService
+    fun rxSearchBus(): PublishSubject<String>
     fun ownerId(): Int
 
     @Component.Builder

@@ -2,8 +2,10 @@ package com.example.tfs.ui.stream
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tfs.R
 import com.example.tfs.appComponent
@@ -35,6 +37,17 @@ class StreamFragment :
         requireArguments().getBoolean(SUBSCRIBED_KEY, true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        store.accept(StreamEvent.Ui.ShowFragment(isSubscribed))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("StreamFragment", "Function called: onPause()")
+        store.accept(StreamEvent.Ui.HideFragment(isSubscribed))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -45,6 +58,7 @@ class StreamFragment :
 
 
     override fun render(state: StreamState) {
+        viewBinding.loading.root.isVisible = state.isLoading
         streamViewAdapter.submitList(state.streamListItem)
     }
 
@@ -70,7 +84,9 @@ class StreamFragment :
     }
 
     override fun onAttach(context: Context) {
-        DaggerStreamComponent.builder().appComponent(context.appComponent).build()
+        DaggerStreamComponent.builder()
+            .appComponent(context.appComponent)
+            .build()
             .inject(this)
         super.onAttach(context)
     }

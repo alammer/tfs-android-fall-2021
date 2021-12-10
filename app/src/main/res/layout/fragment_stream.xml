@@ -4,9 +4,17 @@
     android:layout_height="match_parent"
     android:background="@color/layout_bg">
 
+    <!--move to bottom of appbar?-->
+    <include
+        android:id="@+id/loading"
+        android:visibility="gone"
+        layout="@layout/loading_state" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStreams"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
 
 </LinearLayout>

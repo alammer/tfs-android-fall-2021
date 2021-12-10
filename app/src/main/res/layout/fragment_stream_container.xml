@@ -17,10 +17,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appbar" />
 
-    <!--move to bottom of appbar?-->
-    <include
-        android:id="@+id/loading"
-        android:visibility="gone"
-        layout="@layout/loading_state" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

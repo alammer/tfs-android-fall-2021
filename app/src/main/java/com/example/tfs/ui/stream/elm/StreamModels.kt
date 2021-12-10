@@ -6,6 +6,8 @@ data class StreamState(
     val streamListItem: List<StreamListItem> = emptyList(),
     val error: Throwable? = null,
     val query: String = "",
+    val isLoading: Boolean = false,
+    val isShowing: Boolean = false,
     val isSubscribed: Boolean = true,
     val isClicked: Boolean = false,
 )
@@ -15,6 +17,10 @@ sealed class StreamEvent {
     sealed class Ui : StreamEvent() {
 
         object Init : Ui()
+
+        data class ShowFragment(val isSubscribed: Boolean) : Ui()
+
+        data class HideFragment(val isSubscribed: Boolean) : Ui()
 
         data class ClickOnStream(val streamId: Int) : Ui()
 
@@ -42,6 +48,7 @@ sealed class StreamEffect {
 sealed class Command {
 
     object ObserveQuery : Command()
+    //data class FetchStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class ObserveStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class SelectStream(val streamId: Int) : Command()
 }

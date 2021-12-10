@@ -13,14 +13,25 @@ class StreamActor /*@Inject constructor*/(
     override fun execute(command: Command): Observable<StreamEvent.Internal> = when (command) {
         is Command.SelectStream -> {
             streamInteractor.clickStream(command.streamId)
-                .mapEvents(StreamEvent.Internal.UpdateStreamComplete,
-                    StreamEvent.Internal::LoadingError)
+                .mapEvents(
+                    StreamEvent.Internal.UpdateStreamComplete,
+                    StreamEvent.Internal::LoadingError
+                )
         }
         is Command.ObserveStreams -> {
             streamInteractor.getLocalStreams(command.query, command.isSubscribed)
-                .mapEvents(StreamEvent.Internal::LoadingComplete,
-                    StreamEvent.Internal::LoadingError)
+                .mapEvents(
+                    StreamEvent.Internal::LoadingComplete,
+                    StreamEvent.Internal::LoadingError
+                )
         }
+/*        is Command.FetchStreams -> {
+            streamInteractor.fetchStreams(command.query, command.isSubscribed)
+                .mapEvents(
+                    StreamEvent.Internal::LoadingComplete,
+                    StreamEvent.Internal::LoadingError
+                )
+        }*/
         is Command.ObserveQuery -> {
             streamInteractor.observeQuery()
                 .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::LoadingError)

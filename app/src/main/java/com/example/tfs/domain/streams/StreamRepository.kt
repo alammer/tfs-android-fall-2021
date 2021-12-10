@@ -8,18 +8,20 @@ import com.example.tfs.network.models.toLocalStream
 import com.example.tfs.util.retryWhenError
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 
 interface StreamRepository {
 
-    fun fetchStreams(query: String, isSubscribed: Boolean): Completable
+    fun fetchStreams(query: String, isSubscribed: Boolean): Observable<List<LocalStream>>
 
     fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>>
 
     fun selectStream(streamId: Int): Completable
 }
+
 
 class StreamRepositoryImpl @Inject constructor(
     private val remoteApi: ApiService,
@@ -29,26 +31,28 @@ class StreamRepositoryImpl @Inject constructor(
     override fun fetchStreams(
         query: String,
         isSubscribed: Boolean,
-    ): Completable {
+    ): Observable <List<LocalStream>> {
         //val localSource = if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
         //TODO("leave as is or create separate table for subscribed streams")
+        //жёстко дёргается и надо что-то делать с subscribed streams
 
         return localDao.getAllStreams()
             .subscribeOn(Schedulers.io())
-            .first(emptyList())
-            .flatMapCompletable { localStreamList: List<LocalStream> ->
+            .flatMapObservable { localStreamList: List<LocalStream> ->
                 getRemoteStreams(isSubscribed,
                     localStreamList.filter { it.isExpanded }.map { it.streamId })
-                    .flatMapCompletable { remoteStreamList ->
+                    .flatMapSingle { remoteStreamList ->
                         localDao.insertStreams(remoteStreamList)
+                            .andThen(Single.just(remoteStreamList.filter { it.streamName.contains(query) }))
                     }
+                    .startWith(localStreamList.filter { it.streamName.contains(query) })
             }
     }
 
     override fun getLocalList(query: String, isSubscribed: Boolean): Observable<List<LocalStream>> {
 
         val localSource =
-            if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
+            if (isSubscribed) localDao.fetchSubscribedStreams() else localDao.fetchAllStreams()
 
         return localSource
             .subscribeOn(Schedulers.io())
@@ -94,6 +98,7 @@ class StreamRepositoryImpl @Inject constructor(
             }
             .toList()
             .toObservable()
+
 
     private fun getRawStreams(
         expanded: List<Int>,

@@ -13,9 +13,10 @@ class StreamContainerActor /*@Inject constructor*/(
     //private val switcher = Switcher() //rxjava3 only?
 
     override fun execute(command: Command): Observable<Internal> = when (command) {
-        is Command.FetchStreams -> {
-            streamInteractor.upload(command.query, command.isSubscribed)
-                .mapEvents(Internal.StreamsFetchComplete, Internal::StreamsFetchError)
+
+        is Command.UpdateSearch -> {
+            streamInteractor.updateSearch(command.query)
+                .mapEvents(Internal.UpdateQueryComplete, Internal::UpdateQueryError)
         }
     }
 }
