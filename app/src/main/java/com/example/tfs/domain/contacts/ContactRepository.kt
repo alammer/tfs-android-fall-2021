@@ -9,6 +9,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 interface ContactRepository {
 
@@ -20,7 +21,7 @@ interface ContactRepository {
 }
 
 
-class ContactRepositoryImpl /*@Inject constructor*/(
+class ContactRepositoryImpl @Inject constructor(
         private val remoteApi: ApiService,
         private val localDao: ContactDataDao,
 ) : ContactRepository {

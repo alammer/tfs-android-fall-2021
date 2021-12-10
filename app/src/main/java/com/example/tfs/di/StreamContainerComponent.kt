@@ -1,13 +1,12 @@
 package com.example.tfs.di
 
-import com.example.tfs.database.dao.StreamDataDao
 import com.example.tfs.di.core.AppComponent
 import com.example.tfs.domain.streams.StreamInteractor
 import com.example.tfs.domain.streams.StreamRepository
 import com.example.tfs.domain.streams.StreamRepositoryImpl
-import com.example.tfs.network.ApiService
 import com.example.tfs.ui.stream.streamcontainer.StreamContainerFragment
 import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerActor
+import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -19,8 +18,10 @@ import javax.inject.Scope
 annotation class StreamContainerScope
 
 @StreamContainerScope
-@Component(modules = [StreamContainerModule::class],
-    dependencies = [AppComponent::class])
+@Component(
+    modules = [StreamContainerModule::class, StreamContainerBindings::class],
+    dependencies = [AppComponent::class]
+)
 interface StreamContainerComponent {
 
     fun inject(streamContainerFragment: StreamContainerFragment)
@@ -38,12 +39,14 @@ interface StreamContainerComponent {
 class StreamContainerModule {
 
     @Provides
-    fun provideStreamRepository(service: ApiService, database: StreamDataDao): StreamRepository {
-        return StreamRepositoryImpl(service, database)
-    }
-
-    @Provides
     fun provideStreamContainerActor(interactor: StreamInteractor): StreamContainerActor {
         return StreamContainerActor(interactor)
     }
+}
+
+@Module
+interface StreamContainerBindings {
+
+    @Binds
+    fun bindStreamContainerRepository_to_Impl(impl: StreamRepositoryImpl): StreamRepository
 }

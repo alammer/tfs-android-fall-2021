@@ -16,6 +16,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 interface TopicRepository {
 
@@ -47,7 +48,7 @@ interface TopicRepository {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class TopicRepositoryImpl/*@Inject constructor*/(
+class TopicRepositoryImpl @Inject constructor(
     private val remoteApi: ApiService,
     private val localDao: TopicDataDao,
     private val ownerId: Int

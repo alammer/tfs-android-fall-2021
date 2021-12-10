@@ -8,7 +8,6 @@ data class StreamState(
     val query: String = "",
     val isSubscribed: Boolean = true,
     val isClicked: Boolean = false,
-    val isLoading: Boolean = false,
 )
 
 sealed class StreamEvent {

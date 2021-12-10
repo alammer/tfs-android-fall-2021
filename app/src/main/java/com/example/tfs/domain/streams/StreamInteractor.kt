@@ -1,18 +1,20 @@
 package com.example.tfs.domain.streams
 
+import com.example.tfs.di.StreamContainerScope
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
+//@StreamContainerScope
 class StreamInteractor @Inject constructor(private val streamRepository: StreamRepository) {
 
     private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
     private val queryCache = PublishSubject.create<String>()
 
-    fun upload(query: String, isSubcribed: Boolean): Completable {
+    fun upload(query: String, isSubscribed: Boolean): Completable {
         queryCache.onNext(query)
-        return streamRepository.fetchStreams(query, isSubcribed)
+        return streamRepository.fetchStreams(query, isSubscribed)
     }
 
     fun observeQuery(): Observable<String> {

@@ -1,13 +1,12 @@
 package com.example.tfs.di
 
-import com.example.tfs.database.dao.TopicDataDao
 import com.example.tfs.di.core.AppComponent
 import com.example.tfs.domain.topic.TopicInteractor
 import com.example.tfs.domain.topic.TopicRepository
 import com.example.tfs.domain.topic.TopicRepositoryImpl
-import com.example.tfs.network.ApiService
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.ui.topic.elm.TopicActor
+import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -18,8 +17,10 @@ import javax.inject.Scope
 annotation class TopicScope
 
 @TopicScope
-@Component(modules = [TopicModule::class],
-    dependencies = [AppComponent::class])
+@Component(
+    modules = [TopicModule::class, TopicBindings::class],
+    dependencies = [AppComponent::class]
+)
 interface TopicComponent {
 
     fun inject(topicFragment: TopicFragment)
@@ -37,12 +38,14 @@ interface TopicComponent {
 class TopicModule {
 
     @Provides
-    fun provideTopicRepository(service: ApiService, database: TopicDataDao, owner: Int): TopicRepository {
-        return TopicRepositoryImpl(service, database, owner)
-    }
-
-    @Provides
     fun provideTopicActor(interactor: TopicInteractor): TopicActor {
         return TopicActor(interactor)
     }
+}
+
+@Module
+interface TopicBindings {
+
+    @Binds
+    fun bindTopicRepository_to_Impl(impl: TopicRepositoryImpl): TopicRepository
 }
