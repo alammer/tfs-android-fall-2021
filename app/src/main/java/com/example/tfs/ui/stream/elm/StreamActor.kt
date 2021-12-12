@@ -15,26 +15,26 @@ class StreamActor /*@Inject constructor*/(
             streamInteractor.clickStream(command.streamId)
                 .mapEvents(
                     StreamEvent.Internal.UpdateStreamComplete,
-                    StreamEvent.Internal::LoadingError
+                    StreamEvent.Internal::UpdateDataError
                 )
         }
         is Command.ObserveStreams -> {
             streamInteractor.getLocalStreams(command.query, command.isSubscribed)
                 .mapEvents(
-                    StreamEvent.Internal::LoadingComplete,
-                    StreamEvent.Internal::LoadingError
+                    StreamEvent.Internal::UpdateDataComplete,
+                    StreamEvent.Internal::UpdateDataError
                 )
         }
-/*        is Command.FetchStreams -> {
+        is Command.FetchStreams -> {
             streamInteractor.fetchStreams(command.query, command.isSubscribed)
                 .mapEvents(
-                    StreamEvent.Internal::LoadingComplete,
-                    StreamEvent.Internal::LoadingError
+                    StreamEvent.Internal::InitialLoadingComplete,
+                    StreamEvent.Internal::InitialLoadingError
                 )
-        }*/
+        }
         is Command.ObserveQuery -> {
             streamInteractor.observeQuery()
-                .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::LoadingError)
+                .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::UpdateDataError)
         }
     }
 }

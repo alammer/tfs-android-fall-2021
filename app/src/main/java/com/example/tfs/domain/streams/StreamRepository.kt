@@ -3,7 +3,7 @@ package com.example.tfs.domain.streams
 import com.example.tfs.database.dao.StreamDataDao
 import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.network.ApiService
-import com.example.tfs.network.models.Stream
+import com.example.tfs.network.models.RemoteStream
 import com.example.tfs.network.models.toLocalStream
 import com.example.tfs.util.retryWhenError
 import io.reactivex.Completable
@@ -33,8 +33,8 @@ class StreamRepositoryImpl @Inject constructor(
         isSubscribed: Boolean,
     ): Observable <List<LocalStream>> {
         //val localSource = if (isSubscribed) localDao.getSubscribedStreams() else localDao.getAllStreams()
-        //TODO("leave as is or create separate table for subscribed streams")
-        //жёстко дёргается и надо что-то делать с subscribed streams
+        //TODO("leave as is or create separate table for subscribed remoteStreams")
+        //жёстко дёргается и надо что-то делать с subscribed remoteStreams
 
         return localDao.getAllStreams()
             .subscribeOn(Schedulers.io())
@@ -86,7 +86,7 @@ class StreamRepositoryImpl @Inject constructor(
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
         remoteApi.getSubscribedStreams()
-            .map { response -> response.streams }
+            .map { response -> response.subscribedStreams }
             .toObservable()
             .retryWhenError(3, 1)
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -104,7 +104,7 @@ class StreamRepositoryImpl @Inject constructor(
         expanded: List<Int>,
     ): Observable<List<LocalStream>> =
         remoteApi.getRawStreams()
-            .map { response -> response.streams }
+            .map { response -> response.rawStreams }
             .toObservable()
             .retryWhenError(3, 1)
             .concatMap { streamList -> Observable.fromIterable(streamList) }
@@ -115,7 +115,7 @@ class StreamRepositoryImpl @Inject constructor(
             .toObservable()
 
     private fun getStreamWithTopics(
-        stream: Stream,
+        stream: RemoteStream,
         isSubscribed: Boolean = false,
     ): Observable<LocalStream> =
         Observable.just(stream).zipWith(
@@ -125,17 +125,17 @@ class StreamRepositoryImpl @Inject constructor(
                 stream.toLocalStream(
                     isSubscribed = isSubscribed,
                     isExpanded = true,
-                    topics = topicList,
+                    remoteTopics = topicList,
                 )
             }
 
     private fun getRelatedTopics(streamId: Int) =
         remoteApi.getStreamRelatedTopicList(streamId)
             .retry(1)
-            .map { response -> response.topicResponseList }
+            .map { response -> response.remoteTopicResponseList }
             .onErrorReturn { emptyList() }  //error don't throw down now
 
-    private fun getStream(stream: Stream, isSubscribed: Boolean = false): Observable<LocalStream> =
-        Observable.just(stream.toLocalStream(isSubscribed))
+    private fun getStream(remoteStream: RemoteStream, isSubscribed: Boolean = false): Observable<LocalStream> =
+        Observable.just(remoteStream.toLocalStream(isSubscribed))
 
 }

@@ -57,6 +57,8 @@ class StreamContainerFragment :
         StreamContainerStore.provide(actor = streamContainerActor)
 
     override fun render(state: StreamContainerState) {
+        //TODO("ADD NETWORK STATE RENDERING HERE - check available: 1)network for device, 2)zulip server for user")
+        //TODO("ADD some warning views on screen for these states if cached data exist or full screen ERROR view otherwise")
     }
 
 
@@ -93,7 +95,7 @@ class StreamContainerFragment :
                 appbar.tabLayout,
                 viewPager,
             ) { tab, position ->
-                val tabNames = listOf("Subscribed", "All streams")
+                val tabNames = listOf("Subscribed", "All Streams")
                 tab.text = tabNames[position]
             }.attach()
 

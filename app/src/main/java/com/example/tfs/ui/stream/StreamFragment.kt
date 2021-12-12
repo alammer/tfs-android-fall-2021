@@ -11,8 +11,10 @@ import com.example.tfs.R
 import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
-import com.example.tfs.domain.streams.StreamListItem
-import com.example.tfs.ui.stream.adapter.StreamViewAdapter
+import com.example.tfs.domain.streams.DomainTopic
+import com.example.tfs.ui.stream.adapter.StreamAdapter
+import com.example.tfs.ui.stream.adapter.items.StreamItem
+import com.example.tfs.ui.stream.adapter.items.TopicItem
 import com.example.tfs.ui.stream.elm.*
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.showSnackbarError
@@ -28,24 +30,13 @@ class StreamFragment :
 
     private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 
-    private lateinit var streamViewAdapter: StreamViewAdapter
+    private lateinit var streamAdapter: StreamAdapter
 
     @Inject
     lateinit var streamActor: StreamActor
 
     private val isSubscribed by lazy {
         requireArguments().getBoolean(SUBSCRIBED_KEY, true)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        store.accept(StreamEvent.Ui.ShowFragment(isSubscribed))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.i("StreamFragment", "Function called: onPause()")
-        store.accept(StreamEvent.Ui.HideFragment(isSubscribed))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,13 +50,14 @@ class StreamFragment :
 
     override fun render(state: StreamState) {
         viewBinding.loading.root.isVisible = state.isLoading
-        streamViewAdapter.submitList(state.streamListItem)
+        streamAdapter.submitList(state.streamListItem)
     }
 
     override fun handleEffect(effect: StreamEffect) {
         when (effect) {
             is StreamEffect.LoadingDataError -> {
                 with(requireView()) {
+                    Log.i("StreamFragment", "Function called: handleEffect() ${effect.error.message}")
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
                 }
@@ -91,33 +83,38 @@ class StreamFragment :
         super.onAttach(context)
     }
 
+    override fun onResume() {
+        super.onResume()
+        store.accept(StreamEvent.Ui.ShowFragment(isSubscribed))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //fragment hide by viewpager but continue accept receive search string state from container
+        store.accept(StreamEvent.Ui.HideFragment(isSubscribed))
+    }
+
 
     private fun initViews() {
-        streamViewAdapter = StreamViewAdapter { item: StreamListItem ->
-            when (item) {
-                is StreamListItem.StreamItem -> clickOnStream(item.id)
-                is StreamListItem.TopicItem -> moveToTopicFragment(
-                    item.name,
-                    item.parentStreamName,
-                )
-            }
-        }
+        streamAdapter = StreamAdapter(getItemTypes())
         with(viewBinding) {
-            rvStreams.adapter = streamViewAdapter
+            rvStreams.adapter = streamAdapter
             rvStreams.layoutManager = LinearLayoutManager(context)
 
         }
     }
 
+    private fun getItemTypes() = listOf(
+        StreamItem(::clickOnStream),
+        TopicItem(::moveToTopic)
+    )
+
     private fun clickOnStream(streamId: Int) {
         store.accept(StreamEvent.Ui.ClickOnStream(streamId))
     }
 
-    private fun moveToTopicFragment(
-        topicName: String,
-        streamName: String,
-    ) {
-        store.accept(StreamEvent.Ui.ClickOnTopic(topicName, streamName))
+    private fun moveToTopic(topic: DomainTopic) {
+        store.accept(StreamEvent.Ui.ClickOnTopic(topic.name, topic.parentStreamName))
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.example.tfs.domain.streams
 
 
+import com.example.tfs.ui.stream.adapter.base.StreamListItem
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject

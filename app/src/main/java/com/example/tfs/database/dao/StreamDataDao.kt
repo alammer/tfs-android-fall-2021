@@ -19,21 +19,21 @@ interface StreamDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertStream(localStream: LocalStream): Completable
 
-    @Query("SELECT * FROM streams WHERE is_subscribed")
+    @Query("SELECT * FROM remoteStreams WHERE is_subscribed")
     fun getSubscribedStreams(): Single<List<LocalStream>>
 
-    @Query("SELECT * FROM streams WHERE is_subscribed")
+    @Query("SELECT * FROM remoteStreams WHERE is_subscribed")
     fun fetchSubscribedStreams(): Observable<List<LocalStream>>
 
-    @Query("SELECT * FROM streams")
+    @Query("SELECT * FROM remoteStreams")
     fun getAllStreams(): Single<List<LocalStream>>
 
-    @Query("SELECT * FROM streams")
+    @Query("SELECT * FROM remoteStreams")
     fun fetchAllStreams(): Observable<List<LocalStream>>
 
-    @Query("SELECT * FROM streams WHERE stream_id = :streamId")
+    @Query("SELECT * FROM remoteStreams WHERE stream_id = :streamId")
     fun getStream(streamId: Int): Maybe<LocalStream>
 
-    @Query("DELETE FROM streams")
+    @Query("DELETE FROM remoteStreams")
     fun clearStreams(): Completable
 }

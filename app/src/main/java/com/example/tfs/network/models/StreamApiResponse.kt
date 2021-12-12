@@ -6,17 +6,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RawStreamResponse(
-    val streams: List<Stream>,
+    @SerialName(value = "streams")
+    val rawStreams: List<RemoteStream>,
 )
 
 @Serializable
 data class SubscribedStreamResponse(
     @SerialName(value = "subscriptions")
-    val streams: List<Stream>,
+    val subscribedStreams: List<RemoteStream>,
 )
 
 @Serializable
-data class Stream(
+data class RemoteStream(
     @SerialName("stream_id")
     val id: Int,
     @SerialName("name")
@@ -26,27 +27,27 @@ data class Stream(
 @Serializable
 data class TopicResponse(
     @SerialName("topics")
-    val topicResponseList: List<Topic>,
+    val remoteTopicResponseList: List<RemoteTopic>,
 )
 
 @Serializable
-data class Topic(
+data class RemoteTopic(
     @SerialName("max_id")
     val max_id: Int,
     @SerialName("name")
     val name: String,
 )
 
-fun Stream.toLocalStream(
+fun RemoteStream.toLocalStream(
     isSubscribed: Boolean = false,
     isExpanded: Boolean = false,
-    topics: List<Topic> = emptyList(),
+    remoteTopics: List<RemoteTopic> = emptyList(),
 ) = LocalStream(
     id,
     name,
     isSubscribed = isSubscribed,
     isExpanded = isExpanded,
-    topics = topics.map { it.name },
+    topics = remoteTopics.map { it.name },
 )
 
 

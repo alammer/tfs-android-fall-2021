@@ -1,6 +1,6 @@
 package com.example.tfs.ui.stream.elm
 
-import com.example.tfs.domain.streams.StreamListItem
+import com.example.tfs.ui.stream.adapter.base.StreamListItem
 
 data class StreamState(
     val streamListItem: List<StreamListItem> = emptyList(),
@@ -33,9 +33,13 @@ sealed class StreamEvent {
 
         data class QueryChange(val query: String) : Internal()
 
-        data class LoadingComplete(val streams: List<StreamListItem>) : Internal()
+        data class InitialLoadingComplete(val streams: List<StreamListItem>) : Internal()
 
-        data class LoadingError(val error: Throwable) : Internal()
+        data class InitialLoadingError(val error: Throwable) : Internal()
+
+        data class UpdateDataComplete(val streams: List<StreamListItem>) : Internal()
+
+        data class UpdateDataError(val error: Throwable) : Internal()
     }
 }
 
@@ -48,7 +52,7 @@ sealed class StreamEffect {
 sealed class Command {
 
     object ObserveQuery : Command()
-    //data class FetchStreams(val query: String, val isSubscribed: Boolean) : Command()
+    data class FetchStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class ObserveStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class SelectStream(val streamId: Int) : Command()
 }

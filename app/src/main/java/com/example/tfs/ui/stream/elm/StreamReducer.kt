@@ -12,11 +12,25 @@ class StreamReducer :
         is StreamEvent.Internal.UpdateStreamComplete -> {
             state { copy(isClicked = false) }
         }
-        is StreamEvent.Internal.LoadingComplete -> {
+        is StreamEvent.Internal.InitialLoadingComplete -> {
+            state { copy(streamListItem = event.streams, isLoading = false) }
+            commands {
+                //+Command.ObserveStreams(state.query, state.isSubscribed)
+                +Command.ObserveQuery
+            }
+        }
+        is StreamEvent.Internal.InitialLoadingError -> {
+            state { copy(isLoading = false) }
+            effects { +StreamEffect.LoadingDataError(event.error) }
+            commands {
+                //+Command.ObserveStreams(state.query, state.isSubscribed)
+                +Command.ObserveQuery
+            }
+        }
+        is StreamEvent.Internal.UpdateDataComplete -> {
             state { copy(streamListItem = event.streams, isLoading = false) }
         }
-
-        is StreamEvent.Internal.LoadingError -> {
+        is StreamEvent.Internal.UpdateDataError -> {
             state { copy(isLoading = false) }
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
@@ -34,9 +48,9 @@ class StreamReducer :
     override fun Result.ui(event: StreamEvent.Ui) = when (event) {
 
         is StreamEvent.Ui.Init -> {
-            state { copy(isClicked = false, error = null) }
+            state { copy(isClicked = false, error = null, isLoading = true) }
             commands {
-                +Command.ObserveQuery
+                +Command.FetchStreams(state.query, state.isSubscribed)
             }
         }
 
