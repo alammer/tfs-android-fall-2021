@@ -5,9 +5,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RawStreamResponse(
+data class AllStreamResponse(
     @SerialName(value = "streams")
-    val rawStreams: List<RemoteStream>,
+    val allStreams: List<RemoteStream>,
 )
 
 @Serializable

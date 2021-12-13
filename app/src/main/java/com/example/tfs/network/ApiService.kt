@@ -10,7 +10,9 @@ import retrofit2.http.*
 interface ApiService {
 
     @GET("api/v1/streams")
-    fun getRawStreams(): Single<RawStreamResponse>
+    fun getAllStreams(
+        //@Query("include_subscribed") include_subs: Boolean = false,  //don't support by backend?
+    ): Single<AllStreamResponse>
 
     @GET("api/v1/users/me/subscriptions")
     fun getSubscribedStreams(): Single<SubscribedStreamResponse>

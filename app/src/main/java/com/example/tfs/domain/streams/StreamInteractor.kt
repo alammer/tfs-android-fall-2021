@@ -26,14 +26,19 @@ class StreamInteractor @Inject constructor(
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
     fun fetchStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
-        //TODO("return specific value from DB if local cache is empty ")
-        return streamRepository.fetchStreams(query, isSubscribed)
+        val source =
+            if (isSubscribed) {
+                streamRepository.fetchSubscribedStreams(query)
+            } else {
+                streamRepository.fetchAllStreams(query)
+            }
+        return source
             .map(streamToItemMapper)
     }
 
-    fun getLocalStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
+    fun observeStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
         //TODO("return specific value from DB if local cache is empty ")
-        return streamRepository.getLocalList(query, isSubscribed)
+        return streamRepository.observeLocalStreams(query, isSubscribed)
             .map(streamToItemMapper)
     }
 }

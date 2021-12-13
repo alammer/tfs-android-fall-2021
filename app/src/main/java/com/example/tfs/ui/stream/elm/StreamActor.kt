@@ -19,7 +19,7 @@ class StreamActor /*@Inject constructor*/(
                 )
         }
         is Command.ObserveStreams -> {
-            streamInteractor.getLocalStreams(command.query, command.isSubscribed)
+            streamInteractor.observeStreams(command.query, command.isSubscribed)
                 .mapEvents(
                     StreamEvent.Internal::UpdateDataComplete,
                     StreamEvent.Internal::UpdateDataError
