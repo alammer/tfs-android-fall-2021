@@ -18,14 +18,15 @@ class StreamActor /*@Inject constructor*/(
                     StreamEvent.Internal::UpdateDataError
                 )
         }
-        is Command.ObserveStreams -> {
+
+        is Command.SearchStreams -> {
             streamInteractor.observeStreams(command.query, command.isSubscribed)
                 .mapEvents(
                     StreamEvent.Internal::UpdateDataComplete,
                     StreamEvent.Internal::UpdateDataError
                 )
         }
-        is Command.FetchStreams -> {
+        is Command.InitilaFetchStreams -> {
             streamInteractor.fetchStreams(command.query, command.isSubscribed)
                 .mapEvents(
                     StreamEvent.Internal::InitialLoadingComplete,

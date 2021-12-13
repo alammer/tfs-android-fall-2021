@@ -28,7 +28,7 @@ class EmojiView @JvmOverloads constructor(
     private var emojiGlyph = ""
     private val backColor = ContextCompat.getColor(context, R.color.view_bg)
     private val checkBackColor = ContextCompat.getColor(context, R.color.check_emoji_view_bg_color)
-    private val textColor = ContextCompat.getColor(context, R.color.emoji_text_color)
+    private val textColor = ContextCompat.getColor(context, R.color.light_grey)
     private val checkTextColor = ContextCompat.getColor(context, R.color.check_emoji_text_color)
 
     private val textPaint = Paint().apply {

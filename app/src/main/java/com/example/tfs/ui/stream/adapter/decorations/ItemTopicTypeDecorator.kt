@@ -19,7 +19,7 @@ class ItemTopicTypeDecorator(
     private val outerDivider: Int
 ) : RecyclerView.ItemDecoration() {
 
-    private val colors = listOf(R.color.green_stream, R.color.yellow_stream, R.color.blue_stream)
+    private val colors = listOf(R.color.green_bg, R.color.yellow_stream, R.color.blue_stream)
 
     override fun getItemOffsets(
         outRect: Rect,

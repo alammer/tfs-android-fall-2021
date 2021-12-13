@@ -22,18 +22,24 @@ interface StreamDataDao {
     @Query("SELECT * FROM remoteStreams WHERE is_subscribed")
     fun getSubscribedStreams(): Single<List<LocalStream>>
 
-    @Query("SELECT * FROM remoteStreams WHERE is_subscribed")
-    fun observeSubscribedStreams(): Observable<List<LocalStream>>
+    /*@Query("SELECT * FROM remoteStreams WHERE is_subscribed")
+    fun observeSubscribedStreams(): Observable<List<LocalStream>>*/
 
     @Query("SELECT * FROM remoteStreams")
     fun getAllStreams(): Single<List<LocalStream>>
 
     @Query("SELECT * FROM remoteStreams WHERE is_subscribed=0")
-    fun observeAllStreams(): Observable<List<LocalStream>>
+    fun getUnsubscribedStreams(): Single<List<LocalStream>>
+
+    /*@Query("SELECT * FROM remoteStreams WHERE is_subscribed=0")
+    fun observeAllStreams(): Observable<List<LocalStream>>*/
 
     @Query("SELECT * FROM remoteStreams WHERE stream_id = :streamId")
     fun getStream(streamId: Int): Maybe<LocalStream>
 
-    @Query("DELETE FROM remoteStreams")
-    fun clearStreams(): Completable
+    @Query("DELETE FROM remoteStreams WHERE is_subscribed=0")
+    fun clearUnsubscribedStreams(): Completable
+
+    @Query("DELETE FROM remoteStreams WHERE is_subscribed")
+    fun clearSubscribedStreams(): Completable
 }

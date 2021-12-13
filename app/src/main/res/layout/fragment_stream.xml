@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/layout_bg">
 
-    <!--move to bottom of appbar?-->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvStreams"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <include
         android:id="@+id/loading"
-        android:visibility="gone"
-        layout="@layout/loading_state" />
+        layout="@layout/data_loading_state"
+        android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvStreams"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-
-
-</LinearLayout>
+    <include
+        android:id="@+id/empty"
+        layout="@layout/data_empty_state"
+        android:visibility="gone" />
+</FrameLayout>

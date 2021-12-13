@@ -45,7 +45,7 @@
         android:layout_height="40dp"
         android:background="@color/view_bg"
         android:gravity="center"
-        android:textColor="@color/new_message_text"
+        android:textColor="@color/white"
         android:textSize="@dimen/large_text_size"
         app:layout_constraintTop_toBottomOf="@id/appbar" />
 
@@ -75,8 +75,8 @@
             android:background="@drawable/edittext_message_bg"
             android:hint="@string/message_input_hint"
             android:paddingHorizontal="@dimen/new_message_horizontal_padding"
-            android:textColor="@color/new_message_text"
-            android:textColorHint="@color/new_message_text"
+            android:textColor="@color/light_grey"
+            android:textColorHint="@color/light_grey"
             android:textSize="@dimen/large_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnSendPost"
@@ -100,6 +100,6 @@
     <include
         android:id="@+id/loading"
         android:visibility="gone"
-        layout="@layout/loading_state" />
+        layout="@layout/data_loading_state" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,7 @@ class StreamInteractor @Inject constructor(
             if (isSubscribed) {
                 streamRepository.fetchSubscribedStreams(query)
             } else {
-                streamRepository.fetchAllStreams(query)
+                streamRepository.fetchUnsubscribedStreams(query)
             }
         return source
             .map(streamToItemMapper)

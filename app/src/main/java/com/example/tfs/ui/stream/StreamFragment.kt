@@ -55,8 +55,11 @@ class StreamFragment :
 
 
     override fun render(state: StreamState) {
-        viewBinding.loading.root.isVisible = state.isLoading
-        streamAdapter.submitList(state.streamListItem)
+        if (state.isShowing) {
+            viewBinding.empty.root.isVisible = state.isEmpty
+            viewBinding.loading.root.isVisible = state.isLoading
+            if (state.isEmpty.not()) streamAdapter.submitList(state.streamListItem)
+        }
     }
 
     override fun handleEffect(effect: StreamEffect) {
@@ -108,11 +111,19 @@ class StreamFragment :
 
         with(viewBinding.rvStreams) {
             setHasFixedSize(true)
+
+            streamAdapter.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             adapter = streamAdapter
             layoutManager = LinearLayoutManager(context)
 
             addItemDecoration(ItemStreamTypeDecorator(context, R.layout.item_stream_rv_header, 20.toPx, 40.toPx ))
             addItemDecoration(ItemTopicTypeDecorator(context, R.layout.item_stream_rv_topic, 40.toPx,  4.toPx, 4.toPx))
+        }
+
+        viewBinding.swipeLayout.setOnRefreshListener {
+            viewBinding.swipeLayout.isRefreshing = false
+            store.accept(StreamEvent.Ui.RefreshData)
         }
     }
 

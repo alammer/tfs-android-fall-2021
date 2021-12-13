@@ -11,7 +11,7 @@
         android:layout_gravity="center_vertical|start"
         android:layout_weight="1"
         android:textSize="@dimen/channel_name_text_size"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/white_text_color" />
 
     <ImageView
         android:id="@+id/btnShowTopic"

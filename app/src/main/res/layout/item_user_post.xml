@@ -37,7 +37,7 @@
             android:id="@+id/tvPostUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/green_stream"
+            android:textColor="@color/green_bg"
             android:textSize="@dimen/medium_text_size"
             tools:text="Ivan Ivanov" />
 
@@ -45,7 +45,7 @@
             android:id="@+id/tvPostMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
+            android:textColor="@color/white_text_color"
             android:textSize="@dimen/info_text_size" />
 
     </LinearLayout>
