@@ -4,20 +4,26 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.streams.DomainTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
+import com.example.tfs.ui.stream.adapter.decorations.ItemStreamTypeDecorator
+import com.example.tfs.ui.stream.adapter.decorations.ItemTopicTypeDecorator
 import com.example.tfs.ui.stream.adapter.items.StreamItem
 import com.example.tfs.ui.stream.adapter.items.TopicItem
 import com.example.tfs.ui.stream.elm.*
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.util.showSnackbarError
+import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
@@ -30,7 +36,7 @@ class StreamFragment :
 
     private val viewBinding by viewBinding(FragmentStreamBinding::bind)
 
-    private lateinit var streamAdapter: StreamAdapter
+    private val streamAdapter = StreamAdapter(getItemTypes())
 
     @Inject
     lateinit var streamActor: StreamActor
@@ -96,11 +102,17 @@ class StreamFragment :
 
 
     private fun initViews() {
-        streamAdapter = StreamAdapter(getItemTypes())
-        with(viewBinding) {
-            rvStreams.adapter = streamAdapter
-            rvStreams.layoutManager = LinearLayoutManager(context)
+        val dividerItem = DividerItemDecoration(context,RecyclerView.VERTICAL)
+        ResourcesCompat.getDrawable(resources, R.drawable.stream_item_divider, null)
+            ?.let { drawable -> dividerItem.setDrawable(drawable) }
 
+        with(viewBinding.rvStreams) {
+            setHasFixedSize(true)
+            adapter = streamAdapter
+            layoutManager = LinearLayoutManager(context)
+
+            addItemDecoration(ItemStreamTypeDecorator(context, R.layout.item_stream_rv_header, 20.toPx, 40.toPx ))
+            addItemDecoration(ItemTopicTypeDecorator(context, R.layout.item_stream_rv_topic, 40.toPx,  4.toPx, 4.toPx))
         }
     }
 

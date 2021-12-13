@@ -1,6 +1,5 @@
 package com.example.tfs.domain.topic
 
-import android.util.Log
 import com.example.tfs.database.dao.TopicDataDao
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction

@@ -32,9 +32,5 @@ data class LocalStream(
     val topics: List<String>,
 )
 
-fun LocalStream.toDomainStream() =
-    DomainStream(id = streamId,
-        name = streamName,
-        topics = topics,
-        expanded = isExpanded)
+
 

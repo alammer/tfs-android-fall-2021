@@ -15,7 +15,7 @@
     <color name="layout_bg">#121212</color>
 
     <color name="view_bg">#1C1C1C</color>
-    <color name="new_message_bg">#282828</color>
+    <color name="gray_bg">#282828</color>
     <color name="new_message_text">#CCCCCC</color>
     <color name="date_item_text_color">#999999</color>
     <color name="text_color">#FAFAFA</color>
@@ -25,8 +25,9 @@
     <color name="check_emoji_view_bg_color">#3A3A3A</color>
     <color name="emoji_text_color">#CCCCCC</color>
     <color name="check_emoji_text_color">#EAEAEA</color>
-    <color name="hot_topic_bg_color">#2A9D8F</color>
-    <color name="topic_bg_color">#E9C46A</color>
+    <color name="green_stream">#2A9D8F</color>
+    <color name="blue_stream">#34c0eb</color>
+    <color name="yellow_stream">#E9C46A</color>
     <color name="state_color_green">#4AB54D</color>
     <color name="state_color_red">#D50000</color>
     <color name="state_color_orange">#FF5722</color>
