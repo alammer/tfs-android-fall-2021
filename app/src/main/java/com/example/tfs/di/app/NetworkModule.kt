@@ -1,4 +1,4 @@
-package com.example.tfs.di.core
+package com.example.tfs.di.app
 
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.utils.addJsonConverter

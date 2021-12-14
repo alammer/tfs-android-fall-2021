@@ -1,9 +1,9 @@
-package com.example.tfs.ui.stream.adapter.base
+package com.example.tfs.common.baseadapter
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class BaseViewHolder<out V : View, I : StreamListItem>(
+abstract class BaseViewHolder<out V : View, I : AdapterItem>(
     itemView: V
 ) : RecyclerView.ViewHolder(itemView) {
 

@@ -1,37 +1,32 @@
-package com.example.tfs.ui.stream.adapter
+package com.example.tfs.common.baseadapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import com.example.tfs.ui.stream.adapter.base.BaseDiffUtil
-import com.example.tfs.ui.stream.adapter.base.BaseViewHolder
-import com.example.tfs.ui.stream.adapter.base.StreamListItem
-import com.example.tfs.ui.stream.adapter.base.StreamListItemBase
 
 
-class StreamAdapter(
-    private val streamItems: List<StreamListItemBase<*, *>>,
-) :
-    ListAdapter<StreamListItem, BaseViewHolder<View, StreamListItem>>(BaseDiffUtil(streamItems)) {
+abstract class BaseAdapter(
+    private val items: List<AdapterItemBase<*, *>>,
+) : ListAdapter<AdapterItem, BaseViewHolder<View, AdapterItem>>(BaseDiffUtil(items)) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<View, StreamListItem> {
+    ): BaseViewHolder<View, AdapterItem> {
         val inflater = LayoutInflater.from(parent.context)
-        return streamItems.find { it.getLayoutId() == viewType }
+        return items.find { it.getLayoutId() == viewType }
             ?.getViewHolder(inflater, parent)
-            ?.let { it as BaseViewHolder<View, StreamListItem> }
+            ?.let { it as BaseViewHolder<View, AdapterItem> }
             ?: throw IllegalArgumentException("View type not found: $viewType")
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<View, StreamListItem>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<View, AdapterItem>, position: Int) {
         holder.onBind(currentList[position])
     }
 
     override fun onBindViewHolder(
-        holder: BaseViewHolder<View, StreamListItem>,
+        holder: BaseViewHolder<View, AdapterItem>,
         position: Int,
         payloads: MutableList<Any>
     ) {
@@ -42,9 +37,9 @@ class StreamAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int { //TODO("IndexOutOfBound rise here in decorator")
         val item = currentList[position]
-        return streamItems.find { it.isRelativeItem(item) }
+        return items.find { it.isRelativeItem(item) }
             ?.getLayoutId()
             ?: throw IllegalArgumentException("View type not found: $item")
     }

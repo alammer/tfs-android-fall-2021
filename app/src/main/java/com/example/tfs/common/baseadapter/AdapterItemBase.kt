@@ -1,15 +1,14 @@
-package com.example.tfs.ui.stream.adapter.base
+package com.example.tfs.common.baseadapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
-import androidx.viewbinding.ViewBinding
 
-interface StreamListItemBase<V : View, I : StreamListItem> {
+interface AdapterItemBase<V : View, I : AdapterItem> {
 
-    fun isRelativeItem(streamListItem: StreamListItem): Boolean
+    fun isRelativeItem(item: AdapterItem): Boolean
 
     @LayoutRes
     fun getLayoutId(): Int

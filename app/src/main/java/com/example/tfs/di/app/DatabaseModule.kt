@@ -1,4 +1,4 @@
-package com.example.tfs.di.core
+package com.example.tfs.di.app
 
 import android.content.Context
 import androidx.room.Room

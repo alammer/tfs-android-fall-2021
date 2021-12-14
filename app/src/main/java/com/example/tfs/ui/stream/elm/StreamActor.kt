@@ -1,5 +1,6 @@
 package com.example.tfs.ui.stream.elm
 
+import android.util.Log
 import com.example.tfs.domain.streams.StreamInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
@@ -41,6 +42,7 @@ class StreamActor /*@Inject constructor*/(
                 )
         }
         is Command.ObserveQuery -> {
+            Log.i("StreamActor", "Function called: OBSERVE QUERY!!!")
             streamInteractor.observeQuery()
                 .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::UpdateDataError)
         }

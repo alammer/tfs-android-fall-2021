@@ -1,7 +1,7 @@
 package com.example.tfs.domain.streams
 
 
-import com.example.tfs.ui.stream.adapter.base.StreamListItem
+import com.example.tfs.common.baseadapter.AdapterItem
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -26,7 +26,7 @@ class StreamInteractor @Inject constructor(
 
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
-    fun getStreamsFromLocal(query: String, isSubscribed: Boolean): Single<List<StreamListItem>> {
+    fun getStreamsFromLocal(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
                 streamRepository.getLocalSubscribedStreams(query)
@@ -37,7 +37,7 @@ class StreamInteractor @Inject constructor(
             .map(streamToItemMapper)
     }
 
-    fun getStreamsFromRemote(query: String, isSubscribed: Boolean): Single<List<StreamListItem>> {
+    fun getStreamsFromRemote(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
                 streamRepository.updateSubscribedStreams(query)

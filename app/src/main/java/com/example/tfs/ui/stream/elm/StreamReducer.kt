@@ -59,10 +59,8 @@ class StreamReducer :
             state { copy(query = event.query) }
             if (state.isShowing) {
                 state { copy(isLoading = true) }
-                commands { +Command.SearchStreams(event.query, state.isSubscribed) }
-            } else {
-                Any()
             }
+            commands { +Command.SearchStreams(event.query, state.isSubscribed) }
         }
     }
 
@@ -92,12 +90,7 @@ class StreamReducer :
         }
 
         is StreamEvent.Ui.ClickOnStream -> {
-            state {
-                copy(
-                    isClicked = true,
-                    error = null,
-                )
-            }
+            state { copy(isClicked = true, error = null) }
             commands { +Command.SelectStream(event.streamId) }
         }
 

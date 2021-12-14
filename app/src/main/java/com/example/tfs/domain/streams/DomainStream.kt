@@ -1,6 +1,6 @@
 package com.example.tfs.domain.streams
 
-import com.example.tfs.ui.stream.adapter.base.StreamListItem
+import com.example.tfs.common.baseadapter.AdapterItem
 
 
 data class DomainStream(
@@ -8,10 +8,10 @@ data class DomainStream(
     val name: String,
     val topics: List<String> = emptyList(),
     val expanded: Boolean = false,
-) : StreamListItem
+) : AdapterItem
 
 data class DomainTopic(
     val name: String,
     val parentStreamName: String,
-) : StreamListItem
+) : AdapterItem
 

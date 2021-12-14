@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.TextView
 import com.example.tfs.R
 import com.example.tfs.domain.streams.DomainTopic
-import com.example.tfs.ui.stream.adapter.base.BaseViewHolder
+import com.example.tfs.common.baseadapter.BaseViewHolder
 
 class TopicItemViewHolder(
     private val topicView: View,

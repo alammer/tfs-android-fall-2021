@@ -2,8 +2,8 @@ package com.example.tfs
 
 import android.app.Application
 import android.content.Context
-import com.example.tfs.di.core.AppComponent
-import com.example.tfs.di.core.DaggerAppComponent
+import com.example.tfs.di.app.AppComponent
+import com.example.tfs.di.app.DaggerAppComponent
 
 
 class MessengerApp : Application() {

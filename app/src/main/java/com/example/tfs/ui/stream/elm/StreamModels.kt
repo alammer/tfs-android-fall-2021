@@ -1,9 +1,9 @@
 package com.example.tfs.ui.stream.elm
 
-import com.example.tfs.ui.stream.adapter.base.StreamListItem
+import com.example.tfs.common.baseadapter.AdapterItem
 
 data class StreamState(
-    val streamListItem: List<StreamListItem> = emptyList(),
+    val streamListItem: List<AdapterItem> = emptyList(),
     val error: Throwable? = null,
     val query: String = "",
     val isInitial: Boolean = true,
@@ -37,13 +37,13 @@ sealed class StreamEvent {
 
         data class QueryChange(val query: String) : Internal()
 
-        data class LocalLoadingComplete(val streams: List<StreamListItem>) : Internal()
+        data class LocalLoadingComplete(val streams: List<AdapterItem>) : Internal()
 
-        data class RemoteLoadingComplete(val streams: List<StreamListItem>) : Internal()
+        data class RemoteLoadingComplete(val streams: List<AdapterItem>) : Internal()
 
         data class LoadingError(val error: Throwable) : Internal()
 
-        data class SearchStreamsComplete(val streams: List<StreamListItem>) : Internal()
+        data class SearchStreamsComplete(val streams: List<AdapterItem>) : Internal()
 
         data class UpdateDataError(val error: Throwable) : Internal()
     }

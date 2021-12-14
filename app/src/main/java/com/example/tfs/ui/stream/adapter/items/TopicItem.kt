@@ -6,15 +6,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import com.example.tfs.R
 import com.example.tfs.domain.streams.DomainTopic
-import com.example.tfs.ui.stream.adapter.base.BaseViewHolder
-import com.example.tfs.ui.stream.adapter.base.StreamListItem
-import com.example.tfs.ui.stream.adapter.base.StreamListItemBase
+import com.example.tfs.common.baseadapter.AdapterItem
+import com.example.tfs.common.baseadapter.AdapterItemBase
+import com.example.tfs.common.baseadapter.BaseViewHolder
 
-class TopicItem (
+class TopicItem(
     private val onClickTopic: (DomainTopic) -> Unit
-) : StreamListItemBase<View, DomainTopic> {
+) : AdapterItemBase<View, DomainTopic> {
 
-    override fun isRelativeItem(streamListItem: StreamListItem) = streamListItem is DomainTopic
+    override fun isRelativeItem(item: AdapterItem): Boolean = item is DomainTopic
 
     override fun getLayoutId() = R.layout.item_stream_rv_topic
 
@@ -26,12 +26,14 @@ class TopicItem (
         return TopicItemViewHolder(v, onClickTopic)
     }
 
-    override fun getDiffUtil() = diffUtil
+    override fun getDiffUtil(): DiffUtil.ItemCallback<DomainTopic> = diffUtil
 
     private val diffUtil = object : DiffUtil.ItemCallback<DomainTopic>() {
 
-        override fun areItemsTheSame(oldItem: DomainTopic, newItem: DomainTopic) = oldItem.name == newItem.name
+        override fun areItemsTheSame(oldItem: DomainTopic, newItem: DomainTopic) =
+            oldItem.name == newItem.name
 
-        override fun areContentsTheSame(oldItem: DomainTopic, newItem: DomainTopic) = oldItem == newItem
+        override fun areContentsTheSame(oldItem: DomainTopic, newItem: DomainTopic) =
+            oldItem == newItem
     }
 }

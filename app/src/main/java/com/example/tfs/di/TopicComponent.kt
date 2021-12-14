@@ -1,6 +1,6 @@
 package com.example.tfs.di
 
-import com.example.tfs.di.core.AppComponent
+import com.example.tfs.di.app.AppComponent
 import com.example.tfs.domain.topic.TopicInteractor
 import com.example.tfs.domain.topic.TopicRepository
 import com.example.tfs.domain.topic.TopicRepositoryImpl
