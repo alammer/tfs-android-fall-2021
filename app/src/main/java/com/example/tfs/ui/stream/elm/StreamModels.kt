@@ -6,6 +6,7 @@ data class StreamState(
     val streamListItem: List<StreamListItem> = emptyList(),
     val error: Throwable? = null,
     val query: String = "",
+    val isInitial: Boolean = true,
     val isLoading: Boolean = false,
     val isShowing: Boolean = false,
     val isSubscribed: Boolean = true,
@@ -36,11 +37,13 @@ sealed class StreamEvent {
 
         data class QueryChange(val query: String) : Internal()
 
-        data class InitialLoadingComplete(val streams: List<StreamListItem>) : Internal()
+        data class LocalLoadingComplete(val streams: List<StreamListItem>) : Internal()
 
-        data class InitialLoadingError(val error: Throwable) : Internal()
+        data class RemoteLoadingComplete(val streams: List<StreamListItem>) : Internal()
 
-        data class UpdateDataComplete(val streams: List<StreamListItem>) : Internal()
+        data class LoadingError(val error: Throwable) : Internal()
+
+        data class SearchStreamsComplete(val streams: List<StreamListItem>) : Internal()
 
         data class UpdateDataError(val error: Throwable) : Internal()
     }
@@ -55,8 +58,8 @@ sealed class StreamEffect {
 sealed class Command {
 
     object ObserveQuery : Command()
-    data class InitilaFetchStreams(val query: String, val isSubscribed: Boolean) : Command()
+    data class GetLocalStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class SearchStreams(val query: String, val isSubscribed: Boolean) : Command()
-    data class UpdateStreams(val query: String, val isSubscribed: Boolean) : Command()
+    data class GetRemoteStreams(val query: String, val isSubscribed: Boolean) : Command()
     data class SelectStream(val streamId: Int) : Command()
 }

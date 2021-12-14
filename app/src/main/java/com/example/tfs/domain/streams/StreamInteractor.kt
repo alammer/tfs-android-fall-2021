@@ -4,6 +4,7 @@ package com.example.tfs.domain.streams
 import com.example.tfs.ui.stream.adapter.base.StreamListItem
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -25,20 +26,25 @@ class StreamInteractor @Inject constructor(
 
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
-    fun fetchStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
+    fun getStreamsFromLocal(query: String, isSubscribed: Boolean): Single<List<StreamListItem>> {
         val source =
             if (isSubscribed) {
-                streamRepository.fetchSubscribedStreams(query)
+                streamRepository.getLocalSubscribedStreams(query)
             } else {
-                streamRepository.fetchUnsubscribedStreams(query)
+                streamRepository.getLocalUnsubscribedStreams(query)
             }
         return source
             .map(streamToItemMapper)
     }
 
-    fun observeStreams(query: String, isSubscribed: Boolean): Observable<List<StreamListItem>> {
-        //TODO("return specific value from DB if local cache is empty ")
-        return streamRepository.observeLocalStreams(query, isSubscribed)
+    fun getStreamsFromRemote(query: String, isSubscribed: Boolean): Single<List<StreamListItem>> {
+        val source =
+            if (isSubscribed) {
+                streamRepository.updateSubscribedStreams(query)
+            } else {
+                streamRepository.updateUnsubscribedStreams(query)
+            }
+        return source
             .map(streamToItemMapper)
     }
 }

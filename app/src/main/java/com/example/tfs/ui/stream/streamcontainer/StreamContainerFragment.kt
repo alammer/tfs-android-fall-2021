@@ -36,7 +36,6 @@ class StreamContainerFragment :
     @Inject
     lateinit var streamContainerActor: StreamContainerActor
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -57,10 +56,8 @@ class StreamContainerFragment :
         StreamContainerStore.provide(actor = streamContainerActor)
 
     override fun render(state: StreamContainerState) {
-        //TODO("ADD NETWORK STATE RENDERING HERE - check available: 1)network for device, 2)zulip server for user")
-        //TODO("ADD some warning views on screen for these states if cached data exist or full screen ERROR view otherwise")
-    }
 
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -73,21 +70,25 @@ class StreamContainerFragment :
         super.onAttach(context)
     }
 
-    private fun subscribeToSearchStreams() {
+    private fun subscribeToSearchStreams(adapter: FragmentPagerAdapter) {
         searchStream
             .distinctUntilChanged()
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
-                onNext = { store.accept(StreamContainerEvent.Ui.ChangeSearchQuery(it)) }
+                onNext = {
+                    adapter.setCurrentQuery(it)
+                    store.accept(StreamContainerEvent.Ui.ChangeSearchQuery(it))
+                }
             )
             .addTo(compositeDisposable)
     }
 
     private fun initViews() {
-        val pagerAdapter = FragmentPagerAdapter(requireActivity())
 
-        subscribeToSearchStreams()
+        val pagerAdapter = FragmentPagerAdapter(this)
+
+        subscribeToSearchStreams(pagerAdapter)
 
         with(viewBinding) {
             viewPager.adapter = pagerAdapter

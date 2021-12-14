@@ -20,17 +20,24 @@ class StreamActor /*@Inject constructor*/(
         }
 
         is Command.SearchStreams -> {
-            streamInteractor.observeStreams(command.query, command.isSubscribed)
+            streamInteractor.getStreamsFromLocal(command.query, command.isSubscribed)
                 .mapEvents(
-                    StreamEvent.Internal::UpdateDataComplete,
+                    StreamEvent.Internal::SearchStreamsComplete,
                     StreamEvent.Internal::UpdateDataError
                 )
         }
-        is Command.InitilaFetchStreams -> {
-            streamInteractor.fetchStreams(command.query, command.isSubscribed)
+        is Command.GetLocalStreams -> {
+            streamInteractor.getStreamsFromLocal(command.query, command.isSubscribed)
                 .mapEvents(
-                    StreamEvent.Internal::InitialLoadingComplete,
-                    StreamEvent.Internal::InitialLoadingError
+                    StreamEvent.Internal::LocalLoadingComplete,
+                    StreamEvent.Internal::LoadingError
+                )
+        }
+        is Command.GetRemoteStreams -> {
+            streamInteractor.getStreamsFromRemote(command.query, command.isSubscribed)
+                .mapEvents(
+                    StreamEvent.Internal::RemoteLoadingComplete,
+                    StreamEvent.Internal::LoadingError
                 )
         }
         is Command.ObserveQuery -> {

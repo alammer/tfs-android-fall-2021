@@ -1,6 +1,5 @@
 package com.example.tfs.ui.stream.elm
 
-import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :
@@ -10,36 +9,53 @@ class StreamReducer :
     ) {
 
     override fun Result.internal(event: StreamEvent.Internal) = when (event) {
+
         is StreamEvent.Internal.UpdateStreamComplete -> {
             state { copy(isClicked = false) }
             commands { +Command.SearchStreams(state.query, state.isSubscribed) }
         }
-        is StreamEvent.Internal.InitialLoadingComplete -> {
-            Log.i("StreamReducer", "Function called: Initilal complete ${event.streams.isEmpty()}")
+
+        is StreamEvent.Internal.LocalLoadingComplete -> {
+            if (event.streams.isEmpty()) {
+                state { copy(isEmpty = true) }
+            } else {
+                state { copy(streamListItem = event.streams, isEmpty = false) }
+            }
+            if (state.isInitial) {
+                state { copy(isInitial = false, isLoading = true) }
+                commands { +Command.GetRemoteStreams(state.query, state.isSubscribed) }
+            } else {
+                Any()
+            }
+        }
+
+        is StreamEvent.Internal.RemoteLoadingComplete -> {
             if (event.streams.isEmpty()) {
                 state { copy(isLoading = false, isEmpty = true) }
             } else {
                 state { copy(streamListItem = event.streams, isLoading = false, isEmpty = false) }
             }
         }
-        is StreamEvent.Internal.InitialLoadingError -> {
+
+        is StreamEvent.Internal.LoadingError -> {  //TODO("retry get remote if error from room?")
             state { copy(isLoading = false) }
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
-        is StreamEvent.Internal.UpdateDataComplete -> {
-            Log.i("StreamReducer", "Function called: Update complete ${event.streams.isEmpty()}")
+
+        is StreamEvent.Internal.SearchStreamsComplete -> {
             if (event.streams.isEmpty()) {
                 state { copy(isLoading = false, isEmpty = true) }
             } else {
                 state { copy(streamListItem = event.streams, isLoading = false, isEmpty = false) }
             }
         }
+
         is StreamEvent.Internal.UpdateDataError -> {
             state { copy(isLoading = false) }
             effects { +StreamEffect.LoadingDataError(event.error) }
         }
+
         is StreamEvent.Internal.QueryChange -> {
-            Log.i("StreamReducer", "Function called: QUERY CHANGE!!!")
             state { copy(query = event.query) }
             if (state.isShowing) {
                 state { copy(isLoading = true) }
@@ -53,15 +69,15 @@ class StreamReducer :
     override fun Result.ui(event: StreamEvent.Ui) = when (event) {
 
         is StreamEvent.Ui.Init -> {
-            state { copy(isClicked = false, error = null, isLoading = true) }
+            state { copy(isClicked = false, error = null) }
             commands { +Command.ObserveQuery }
-            commands { +Command.InitilaFetchStreams(initialState.query, initialState.isSubscribed) }
+            commands { +Command.GetLocalStreams(initialState.query, initialState.isSubscribed) }
         }
 
         is StreamEvent.Ui.RefreshData -> {
             if (state.isShowing) {
                 state { copy(isLoading = true, error = null) }
-                commands { +Command.InitilaFetchStreams(state.query, state.isSubscribed) }
+                commands { +Command.GetRemoteStreams(state.query, state.isSubscribed) }
             } else {
                 Any()
             }

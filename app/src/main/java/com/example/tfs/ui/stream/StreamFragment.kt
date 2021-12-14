@@ -45,13 +45,20 @@ class StreamFragment :
         requireArguments().getBoolean(SUBSCRIBED_KEY, true)
     }
 
+    private val initialQuery by lazy {
+        requireArguments().getString(QUERY_KEY, "")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
     }
 
     override fun createStore(): Store<StreamEvent, StreamEffect, StreamState> =
-        StreamStore.provide(StreamState(isSubscribed = isSubscribed), streamActor)
+        StreamStore.provide(
+            StreamState(isSubscribed = isSubscribed, query = initialQuery),
+            streamActor
+        )
 
 
     override fun render(state: StreamState) {
@@ -66,7 +73,10 @@ class StreamFragment :
         when (effect) {
             is StreamEffect.LoadingDataError -> {
                 with(requireView()) {
-                    Log.i("StreamFragment", "Function called: handleEffect() ${effect.error.message}")
+                    Log.i(
+                        "StreamFragment",
+                        "Function called: handleEffect() ${effect.error.message}"
+                    )
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
                 }
@@ -105,7 +115,7 @@ class StreamFragment :
 
 
     private fun initViews() {
-        val dividerItem = DividerItemDecoration(context,RecyclerView.VERTICAL)
+        val dividerItem = DividerItemDecoration(context, RecyclerView.VERTICAL)
         ResourcesCompat.getDrawable(resources, R.drawable.stream_item_divider, null)
             ?.let { drawable -> dividerItem.setDrawable(drawable) }
 
@@ -117,8 +127,23 @@ class StreamFragment :
             adapter = streamAdapter
             layoutManager = LinearLayoutManager(context)
 
-            addItemDecoration(ItemStreamTypeDecorator(context, R.layout.item_stream_rv_header, 20.toPx, 40.toPx ))
-            addItemDecoration(ItemTopicTypeDecorator(context, R.layout.item_stream_rv_topic, 40.toPx,  4.toPx, 4.toPx))
+            addItemDecoration(
+                ItemStreamTypeDecorator(
+                    context,
+                    R.layout.item_stream_rv_header,
+                    20.toPx,
+                    40.toPx
+                )
+            )
+            addItemDecoration(
+                ItemTopicTypeDecorator(
+                    context,
+                    R.layout.item_stream_rv_topic,
+                    40.toPx,
+                    4.toPx,
+                    4.toPx
+                )
+            )
         }
 
         viewBinding.swipeLayout.setOnRefreshListener {
@@ -143,11 +168,13 @@ class StreamFragment :
     companion object {
 
         private const val SUBSCRIBED_KEY = "is_subscribed"
+        private const val QUERY_KEY = "current_query"
 
-        fun newInstance(isSubcribed: Boolean = true): StreamFragment {
+        fun newInstance(isSubscribed: Boolean = true, query: String = ""): StreamFragment {
             return StreamFragment().apply {
                 arguments = bundleOf(
-                    SUBSCRIBED_KEY to isSubcribed,
+                    SUBSCRIBED_KEY to isSubscribed,
+                    QUERY_KEY to query
                 )
             }
         }
