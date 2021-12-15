@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import com.example.tfs.domain.streams.DomainStream
 import org.jetbrains.annotations.NotNull
 
-@Entity(tableName = "remoteStreams")
+@Entity(tableName = "streams")
 data class LocalStream(
 
     @PrimaryKey

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 
-interface AdapterItemBase<V : View, I : AdapterItem> {
+interface AdapterItemBase<VH : View, Item : AdapterItem> {
 
     fun isRelativeItem(item: AdapterItem): Boolean
 
@@ -16,8 +16,8 @@ interface AdapterItemBase<V : View, I : AdapterItem> {
     fun getViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
-    ): BaseViewHolder<V, I>
+    ): BaseViewHolder<VH, Item>
 
-    fun getDiffUtil(): DiffUtil.ItemCallback<I>
+    fun getDiffUtil(): DiffUtil.ItemCallback<Item>
 
 }

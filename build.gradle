@@ -11,6 +11,7 @@ buildscript {
     ext.kotlinx_json_converter_version = "0.8.0"
     ext.elmslie_version = "1.2.0"
     ext.dagger_version = "2.40.1"
+    ext.shimmer_version = "0.5.0"
     
     repositories {
         google()

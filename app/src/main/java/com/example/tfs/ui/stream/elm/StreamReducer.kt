@@ -1,5 +1,6 @@
 package com.example.tfs.ui.stream.elm
 
+import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :
@@ -9,11 +10,6 @@ class StreamReducer :
     ) {
 
     override fun Result.internal(event: StreamEvent.Internal) = when (event) {
-
-        is StreamEvent.Internal.UpdateStreamComplete -> {
-            state { copy(isClicked = false) }
-            commands { +Command.SearchStreams(state.query, state.isSubscribed) }
-        }
 
         is StreamEvent.Internal.LocalLoadingComplete -> {
             if (event.streams.isEmpty()) {
@@ -37,22 +33,18 @@ class StreamReducer :
             }
         }
 
-        is StreamEvent.Internal.LoadingError -> {  //TODO("retry get remote if error from room?")
-            state { copy(isLoading = false) }
-            effects { +StreamEffect.LoadingDataError(event.error) }
-        }
-
         is StreamEvent.Internal.SearchStreamsComplete -> {
+            state { copy(isClicked = false, isLoading = false) }
             if (event.streams.isEmpty()) {
-                state { copy(isLoading = false, isEmpty = true) }
+                state { copy(isEmpty = true) }
             } else {
-                state { copy(streamListItem = event.streams, isLoading = false, isEmpty = false) }
+                state { copy(streamListItem = event.streams, isEmpty = false) }
             }
         }
 
-        is StreamEvent.Internal.UpdateDataError -> {
-            state { copy(isLoading = false) }
-            effects { +StreamEffect.LoadingDataError(event.error) }
+        is StreamEvent.Internal.UpdateStreamComplete -> {
+            state { copy(error = null) }
+            commands { +Command.SearchStreams(state.query, state.isSubscribed) }
         }
 
         is StreamEvent.Internal.QueryChange -> {
@@ -62,12 +54,22 @@ class StreamReducer :
             }
             commands { +Command.SearchStreams(event.query, state.isSubscribed) }
         }
+
+        is StreamEvent.Internal.LoadingError -> {  //TODO("retry get remote if error from room?")
+            state { copy(isLoading = false) }
+            effects { +StreamEffect.LoadingDataError(event.error) }
+        }
+
+        is StreamEvent.Internal.UpdateDataError -> {
+            state { copy(isLoading = false, isClicked = false) }
+            effects { +StreamEffect.LoadingDataError(event.error) }
+        }
     }
 
     override fun Result.ui(event: StreamEvent.Ui) = when (event) {
 
         is StreamEvent.Ui.Init -> {
-            state { copy(isClicked = false, error = null) }
+            state { copy(error = null) }
             commands { +Command.ObserveQuery }
             commands { +Command.GetLocalStreams(initialState.query, initialState.isSubscribed) }
         }
@@ -95,7 +97,7 @@ class StreamReducer :
         }
 
         is StreamEvent.Ui.ClickOnTopic -> {
-            state { copy(isClicked = false, error = null) }
+            state { copy(error = null) }
             effects { +StreamEffect.ShowTopic(event.topicName, event.streamName) }
         }
     }

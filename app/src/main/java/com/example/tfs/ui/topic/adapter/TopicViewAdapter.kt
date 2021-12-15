@@ -20,9 +20,9 @@ class TopicViewAdapter(
         OwnerPostItemBinder(onPostTap)
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is PostItem.UserPostItem -> R.layout.item_user_post
-        is PostItem.OwnerPostItem -> R.layout.item_owner_post
-        is PostItem.LocalDateItem -> R.layout.item_topic_date
+        is PostItem.UserPostItem -> R.layout.item_post_owner
+        is PostItem.OwnerPostItem -> R.layout.item_post
+        is PostItem.LocalDateItem -> R.layout.item_post_date
         else -> throw IllegalStateException("Unknown view")
     }
 
@@ -30,9 +30,9 @@ class TopicViewAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         val v = layoutInflater.inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.item_user_post -> UserPostViewHolder(v)
-            R.layout.item_owner_post -> OwnerPostViewHolder(v)
-            R.layout.item_topic_date -> DateViewHolder(v)
+            R.layout.item_post_owner -> UserPostViewHolder(v)
+            R.layout.item_post -> OwnerPostViewHolder(v)
+            R.layout.item_post_date -> DateViewHolder(v)
             else -> throw IllegalStateException("Unknown viewType")
         }
     }

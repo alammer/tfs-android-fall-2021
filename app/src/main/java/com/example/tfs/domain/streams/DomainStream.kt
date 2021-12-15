@@ -8,6 +8,7 @@ data class DomainStream(
     val name: String,
     val topics: List<String> = emptyList(),
     val expanded: Boolean = false,
+    val updated: Boolean = false,
 ) : AdapterItem
 
 data class DomainTopic(

@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
+import com.example.tfs.domain.streams.DomainStream
 import com.example.tfs.domain.streams.DomainTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
 import com.example.tfs.ui.stream.adapter.decorations.ItemStreamTypeDecorator
@@ -27,6 +29,7 @@ import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.storepersisting.retainStoreHolder
 import javax.inject.Inject
 
 class StreamFragment :
@@ -65,9 +68,11 @@ class StreamFragment :
         if (state.isShowing) {
             viewBinding.empty.root.isVisible = state.isEmpty
             viewBinding.loading.root.isVisible = state.isLoading
-            if (state.isEmpty.not()) streamAdapter.submitList(state.streamListItem)
+            if (state.isEmpty.not() && state.isClicked.not()) streamAdapter.updateData(state.streamListItem)
         }
     }
+
+    override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
 
     override fun handleEffect(effect: StreamEffect) {
         when (effect) {
@@ -81,6 +86,7 @@ class StreamFragment :
                         ?: showSnackbarError("Error on load stream list")
                 }
             }
+
             is StreamEffect.ShowTopic -> {
                 requireActivity().supportFragmentManager
                     .beginTransaction()
@@ -130,7 +136,7 @@ class StreamFragment :
             addItemDecoration(
                 ItemStreamTypeDecorator(
                     context,
-                    R.layout.item_stream_rv_header,
+                    R.layout.item_stream,
                     20.toPx,
                     40.toPx
                 )
@@ -138,7 +144,7 @@ class StreamFragment :
             addItemDecoration(
                 ItemTopicTypeDecorator(
                     context,
-                    R.layout.item_stream_rv_topic,
+                    R.layout.item_related_topic,
                     40.toPx,
                     4.toPx,
                     4.toPx
@@ -154,11 +160,13 @@ class StreamFragment :
 
     private fun getItemTypes() = listOf(
         StreamItem(::clickOnStream),
-        TopicItem(::moveToTopic)
+        TopicItem(::moveToTopic),
+        TextShimmerItem()
     )
 
-    private fun clickOnStream(streamId: Int) {
-        store.accept(StreamEvent.Ui.ClickOnStream(streamId))
+    private fun clickOnStream(stream: DomainStream) {
+        streamAdapter.addTextShimmerItem(stream, "Data loading...")
+        store.accept(StreamEvent.Ui.ClickOnStream(stream.id))
     }
 
     private fun moveToTopic(topic: DomainTopic) {

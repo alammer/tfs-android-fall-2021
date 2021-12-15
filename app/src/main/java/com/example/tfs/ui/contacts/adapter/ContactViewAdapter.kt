@@ -16,7 +16,7 @@ class ContactViewAdapter(onContactClick: (Int) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
         val view =
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_contact_rv_user, parent, false)
+                .inflate(R.layout.item_contact, parent, false)
         return ContactViewHolder(view)
     }
 

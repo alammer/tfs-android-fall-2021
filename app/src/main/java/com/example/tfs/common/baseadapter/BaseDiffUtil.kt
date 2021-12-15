@@ -2,7 +2,7 @@ package com.example.tfs.common.baseadapter
 
 import androidx.recyclerview.widget.DiffUtil
 
-class BaseDiffUtil(
+internal class BaseDiffUtil(
     private val items: List<AdapterItemBase<*, *>>,
 ) : DiffUtil.ItemCallback<AdapterItem>() {
 
@@ -36,6 +36,7 @@ class BaseDiffUtil(
         return getItemCallback(oldStreamListItem).getChangePayload(oldStreamListItem, newStreamListItem)
     }*/
 
+    @Suppress("UNCHECKED_CAST")
     private fun getItemCallback(
         item: AdapterItem
     ): DiffUtil.ItemCallback<AdapterItem> = items.find { it.isRelativeItem(item) }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_shimmer"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/tvShimmerText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/channel_name_text_size"
+            android:gravity="start"
+            android:textColor="@color/blue_stream" />
+
+</com.facebook.shimmer.ShimmerFrameLayout>

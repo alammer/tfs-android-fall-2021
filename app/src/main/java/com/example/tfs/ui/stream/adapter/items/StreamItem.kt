@@ -5,24 +5,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import com.example.tfs.R
-import com.example.tfs.domain.streams.DomainStream
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.common.baseadapter.AdapterItemBase
 import com.example.tfs.common.baseadapter.BaseViewHolder
+import com.example.tfs.domain.streams.DomainStream
 
 class StreamItem(
-    private val onClickStream: (Int) -> Unit
+    private val onClickStream: (DomainStream) -> Unit
 ) : AdapterItemBase<View, DomainStream> {
 
     override fun isRelativeItem(item: AdapterItem): Boolean = item is DomainStream
 
-    override fun getLayoutId() = R.layout.item_stream_rv_header
+    override fun getLayoutId() = R.layout.item_stream
 
     override fun getViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
     ): BaseViewHolder<View, DomainStream> {
-        val v = layoutInflater.inflate(R.layout.item_stream_rv_header, parent, false)
+        val v = layoutInflater.inflate(R.layout.item_stream, parent, false)
         return StreamItemViewHolder(v, onClickStream)
     }
 
@@ -35,10 +35,5 @@ class StreamItem(
 
         override fun areContentsTheSame(oldItem: DomainStream, newItem: DomainStream) =
             oldItem == newItem
-
-/*        override fun getChangePayload(oldItem: DomainStream, newItem: DomainStream): Any? {
-            if (oldItem.expanded != newItem.expanded) return newItem.expanded
-            return super.getChangePayload(oldItem, newItem)
-        }*/
     }
 }

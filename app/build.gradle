@@ -102,4 +102,8 @@ dependencies {
     //dagger
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    // Shimmer Layout
+    implementation "com.facebook.shimmer:shimmer:$shimmer_version"
+
 }

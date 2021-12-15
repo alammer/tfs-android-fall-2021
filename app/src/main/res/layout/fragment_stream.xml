@@ -17,12 +17,14 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
+        android:id="@+id/empty"
+        layout="@layout/data_empty_state"
+        android:visibility="gone" />
+
+    <include
         android:id="@+id/loading"
         layout="@layout/data_loading_state"
         android:visibility="gone" />
 
-    <include
-        android:id="@+id/empty"
-        layout="@layout/data_empty_state"
-        android:visibility="gone" />
+
 </FrameLayout>

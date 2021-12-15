@@ -5,10 +5,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 
-
-abstract class BaseAdapter(
+@Suppress("UNCHECKED_CAST")
+open class BaseAdapter(
     private val items: List<AdapterItemBase<*, *>>,
 ) : ListAdapter<AdapterItem, BaseViewHolder<View, AdapterItem>>(BaseDiffUtil(items)) {
+
+    var currentData: List<AdapterItem> = mutableListOf()
+    var isLoading: Boolean = false
+
+    open fun updateData(data: List<AdapterItem>) {
+        currentData = data
+        submitList(data)
+    }
+
+    open fun addTextShimmerItem(item: AdapterItem, text: String) = Unit
+
+    open fun addData(dataList: List<AdapterItem>) {
+        currentData = currentData + dataList
+        submitList(currentData)
+    }
+
+    override fun getItemCount() = getDataSize() + if (isLoading) 1 else 0
+
+    private fun getDataSize() = super.getItemCount()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,7 +56,12 @@ abstract class BaseAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int { //TODO("IndexOutOfBound rise here in decorator")
+    override fun onViewDetachedFromWindow(holder: BaseViewHolder<View, AdapterItem>) {
+        super.onViewDetachedFromWindow(holder)
+        holder.onViewDetached()
+    }
+
+    override fun getItemViewType(position: Int): Int {
         val item = currentList[position]
         return items.find { it.isRelativeItem(item) }
             ?.getLayoutId()

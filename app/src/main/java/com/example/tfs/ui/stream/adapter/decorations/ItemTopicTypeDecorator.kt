@@ -32,6 +32,7 @@ class ItemTopicTypeDecorator(
         if (viewHolder.itemViewType != viewType) return
 
         val adapter = parent.adapter ?: return
+
         val currentPosition =
             parent.getChildAdapterPosition(view).takeIf { it != RecyclerView.NO_POSITION }
                 ?: viewHolder.oldPosition
@@ -51,14 +52,17 @@ class ItemTopicTypeDecorator(
     private fun RecyclerView.Adapter<*>.isPrevTargetView(
         currentPosition: Int,
         viewType: Int
-    ) = currentPosition != 0 && getItemViewType(currentPosition - 1) == viewType
+    ): Boolean {
+        val lastIndex = itemCount - 1
+        return currentPosition < lastIndex && getItemViewType(currentPosition - 1) == viewType
+    }
 
     private fun RecyclerView.Adapter<*>.isNextTargetView(
         currentPosition: Int,
         viewType: Int
     ): Boolean {
         val lastIndex = itemCount - 1
-        return currentPosition != lastIndex && getItemViewType(currentPosition + 1) == viewType
+        return currentPosition < lastIndex && getItemViewType(currentPosition + 1) == viewType
     }
 
     override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -66,13 +70,10 @@ class ItemTopicTypeDecorator(
 
             parent.children
                 .forEach { view ->
-
                     val childAdapterPosition = parent.getChildAdapterPosition(view)
                         .let { if (it == RecyclerView.NO_POSITION) return else it }
 
-
                     when (adapter.getItemViewType(childAdapterPosition)) {
-
                         viewType -> drawBackground(view, canvas, childAdapterPosition)
                         else -> Unit
                     }
