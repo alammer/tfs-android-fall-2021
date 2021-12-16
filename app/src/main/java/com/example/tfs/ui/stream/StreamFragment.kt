@@ -18,7 +18,7 @@ import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.streams.DomainStream
 import com.example.tfs.domain.streams.DomainTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
-import com.example.tfs.ui.stream.adapter.decorations.ItemStreamTypeDecorator
+import com.example.tfs.ui.stream.adapter.decorations.ItemDividerDecorator
 import com.example.tfs.ui.stream.adapter.decorations.ItemTopicTypeDecorator
 import com.example.tfs.ui.stream.adapter.items.StreamItem
 import com.example.tfs.ui.stream.adapter.items.TopicItem
@@ -134,20 +134,30 @@ class StreamFragment :
             layoutManager = LinearLayoutManager(context)
 
             addItemDecoration(
-                ItemStreamTypeDecorator(
+                ItemDividerDecorator(
                     context,
                     R.layout.item_stream,
-                    20.toPx,
-                    40.toPx
+                    STREAM_ITEM_START_PADDING.toPx,
+                    STREAM_ITEM_END_PADDING.toPx
                 )
             )
+
+            addItemDecoration(
+                ItemDividerDecorator(
+                    context,
+                    R.layout.item_text_shimmer,
+                    SHIMMER_ITEM_PADDING.toPx,
+                    SHIMMER_ITEM_PADDING.toPx
+                )
+            )
+
             addItemDecoration(
                 ItemTopicTypeDecorator(
                     context,
                     R.layout.item_related_topic,
-                    40.toPx,
-                    4.toPx,
-                    4.toPx
+                    TOPIC_ITEM_START_PADDING.toPx,
+                    TOPIC_ITEM_INNER_DIVIDER.toPx,
+                    TOPIC_ITEM_OUTER_DIVIDER.toPx
                 )
             )
         }
@@ -165,7 +175,9 @@ class StreamFragment :
     )
 
     private fun clickOnStream(stream: DomainStream) {
-        streamAdapter.addTextShimmerItem(stream, "Data loading...")
+        if (stream.expanded.not() && stream.updated.not()) {
+            streamAdapter.addTextShimmerItem(stream, "Data loading...")
+        }
         store.accept(StreamEvent.Ui.ClickOnStream(stream.id))
     }
 
@@ -188,3 +200,14 @@ class StreamFragment :
         }
     }
 }
+
+private const val STREAM_ITEM_START_PADDING = 20
+private const val STREAM_ITEM_END_PADDING = 40
+private const val TOPIC_ITEM_START_PADDING = 40
+private const val SHIMMER_ITEM_PADDING = 40
+private const val TOPIC_ITEM_INNER_DIVIDER = 4
+private const val TOPIC_ITEM_OUTER_DIVIDER = 4
+
+
+
+

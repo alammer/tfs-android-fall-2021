@@ -65,7 +65,7 @@ class ItemTopicTypeDecorator(
         return currentPosition < lastIndex && getItemViewType(currentPosition + 1) == viewType
     }
 
-    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+/*    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         parent.adapter?.let { adapter ->
 
             parent.children
@@ -93,6 +93,6 @@ class ItemTopicTypeDecorator(
         val bottom = view.bottom
 
         canvas.drawRect(Rect(left, top, right, bottom), backPaint)
-    }
+    }*/
 }
 

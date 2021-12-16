@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 
 
-class ItemStreamTypeDecorator(
+class ItemDividerDecorator(
     context: Context,
     private val viewType: Int,
     private val startPadding: Int,
