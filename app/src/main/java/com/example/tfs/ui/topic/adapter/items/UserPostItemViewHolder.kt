@@ -27,8 +27,6 @@ class UserPostItemViewHolder(
     override fun onBind(item: DomainUserPost) {
         super.onBind(item)
 
-        Log.e("UserPostItemViewHolder", "Function called: onBind() $item")
-
         userName.text = item.userName
 
         postMessage.text = item.message

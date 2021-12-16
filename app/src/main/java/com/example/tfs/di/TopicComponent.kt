@@ -1,9 +1,9 @@
 package com.example.tfs.di
 
 import com.example.tfs.di.app.AppComponent
-import com.example.tfs.domain.topic.TopicInteractor
-import com.example.tfs.domain.topic.TopicRepository
-import com.example.tfs.domain.topic.TopicRepositoryImpl
+import com.example.tfs.domain.topic.PostInteractor
+import com.example.tfs.domain.topic.PostRepository
+import com.example.tfs.domain.topic.PostRepositoryImpl
 import com.example.tfs.ui.topic.TopicFragment
 import com.example.tfs.ui.topic.elm.TopicActor
 import dagger.Binds
@@ -38,7 +38,7 @@ interface TopicComponent {
 class TopicModule {
 
     @Provides
-    fun provideTopicActor(interactor: TopicInteractor): TopicActor {
+    fun provideTopicActor(interactor: PostInteractor): TopicActor {
         return TopicActor(interactor)
     }
 }
@@ -47,5 +47,5 @@ class TopicModule {
 interface TopicBindings {
 
     @Binds
-    fun bindTopicRepository_to_Impl(impl: TopicRepositoryImpl): TopicRepository
+    fun bindPostRepository_to_Impl(impl: PostRepositoryImpl): PostRepository
 }

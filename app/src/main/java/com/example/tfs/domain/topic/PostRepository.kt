@@ -17,7 +17,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-interface TopicRepository {
+interface PostRepository {
 
     fun fetchTopic(streamName: String, topicName: String): Observable<List<PostWithReaction>>
 
@@ -47,11 +47,11 @@ interface TopicRepository {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class TopicRepositoryImpl @Inject constructor(
+class PostRepositoryImpl @Inject constructor(
     private val remoteApi: ApiService,
     private val localDao: TopicDataDao,
     private val ownerId: Int
-) : TopicRepository {
+) : PostRepository {
 
 
     override fun fetchTopic(

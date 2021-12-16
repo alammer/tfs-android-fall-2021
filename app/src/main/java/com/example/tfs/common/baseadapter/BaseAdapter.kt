@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import com.example.tfs.common.baseitems.LoaderItem
 
 @Suppress("UNCHECKED_CAST")
 open class BaseAdapter(
@@ -20,14 +21,18 @@ open class BaseAdapter(
 
     open fun addTextShimmerItem(item: AdapterItem, text: String) = Unit
 
+    open fun addHeaderItem(item: AdapterItem) = Unit
+
+    open fun addFooterItem(item: AdapterItem) = Unit
+
     open fun addData(dataList: List<AdapterItem>) {
         currentData = currentData + dataList
         submitList(currentData)
     }
 
-    override fun getItemCount() = getDataSize() + if (isLoading) 1 else 0
+    //override fun getItemCount() = getDataSize() + if (isLoading) 1 else 0
 
-    private fun getDataSize() = super.getItemCount()
+    //private fun getDataSize() = super.getItemCount()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

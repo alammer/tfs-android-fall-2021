@@ -19,48 +19,57 @@ class TopicReducer :
                     downAnchor = event.uiTopic.downAnchorId
                 )
             }
-            effects { +TopicEffect.LoadTopic }
         }
+
         is TopicEvent.Internal.TopicLoadingError -> {
             state { copy(isLoading = false) }
-            effects { +TopicEffect.LoadError(event.error) }
+            effects { +TopicEffect.LoadTopicError(event.error) }
         }
+
+        is TopicEvent.Internal.PostListUploadingComplete -> {
+            state {
+                copy(
+                    topicList = event.uiTopic.itemList,
+                    upAnchor = event.uiTopic.upAnchorId,
+                    downAnchor = event.uiTopic.downAnchorId
+                )
+            }
+        }
+
+        is TopicEvent.Internal.PostListUploadingError -> {
+            effects { +TopicEffect.PostListUploadError(event.error) }
+        }
+
         is TopicEvent.Internal.TopicUpdatingComplete -> {
             state {
                 copy(
-                    isNextPageLoading = false,
-                    isPrevPageLoading = false,
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
                     downAnchor = event.uiTopic.downAnchorId
                 )
             }
-            effects { +TopicEffect.UpdateTopic }
         }
+
         is TopicEvent.Internal.TopicUpdatingError -> {
-            state { copy(isNextPageLoading = false, isPrevPageLoading = false) }
-            effects { +TopicEffect.UpdateError(event.error) }
+            state { copy() }
+            effects { +TopicEffect.UpdateTopicError(event.error) }
         }
-        is TopicEvent.Internal.MessageSendingComplete -> {
+
+        is TopicEvent.Internal.PostSendingComplete -> {
             state {
                 copy(
-                    isNextPageLoading = false,
-                    isPrevPageLoading = false,
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
                     downAnchor = event.uiTopic.downAnchorId
                 )
             }
-            effects { +TopicEffect.LoadTopic }
         }
-        is TopicEvent.Internal.MessageSendingError -> {
+
+        is TopicEvent.Internal.PostSendingError -> {
             state {
-                copy(
-                    isNextPageLoading = false,
-                    isPrevPageLoading = false,
-                )
+                copy()
             }
-            effects { +TopicEffect.LoadTopic }
+            effects { +TopicEffect.UpdateTopicError(event.error) }
         }
     }
 
@@ -68,77 +77,72 @@ class TopicReducer :
 
         is TopicEvent.Ui.Init -> {
             state { copy(isLoading = true, error = null) }
-            commands { +Command.FetchTopic(initialState.streamName, initialState.topicName) }
-        }
-        is TopicEvent.Ui.BackToStream -> {
-            state {
-                copy(
-                    error = null,
-                    isLoading = false,
-                    isPrevPageLoading = false,
-                    isNextPageLoading = false
+            commands {
+                +Command.FetchRecentPostList(
+                    initialState.streamName,
+                    initialState.topicName
                 )
             }
+        }
+
+        is TopicEvent.Ui.BackToStream -> {
+            state { copy(error = null, isLoading = false) }
             effects { +TopicEffect.BackNavigation }
         }
+
         is TopicEvent.Ui.NewReactionAdding -> {
             effects { +TopicEffect.AddReactionDialog(event.postId) }
         }
+
         is TopicEvent.Ui.ReactionClicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(
+                +Command.UpdatePostReaction(
                     event.postId,
                     event.emojiName,
                     event.emojiCode
                 )
             }
         }
+
         is TopicEvent.Ui.NewReactionPicked -> {
             state { copy(error = null) }
             commands {
-                +Command.UpdateReaction(
+                +Command.UpdatePostReaction(
                     event.postId,
                     event.emojiName,
                     event.emojiCode
                 )
             }
         }
-        is TopicEvent.Ui.MessageDraftChanging -> {
+
+        is TopicEvent.Ui.PostDraftChanging -> {
             state { copy(messageDraft = event.draft) }
             effects { +TopicEffect.MessageDraftChange(event.draft) }
         }
-        is TopicEvent.Ui.MessageSending -> {
-            state {
-                copy(
-                    isNextPageLoading = true,
-                    isPrevPageLoading = false,
-                    error = null
-                )
-            }
-            commands { +Command.SendMessage(state.streamName, state.topicName, state.messageDraft) }
+
+        is TopicEvent.Ui.PostSending -> {
+            state { copy(error = null) }
+            commands { +Command.SendPost(state.streamName, state.topicName, state.messageDraft) }
             state { copy(messageDraft = "") }
-            effects { +TopicEffect.MessageSend }
+            effects { +TopicEffect.PostSend }
         }
-        is TopicEvent.Ui.PageFetching -> {
-            if (event.isDownScroll && state.isNextPageLoading.not()) {
-                state {
-                    copy(isNextPageLoading = true, isPrevPageLoading = false, error = null)
-                }
+
+        is TopicEvent.Ui.PostListUploading -> {
+            if (event.isDownScroll) {
+                state { copy(error = null) }
                 commands {
-                    +Command.FetchNextPage(
+                    +Command.FetchNextPagePostList(
                         state.streamName,
                         state.topicName,
                         state.downAnchor
                     )
                 }
             } else {
-                if (event.isDownScroll.not() && state.isPrevPageLoading.not()) {
-                    state {
-                        copy(isNextPageLoading = false, isPrevPageLoading = true, error = null)
-                    }
+                if (event.isDownScroll.not()) {
+                    state { copy(error = null) }
                     commands {
-                        +Command.FetchPrevPage(
+                        +Command.FetchPreviousPagePostList(
                             state.streamName,
                             state.topicName,
                             state.upAnchor

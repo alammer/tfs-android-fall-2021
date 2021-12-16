@@ -7,8 +7,6 @@ data class TopicState(
     val topicList: List<AdapterItem> = emptyList(),
     val error: Throwable? = null,
     val isLoading: Boolean = false,
-    val isNextPageLoading: Boolean = false,
-    val isPrevPageLoading: Boolean = false,
     val messageDraft: String = "",
     val downAnchor: Int = 0,
     val upAnchor: Int = 0,
@@ -36,11 +34,11 @@ sealed class TopicEvent {
             val emojiCode: String
         ) : Ui()
 
-        data class MessageDraftChanging(val draft: String) : Ui()
+        data class PostDraftChanging(val draft: String) : Ui()
 
-        object MessageSending : Ui()
+        object PostSending : Ui()
 
-        data class PageFetching(val isDownScroll: Boolean) : Ui()
+        data class PostListUploading(val isDownScroll: Boolean) : Ui()
     }
 
     sealed class Internal : TopicEvent() {
@@ -49,31 +47,29 @@ sealed class TopicEvent {
 
         data class TopicLoadingError(val error: Throwable) : Internal()
 
+        data class PostListUploadingComplete(val uiTopic: UiTopicListObject) : Internal()
+
+        data class PostListUploadingError(val error: Throwable) : Internal()
+
         data class TopicUpdatingComplete(val uiTopic: UiTopicListObject) : Internal()
 
         data class TopicUpdatingError(val error: Throwable) : Internal()
 
-        data class MessageSendingComplete(val uiTopic: UiTopicListObject) : Internal()
+        data class PostSendingComplete(val uiTopic: UiTopicListObject) : Internal()
 
-        data class MessageSendingError(val error: Throwable) : Internal()
+        data class PostSendingError(val error: Throwable) : Internal()
     }
 }
 
 sealed class TopicEffect {
 
-    data class LoadError(val error: Throwable) : TopicEffect()
+    data class LoadTopicError(val error: Throwable) : TopicEffect()
 
-    data class UpdateError(val error: Throwable) : TopicEffect()
+    data class PostListUploadError(val error: Throwable) : TopicEffect()
 
-    object LoadTopic : TopicEffect()
+    data class UpdateTopicError(val error: Throwable) : TopicEffect()
 
-    object UpdateTopic : TopicEffect()
-
-    object NextPageLoad : TopicEffect()
-
-    object PrevPageLoad : TopicEffect()
-
-    object MessageSend : TopicEffect()
+    object PostSend : TopicEffect()
 
     object BackNavigation : TopicEffect()
 
@@ -84,17 +80,17 @@ sealed class TopicEffect {
 
 sealed class Command {
 
-    data class FetchTopic(val streamName: String, val topicName: String) : Command()
+    data class FetchRecentPostList(val streamName: String, val topicName: String) : Command()
 
-    data class UpdateReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
+    data class UpdatePostReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
         Command()
 
-    data class SendMessage(val streamName: String, val topicName: String, val message: String) :
+    data class SendPost(val streamName: String, val topicName: String, val message: String) :
         Command()
 
-    data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :
+    data class FetchNextPagePostList(val streamName: String, val topicName: String, val downAnchor: Int) :
         Command()
 
-    data class FetchPrevPage(val streamName: String, val topicName: String, val upAnchor: Int) :
+    data class FetchPreviousPagePostList(val streamName: String, val topicName: String, val upAnchor: Int) :
         Command()
 }

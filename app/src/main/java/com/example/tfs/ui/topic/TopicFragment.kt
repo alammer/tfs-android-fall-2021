@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.baseitems.BaseLoader
+import com.example.tfs.common.baseitems.LoaderItem
 import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.DaggerTopicComponent
@@ -84,7 +86,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         with(viewBinding) {
             loading.root.isVisible = state.isLoading
         }
-        topicAdapter.submitList(state.topicList)
+        topicAdapter.uploadData(state.topicList)
     }
 
     override fun handleEffect(effect: TopicEffect) {
@@ -92,23 +94,28 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             is TopicEffect.BackNavigation -> {
                 requireActivity().supportFragmentManager.popBackStack()
             }
-            is TopicEffect.UpdateError -> {
+            is TopicEffect.UpdateTopicError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on update topic")
                 }
             }
-            is TopicEffect.LoadError -> {
+            is TopicEffect.LoadTopicError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load topic")
                 }
-                //TODO("empty screen)
+            }
+            is TopicEffect.PostListUploadError -> {
+                with(requireView()) {
+                    effect.error.message?.let { showSnackbarError(it) }
+                        ?: showSnackbarError("Error on upload post list")
+                }
             }
             is TopicEffect.MessageDraftChange -> {
                 viewBinding.btnSendPost.setImageResource(if (effect.draft.isBlank()) R.drawable.ic_text_plus else R.drawable.ic_send_arrow)
             }
-            is TopicEffect.MessageSend -> {
+            is TopicEffect.PostSend -> {
                 viewBinding.btnSendPost.setImageResource(R.drawable.ic_text_plus)
                 viewBinding.etMessage.apply {
                     text.clear()
@@ -117,18 +124,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             }
             is TopicEffect.AddReactionDialog -> {
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
-            }
-            is TopicEffect.LoadTopic -> {
-                viewBinding.rvTopic.scrollToPosition(topicAdapter.itemCount - 1)
-            }
-            is TopicEffect.UpdateTopic -> {
-                //TODO("scrolling logic for new page")
-            }
-            is TopicEffect.NextPageLoad -> {
-                //TODO("show PB on bottom RV")
-            }
-            is TopicEffect.PrevPageLoad -> {
-                //TODO("show PB on top RV")
             }
         }
     }
@@ -143,7 +138,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         OwnerPostItem(::tapOnPost),
         UserPostItem(::updateReaction, ::addReaction, ::tapOnPost),
         DateItem(),
-        //LoaderItem(),
+        LoaderItem(),
         TextShimmerItem()
     )
 
@@ -169,7 +164,12 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 addOnScrollListener(object :
                     TopicScrollListetner(adapterLayoutManager) { //TODO remove in onDestroyView()
                     override fun loadPage(isDownScroll: Boolean) {
-                        store.accept(TopicEvent.Ui.PageFetching(isDownScroll))
+                        store.accept(TopicEvent.Ui.PostListUploading(isDownScroll))
+                        if (isDownScroll) {
+                            topicAdapter.addFooterItem(BaseLoader)
+                        } else {
+                            topicAdapter.addHeaderItem(BaseLoader)
+                        }
                     }
                 })
 
@@ -200,7 +200,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
-                    store.accept(TopicEvent.Ui.MessageSending)
+                    store.accept(TopicEvent.Ui.PostSending)
                 }
                 requireActivity().currentFocus?.apply { hideSoftKeyboard() }
             }
@@ -210,7 +210,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             }
 
             etMessage.doAfterTextChanged {
-                store.accept(TopicEvent.Ui.MessageDraftChanging(it.toString()))
+                store.accept(TopicEvent.Ui.PostDraftChanging(it.toString()))
             }
         }
     }
