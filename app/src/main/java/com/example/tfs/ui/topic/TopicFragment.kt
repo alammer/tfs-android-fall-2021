@@ -11,9 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.DaggerTopicComponent
-import com.example.tfs.ui.topic.adapter.TopicViewAdapter
+import com.example.tfs.ui.stream.*
+import com.example.tfs.ui.topic.adapter.TopicAdapter
+import com.example.tfs.ui.topic.adapter.items.DateItem
+import com.example.tfs.ui.topic.adapter.items.OwnerPostItem
+import com.example.tfs.ui.topic.adapter.items.UserPostItem
 import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
@@ -41,7 +46,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     private val viewBinding by viewBinding(FragmentTopicBinding::bind)
 
-    private lateinit var topicListAdapter: TopicViewAdapter
+    private val topicAdapter = TopicAdapter(getItemTypes())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,9 +62,13 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
-                store.accept(TopicEvent.Ui.NewReactionPicked(updatedMessageId,
-                    updatedEmojiName,
-                    updatedEmojiCode))
+                store.accept(
+                    TopicEvent.Ui.NewReactionPicked(
+                        updatedMessageId,
+                        updatedEmojiName,
+                        updatedEmojiCode
+                    )
+                )
             }
         }
     }
@@ -72,7 +81,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         with(viewBinding) {
             loading.root.isVisible = state.isLoading
         }
-        topicListAdapter.submitList(state.topicList)
+        topicAdapter.submitList(state.topicList)
     }
 
     override fun handleEffect(effect: TopicEffect) {
@@ -107,7 +116,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
             is TopicEffect.LoadTopic -> {
-                viewBinding.rvTopic.scrollToPosition(topicListAdapter.itemCount - 1)
+                viewBinding.rvTopic.scrollToPosition(topicAdapter.itemCount - 1)
             }
             is TopicEffect.UpdateTopic -> {
                 //TODO("scrolling logic for new page")
@@ -127,6 +136,14 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         super.onAttach(context)
     }
 
+    private fun getItemTypes() = listOf(
+        OwnerPostItem(::tapOnPost),
+        UserPostItem(::updateReaction, ::addReaction, ::tapOnPost),
+        DateItem(),
+        //LoaderItem(),
+        TextShimmerItem()
+    )
+
     private fun initViews() {
         with(viewBinding) {
             tvTopic.text = root.context.getString(
@@ -135,28 +152,52 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             )
             tvStream.text = streamName
 
-            topicListAdapter = TopicViewAdapter(
-                { postId: Int, emojiName: String, emojiCode: String ->
-                    updateReaction(postId = postId,
-                        emojiName = emojiName, emojiCode = emojiCode)
-                },
-                { postId -> addReaction(postId) },
-                { postId, isOwner ->  selectPost(postId, isOwner)}
-            )
-            topicListAdapter.stateRestorationPolicy =
-                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-            rvTopic.adapter = topicListAdapter
+            with(rvTopic) {
+                setHasFixedSize(true)
 
-            val layoutManager = LinearLayoutManager(context)
-            rvTopic.layoutManager = layoutManager
-            rvTopic.setHasFixedSize(true)
+                val adapterLayoutManager = LinearLayoutManager(context)
 
-            rvTopic.addOnScrollListener(object :
-                TopicScrollListetner(layoutManager) { //TODO remove in onDestroyView()
-                override fun loadPage(isDownScroll: Boolean) {
-                    store.accept(TopicEvent.Ui.PageFetching(isDownScroll))
-                }
-            })
+                topicAdapter.stateRestorationPolicy =
+                    RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                adapter = topicAdapter
+
+                layoutManager = adapterLayoutManager
+
+                addOnScrollListener(object :
+                    TopicScrollListetner(adapterLayoutManager) { //TODO remove in onDestroyView()
+                    override fun loadPage(isDownScroll: Boolean) {
+                        store.accept(TopicEvent.Ui.PageFetching(isDownScroll))
+                    }
+                })
+
+/*                addItemDecoration(
+                    ItemDividerDecorator(
+                        context,
+                        R.layout.item_stream,
+                        STREAM_ITEM_START_PADDING.toPx,
+                        STREAM_ITEM_END_PADDING.toPx
+                    )
+                )
+
+                addItemDecoration(
+                    ItemDividerDecorator(
+                        context,
+                        R.layout.item_text_shimmer,
+                        SHIMMER_ITEM_PADDING.toPx,
+                        SHIMMER_ITEM_PADDING.toPx
+                    )
+                )
+
+                addItemDecoration(
+                    ItemTopicTypeDecorator(
+                        context,
+                        R.layout.item_related_topic,
+                        TOPIC_ITEM_START_PADDING.toPx,
+                        TOPIC_ITEM_INNER_DIVIDER.toPx,
+                        TOPIC_ITEM_OUTER_DIVIDER.toPx
+                    )
+                )*/
+            }
 
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
@@ -175,7 +216,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         }
     }
 
-    private fun selectPost(postId: Int, isOwner: Boolean) {
+    private fun tapOnPost(postId: Int, isOwner: Boolean) {
         Log.i("TopicFragment", "Function called: selectPost() $postId $isOwner")
         //TODO("BSD for selected post")
     }

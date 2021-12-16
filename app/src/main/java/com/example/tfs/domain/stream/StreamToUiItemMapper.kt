@@ -1,7 +1,7 @@
 package com.example.tfs.domain.stream
 
-import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.common.baseadapter.AdapterItem
+import com.example.tfs.database.entity.LocalStream
 
 internal class StreamToUiItemMapper : (List<LocalStream>) -> (List<AdapterItem>) {
 
@@ -12,7 +12,7 @@ internal class StreamToUiItemMapper : (List<LocalStream>) -> (List<AdapterItem>)
             domainStreamList.add(stream.toDomainStream())
             if (stream.isExpanded) {
                 stream.topics.forEach { topicName ->
-                    domainStreamList.add(DomainTopic(topicName, stream.streamName))
+                    domainStreamList.add(RelatedTopic(topicName, stream.streamName))
                 }
             }
         }
@@ -21,8 +21,10 @@ internal class StreamToUiItemMapper : (List<LocalStream>) -> (List<AdapterItem>)
 }
 
 fun LocalStream.toDomainStream() =
-    DomainStream(id = streamId,
+    DomainStream(
+        id = streamId,
         name = "#$streamName",
         topics = topics,
-        expanded = isExpanded)
+        expanded = isExpanded
+    )
 

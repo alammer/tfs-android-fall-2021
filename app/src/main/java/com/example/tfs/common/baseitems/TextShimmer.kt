@@ -12,7 +12,7 @@ import com.example.tfs.common.baseadapter.BaseViewHolder
 
 data class TextShimmer(val text: String) : AdapterItem
 
-class TextShimmerItem() : AdapterItemBase<View, TextShimmer> {
+class TextShimmerItem : AdapterItemBase<View, TextShimmer> {
 
     override fun isRelativeItem(item: AdapterItem): Boolean = item is TextShimmer
 

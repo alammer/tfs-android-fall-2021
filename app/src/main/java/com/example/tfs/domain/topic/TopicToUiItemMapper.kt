@@ -1,6 +1,6 @@
 package com.example.tfs.domain.topic
 
-import android.util.Log
+import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.ui.topic.getUnicodeGlyph
@@ -10,7 +10,7 @@ import com.example.tfs.util.startOfDay
 import com.example.tfs.util.year
 import java.util.*
 
-internal class TopicToItemMapper : (List<PostWithReaction>) -> UiTopicListObject {
+internal class TopicToUiItemMapper : (List<PostWithReaction>) -> UiTopicListObject {
 
     override fun invoke(postList: List<PostWithReaction>): UiTopicListObject =
         createDomainPostItemList(postList)
@@ -19,7 +19,7 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> UiTopicListObject
         rawList: List<PostWithReaction>,
     ): UiTopicListObject {
 
-        val datedPostList = mutableListOf<PostItem>()
+        val datedPostList = mutableListOf<AdapterItem>()
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis() + localOffset
 
@@ -31,9 +31,9 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> UiTopicListObject
             if (post.post.timeStamp.startOfDay(localOffset / 1000L) > startTopicDate) {
                 startTopicDate = post.post.timeStamp.startOfDay(localOffset / 1000L)
                 if (startTopicDate.year < currentDate.year) {
-                    datedPostList.add(PostItem.LocalDateItem(startTopicDate.fullDate))
+                    datedPostList.add(DomainPostDate(startTopicDate.fullDate))
                 } else {
-                    datedPostList.add(PostItem.LocalDateItem(startTopicDate.shortDate))
+                    datedPostList.add(DomainPostDate(startTopicDate.shortDate))
                 }
             }
             if (post.post.isSelf) {
@@ -53,19 +53,23 @@ internal class TopicToItemMapper : (List<PostWithReaction>) -> UiTopicListObject
 }
 
 fun PostWithReaction.toOwnerPostItem() =
-    PostItem.OwnerPostItem(id = post.postId,
+    DomainOwnerPost(
+        id = post.postId,
         message = post.content,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction))
+        reaction = createUiReactionList(reaction)
+    )
 
 fun PostWithReaction.toUserPostItem() =
-    PostItem.UserPostItem(id = post.postId,
+    DomainUserPost(
+        id = post.postId,
         userId = post.senderId,
         userName = post.senderName,
         message = post.content,
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction))
+        reaction = createUiReactionList(reaction)
+    )
 
 
 private fun createUiReactionList(
@@ -89,7 +93,8 @@ private fun createUiReactionList(
                 unicodeGlyph = reaction.first { it.name == name }.run {
                     if (isCustom) "ZCE" else code.getUnicodeGlyph()
                 },
-                count = count,)
+                count = count,
+            )
         }
 
     val itemReaction = mutableMapOf<String, UiItemReaction>()
@@ -103,7 +108,13 @@ private fun createUiReactionList(
             }
         } else {
             itemReaction[emoji.emojiCode] =
-                UiItemReaction(emoji.emojiName, emoji.emojiCode, emoji.unicodeGlyph, emoji.count, checkEmoji(reaction,emoji.emojiCode))
+                UiItemReaction(
+                    emoji.emojiName,
+                    emoji.emojiCode,
+                    emoji.unicodeGlyph,
+                    emoji.count,
+                    checkEmoji(reaction, emoji.emojiCode)
+                )
         }
     }
 
@@ -112,7 +123,7 @@ private fun createUiReactionList(
 
 private fun checkEmoji(reaction: List<LocalReaction>, emojiCode: String): Boolean =
     reaction.asSequence().filter { it.code == emojiCode }
-        .firstOrNull{ it.isClicked }?.isClicked ?: false
+        .firstOrNull { it.isClicked }?.isClicked ?: false
 
 data class UiItemReaction(
     val emojiName: String,
@@ -123,7 +134,7 @@ data class UiItemReaction(
 )
 
 data class UiTopicListObject(
-    val itemList: List<PostItem>,
+    val itemList: List<AdapterItem>,
     val upAnchorId: Int,
     val downAnchorId: Int,
     val localDataLength: Int,

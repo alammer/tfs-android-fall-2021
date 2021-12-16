@@ -16,7 +16,7 @@ import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.stream.DomainStream
-import com.example.tfs.domain.stream.DomainTopic
+import com.example.tfs.domain.stream.RelatedTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
 import com.example.tfs.ui.stream.adapter.decorations.ItemDividerDecorator
 import com.example.tfs.ui.stream.adapter.decorations.ItemTopicTypeDecorator
@@ -121,9 +121,6 @@ class StreamFragment :
 
 
     private fun initViews() {
-        val dividerItem = DividerItemDecoration(context, RecyclerView.VERTICAL)
-        ResourcesCompat.getDrawable(resources, R.drawable.stream_item_divider, null)
-            ?.let { drawable -> dividerItem.setDrawable(drawable) }
 
         with(viewBinding.rvStreams) {
             setHasFixedSize(true)
@@ -181,7 +178,7 @@ class StreamFragment :
         store.accept(StreamEvent.Ui.ClickOnStream(stream.id))
     }
 
-    private fun moveToTopic(topic: DomainTopic) {
+    private fun moveToTopic(topic: RelatedTopic) {
         store.accept(StreamEvent.Ui.ClickOnTopic(topic.name, topic.parentStreamName))
     }
 

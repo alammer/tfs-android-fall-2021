@@ -1,10 +1,10 @@
 package com.example.tfs.ui.topic.elm
 
-import com.example.tfs.domain.topic.PostItem
+import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.domain.topic.UiTopicListObject
 
 data class TopicState(
-    val topicList: List<PostItem> = emptyList(),
+    val topicList: List<AdapterItem> = emptyList(),
     val error: Throwable? = null,
     val isLoading: Boolean = false,
     val isNextPageLoading: Boolean = false,
@@ -25,11 +25,16 @@ sealed class TopicEvent {
 
         object BackToStream : Ui()
 
-        data class ReactionClicked(val postId: Int,val emojiName: String, val emojiCode: String) : Ui()
+        data class ReactionClicked(val postId: Int, val emojiName: String, val emojiCode: String) :
+            Ui()
 
         data class NewReactionAdding(val postId: Int) : Ui()
 
-        data class NewReactionPicked(val postId: Int,val emojiName: String, val emojiCode: String) : Ui()
+        data class NewReactionPicked(
+            val postId: Int,
+            val emojiName: String,
+            val emojiCode: String
+        ) : Ui()
 
         data class MessageDraftChanging(val draft: String) : Ui()
 
@@ -81,11 +86,15 @@ sealed class Command {
 
     data class FetchTopic(val streamName: String, val topicName: String) : Command()
 
-    data class UpdateReaction(val postId: Int, val emojiName: String, val emojiCode: String) : Command()
+    data class UpdateReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
+        Command()
 
-    data class SendMessage(val streamName: String, val topicName: String, val message: String) : Command()
+    data class SendMessage(val streamName: String, val topicName: String, val message: String) :
+        Command()
 
-    data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) : Command()
+    data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :
+        Command()
 
-    data class FetchPrevPage(val streamName: String, val topicName: String, val upAnchor: Int) : Command()
+    data class FetchPrevPage(val streamName: String, val topicName: String, val upAnchor: Int) :
+        Command()
 }
