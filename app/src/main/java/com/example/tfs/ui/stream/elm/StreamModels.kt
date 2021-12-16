@@ -5,7 +5,7 @@ import com.example.tfs.common.baseadapter.AdapterItem
 data class StreamState(
     val streamListItem: List<AdapterItem> = emptyList(),
     val error: Throwable? = null,
-    val query: String = "",
+    val searchQuery: String = "",
     val isInitial: Boolean = true,
     val isLoading: Boolean = false,
     val isShowing: Boolean = false,
@@ -20,7 +20,7 @@ sealed class StreamEvent {
 
         object Init : Ui()
 
-        object RefreshData : Ui()
+        object RefreshStreamList : Ui()
 
         data class ShowFragment(val isSubscribed: Boolean) : Ui()
 
@@ -35,7 +35,7 @@ sealed class StreamEvent {
 
         object UpdateStreamComplete : Internal()
 
-        data class QueryChange(val query: String) : Internal()
+        data class SearchQueryChange(val query: String) : Internal()
 
         data class LocalLoadingComplete(val streams: List<AdapterItem>) : Internal()
 
@@ -43,7 +43,7 @@ sealed class StreamEvent {
 
         data class LoadingError(val error: Throwable) : Internal()
 
-        data class SearchStreamsComplete(val streams: List<AdapterItem>) : Internal()
+        data class SearchInLocalStreamListComplete(val streams: List<AdapterItem>) : Internal()
 
         data class UpdateDataError(val error: Throwable) : Internal()
     }
@@ -57,9 +57,9 @@ sealed class StreamEffect {
 
 sealed class Command {
 
-    object ObserveQuery : Command()
-    data class GetLocalStreams(val query: String, val isSubscribed: Boolean) : Command()
-    data class SearchStreams(val query: String, val isSubscribed: Boolean) : Command()
-    data class GetRemoteStreams(val query: String, val isSubscribed: Boolean) : Command()
+    object ObserveSearchQuery : Command()
+    data class GetLocalStreamList(val query: String, val isSubscribed: Boolean) : Command()
+    data class SearchInLocalStreamList(val query: String, val isSubscribed: Boolean) : Command()
+    data class UpdateStreamList(val query: String, val isSubscribed: Boolean) : Command()
     data class SelectStream(val streamId: Int) : Command()
 }

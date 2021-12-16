@@ -9,5 +9,5 @@ class AppModule {
 
     @AppScope
     @Provides
-    fun provideRxSearchBus(): PublishSubject<String> = PublishSubject.create()
+    fun provideRxSearchQueryBus(): PublishSubject<String> = PublishSubject.create()
 }

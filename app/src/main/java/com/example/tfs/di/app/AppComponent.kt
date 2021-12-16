@@ -18,7 +18,7 @@ interface AppComponent {
     fun localTopicSource(): TopicDataDao
     fun localUserSource(): ContactDataDao
     fun remoteSource(): ApiService
-    fun rxSearchBus(): PublishSubject<String>
+    fun rxSearchQueryBus(): PublishSubject<String>
     fun ownerId(): Int
 
     @Component.Builder

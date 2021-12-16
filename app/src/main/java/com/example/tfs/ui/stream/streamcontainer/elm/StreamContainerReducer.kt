@@ -13,11 +13,11 @@ class StreamContainerReducer :
 
     override fun Result.internal(event: Internal) = when (event) {
 
-        is Internal.UpdateQueryComplete -> {
+        is Internal.UpdateSearchQueryComplete -> {
         }
 
-        is Internal.UpdateQueryError -> {
-            effects { +StreamContainerEffect.QueryError(event.error) }
+        is Internal.UpdateSearchQueryError -> {
+            effects { +StreamContainerEffect.UpdatingSearchQueryError(event.error) }
         }
     }
 
@@ -30,10 +30,10 @@ class StreamContainerReducer :
             state {
                 copy(
                     error = null,
-                    query = event.query
+                    searchQuery = event.query
                 )
             }
-            commands { +Command.UpdateSearch(state.query) }
+            commands { +Command.UpdateSearchQuery(state.searchQuery) }
         }
     }
 }

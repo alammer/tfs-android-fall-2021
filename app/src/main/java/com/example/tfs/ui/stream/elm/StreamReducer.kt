@@ -1,6 +1,5 @@
 package com.example.tfs.ui.stream.elm
 
-import android.util.Log
 import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 
 class StreamReducer :
@@ -19,7 +18,7 @@ class StreamReducer :
             }
             if (state.isInitial) {
                 state { copy(isInitial = false, isLoading = true) }
-                commands { +Command.GetRemoteStreams(state.query, state.isSubscribed) }
+                commands { +Command.UpdateStreamList(state.searchQuery, state.isSubscribed) }
             } else {
                 Any()
             }
@@ -33,7 +32,7 @@ class StreamReducer :
             }
         }
 
-        is StreamEvent.Internal.SearchStreamsComplete -> {
+        is StreamEvent.Internal.SearchInLocalStreamListComplete -> {
             state { copy(isClicked = false, isLoading = false) }
             if (event.streams.isEmpty()) {
                 state { copy(isEmpty = true) }
@@ -44,15 +43,15 @@ class StreamReducer :
 
         is StreamEvent.Internal.UpdateStreamComplete -> {
             state { copy(error = null) }
-            commands { +Command.SearchStreams(state.query, state.isSubscribed) }
+            commands { +Command.SearchInLocalStreamList(state.searchQuery, state.isSubscribed) }
         }
 
-        is StreamEvent.Internal.QueryChange -> {
-            state { copy(query = event.query) }
+        is StreamEvent.Internal.SearchQueryChange -> {
+            state { copy(searchQuery = event.query) }
             if (state.isShowing) {
                 state { copy(isLoading = true) }
             }
-            commands { +Command.SearchStreams(event.query, state.isSubscribed) }
+            commands { +Command.SearchInLocalStreamList(event.query, state.isSubscribed) }
         }
 
         is StreamEvent.Internal.LoadingError -> {  //TODO("retry get remote if error from room?")
@@ -70,14 +69,14 @@ class StreamReducer :
 
         is StreamEvent.Ui.Init -> {
             state { copy(error = null) }
-            commands { +Command.ObserveQuery }
-            commands { +Command.GetLocalStreams(initialState.query, initialState.isSubscribed) }
+            commands { +Command.ObserveSearchQuery }
+            commands { +Command.GetLocalStreamList(initialState.searchQuery, initialState.isSubscribed) }
         }
 
-        is StreamEvent.Ui.RefreshData -> {
+        is StreamEvent.Ui.RefreshStreamList -> {
             if (state.isShowing) {
                 state { copy(isLoading = true, error = null) }
-                commands { +Command.GetRemoteStreams(state.query, state.isSubscribed) }
+                commands { +Command.UpdateStreamList(state.searchQuery, state.isSubscribed) }
             } else {
                 Any()
             }

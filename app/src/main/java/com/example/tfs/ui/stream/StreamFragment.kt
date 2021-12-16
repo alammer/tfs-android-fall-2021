@@ -48,8 +48,8 @@ class StreamFragment :
         requireArguments().getBoolean(SUBSCRIBED_KEY, true)
     }
 
-    private val initialQuery by lazy {
-        requireArguments().getString(QUERY_KEY, "")
+    private val initialSearchQuery by lazy {
+        requireArguments().getString(SEARCH_QUERY_KEY, "")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,7 +59,7 @@ class StreamFragment :
 
     override fun createStore(): Store<StreamEvent, StreamEffect, StreamState> =
         StreamStore.provide(
-            StreamState(isSubscribed = isSubscribed, query = initialQuery),
+            StreamState(isSubscribed = isSubscribed, searchQuery = initialSearchQuery),
             streamActor
         )
 
@@ -164,7 +164,7 @@ class StreamFragment :
 
         viewBinding.swipeLayout.setOnRefreshListener {
             viewBinding.swipeLayout.isRefreshing = false
-            store.accept(StreamEvent.Ui.RefreshData)
+            store.accept(StreamEvent.Ui.RefreshStreamList)
         }
     }
 
@@ -188,13 +188,13 @@ class StreamFragment :
     companion object {
 
         private const val SUBSCRIBED_KEY = "is_subscribed"
-        private const val QUERY_KEY = "current_query"
+        private const val SEARCH_QUERY_KEY = "current_query"
 
         fun newInstance(isSubscribed: Boolean = true, query: String = ""): StreamFragment {
             return StreamFragment().apply {
                 arguments = bundleOf(
                     SUBSCRIBED_KEY to isSubscribed,
-                    QUERY_KEY to query
+                    SEARCH_QUERY_KEY to query
                 )
             }
         }

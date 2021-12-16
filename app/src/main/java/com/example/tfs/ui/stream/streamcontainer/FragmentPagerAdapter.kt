@@ -8,13 +8,13 @@ class FragmentPagerAdapter(
     fragment: Fragment,
 ) : FragmentStateAdapter(fragment) {
 
-    private var currentQuery: String = ""
+    private var currentSearchQuery: String = ""
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> StreamFragment.newInstance(true, currentQuery)
+            0 -> StreamFragment.newInstance(true, currentSearchQuery)
 
-            else -> StreamFragment.newInstance(false, currentQuery)
+            else -> StreamFragment.newInstance(false, currentSearchQuery)
         }
     }
 
@@ -22,7 +22,7 @@ class FragmentPagerAdapter(
         return 2
     }
 
-    fun setCurrentQuery(query: String) {
-        currentQuery = query
+    fun setCurrentSearchQuery(query: String) {
+        currentSearchQuery = query
     }
 }

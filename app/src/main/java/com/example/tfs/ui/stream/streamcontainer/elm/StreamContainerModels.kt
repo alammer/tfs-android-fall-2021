@@ -2,7 +2,7 @@ package com.example.tfs.ui.stream.streamcontainer.elm
 
 data class StreamContainerState(
     val error: Throwable? = null,
-    val query: String = "",
+    val searchQuery: String = "",
     val tabPosition: Int = 0,
 )
 
@@ -17,18 +17,18 @@ sealed class StreamContainerEvent {
 
     sealed class Internal : StreamContainerEvent() {
 
-        object UpdateQueryComplete : Internal()
+        object UpdateSearchQueryComplete : Internal()
 
-        data class UpdateQueryError(val error: Throwable) : Internal()
+        data class UpdateSearchQueryError(val error: Throwable) : Internal()
     }
 }
 
 sealed class StreamContainerEffect {
 
-    data class QueryError(val error: Throwable) : StreamContainerEffect()
+    data class UpdatingSearchQueryError(val error: Throwable) : StreamContainerEffect()
 }
 
 sealed class Command {
 
-    data class UpdateSearch(val query: String) : Command()
+    data class UpdateSearchQuery(val query: String) : Command()
 }

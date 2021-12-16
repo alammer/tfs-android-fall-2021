@@ -31,7 +31,7 @@ class StreamContainerFragment :
     private val viewBinding by viewBinding(FragmentStreamContainerBinding::bind)
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private val searchStream: PublishSubject<String> = PublishSubject.create()
+    private val searchStreamQuery: PublishSubject<String> = PublishSubject.create()
 
     @Inject
     lateinit var streamContainerActor: StreamContainerActor
@@ -43,7 +43,7 @@ class StreamContainerFragment :
 
     override fun handleEffect(effect: StreamContainerEffect) {
         when (effect) {
-            is StreamContainerEffect.QueryError -> {
+            is StreamContainerEffect.UpdatingSearchQueryError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on load stream list")
@@ -70,14 +70,14 @@ class StreamContainerFragment :
         super.onAttach(context)
     }
 
-    private fun subscribeToSearchStreams(adapter: FragmentPagerAdapter) {
-        searchStream
+    private fun subscribeToSearchStreamQuery(adapter: FragmentPagerAdapter) {
+        searchStreamQuery
             .distinctUntilChanged()
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread(), true)
             .subscribeBy(
                 onNext = {
-                    adapter.setCurrentQuery(it)
+                    adapter.setCurrentSearchQuery(it)
                     store.accept(StreamContainerEvent.Ui.ChangeSearchQuery(it))
                 }
             )
@@ -88,7 +88,7 @@ class StreamContainerFragment :
 
         val pagerAdapter = FragmentPagerAdapter(this)
 
-        subscribeToSearchStreams(pagerAdapter)
+        subscribeToSearchStreamQuery(pagerAdapter)
 
         with(viewBinding) {
             viewPager.adapter = pagerAdapter
@@ -101,7 +101,7 @@ class StreamContainerFragment :
             }.attach()
 
             appbar.etSearchInput.doAfterTextChanged {
-                searchStream.onNext(it.toString())
+                searchStreamQuery.onNext(it.toString())
                 if (it.isNullOrBlank()) {
                     appbar.etSearchInput.clearFocus()
                 }

@@ -19,30 +19,30 @@ class StreamActor /*@Inject constructor*/(
                 )
         }
 
-        is Command.SearchStreams -> {
-            streamInteractor.getStreamsFromLocal(command.query, command.isSubscribed)
+        is Command.SearchInLocalStreamList -> {
+            streamInteractor.getLocalStreamList(command.query, command.isSubscribed)
                 .mapEvents(
-                    StreamEvent.Internal::SearchStreamsComplete,
+                    StreamEvent.Internal::SearchInLocalStreamListComplete,
                     StreamEvent.Internal::UpdateDataError
                 )
         }
-        is Command.GetLocalStreams -> {
-            streamInteractor.getStreamsFromLocal(command.query, command.isSubscribed)
+        is Command.GetLocalStreamList -> {
+            streamInteractor.getLocalStreamList(command.query, command.isSubscribed)
                 .mapEvents(
                     StreamEvent.Internal::LocalLoadingComplete,
                     StreamEvent.Internal::LoadingError
                 )
         }
-        is Command.GetRemoteStreams -> {
-            streamInteractor.getStreamsFromRemote(command.query, command.isSubscribed)
+        is Command.UpdateStreamList -> {
+            streamInteractor.updateStreamListFromRemote(command.query, command.isSubscribed)
                 .mapEvents(
                     StreamEvent.Internal::RemoteLoadingComplete,
                     StreamEvent.Internal::LoadingError
                 )
         }
-        is Command.ObserveQuery -> {
-            streamInteractor.observeQuery()
-                .mapEvents(StreamEvent.Internal::QueryChange, StreamEvent.Internal::UpdateDataError)
+        is Command.ObserveSearchQuery -> {
+            streamInteractor.observeSearchQuery()
+                .mapEvents(StreamEvent.Internal::SearchQueryChange, StreamEvent.Internal::UpdateDataError)
         }
     }
 }

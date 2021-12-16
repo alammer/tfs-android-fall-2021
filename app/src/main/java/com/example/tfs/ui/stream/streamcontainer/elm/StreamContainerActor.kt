@@ -14,9 +14,9 @@ class StreamContainerActor /*@Inject constructor*/(
 
     override fun execute(command: Command): Observable<Internal> = when (command) {
 
-        is Command.UpdateSearch -> {
-            streamInteractor.updateSearch(command.query)
-                .mapEvents(Internal.UpdateQueryComplete, Internal::UpdateQueryError)
+        is Command.UpdateSearchQuery -> {
+            streamInteractor.updateSearchQuery(command.query)
+                .mapEvents(Internal.UpdateSearchQueryComplete, Internal::UpdateSearchQueryError)
         }
     }
 }

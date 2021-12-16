@@ -10,23 +10,23 @@ import javax.inject.Inject
 
 class StreamInteractor @Inject constructor(
     private val streamRepository: StreamRepository,
-    private val rxSearchBus: PublishSubject<String>
+    private val rxSearchQueryBus: PublishSubject<String>
 ) {
 
-    private val streamToItemMapper: StreamToItemMapper = StreamToItemMapper()
+    private val streamToUiItemMapper: StreamToUiItemMapper = StreamToUiItemMapper()
 
-    fun updateSearch(query: String): Completable {
-        rxSearchBus.onNext(query)
+    fun updateSearchQuery(query: String): Completable {
+        rxSearchQueryBus.onNext(query)
         return Completable.complete()
     }
 
-    fun observeQuery(): Observable<String> {
-        return rxSearchBus
+    fun observeSearchQuery(): Observable<String> {
+        return rxSearchQueryBus
     }
 
     fun clickStream(streamId: Int) = streamRepository.selectStream(streamId)
 
-    fun getStreamsFromLocal(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
+    fun getLocalStreamList(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
                 streamRepository.getLocalSubscribedStreams(query)
@@ -34,10 +34,10 @@ class StreamInteractor @Inject constructor(
                 streamRepository.getLocalUnsubscribedStreams(query)
             }
         return source
-            .map(streamToItemMapper)
+            .map(streamToUiItemMapper)
     }
 
-    fun getStreamsFromRemote(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
+    fun updateStreamListFromRemote(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
                 streamRepository.updateSubscribedStreams(query)
@@ -45,6 +45,6 @@ class StreamInteractor @Inject constructor(
                 streamRepository.updateUnsubscribedStreams(query)
             }
         return source
-            .map(streamToItemMapper)
+            .map(streamToUiItemMapper)
     }
 }
