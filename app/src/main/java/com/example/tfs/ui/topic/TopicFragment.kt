@@ -16,6 +16,8 @@ import com.example.tfs.databinding.FragmentTopicBinding
 import com.example.tfs.di.DaggerTopicComponent
 import com.example.tfs.ui.stream.*
 import com.example.tfs.ui.topic.adapter.TopicAdapter
+import com.example.tfs.ui.topic.adapter.decorations.ItemDateDecorator
+import com.example.tfs.ui.topic.adapter.decorations.ItemPostDecorator
 import com.example.tfs.ui.topic.adapter.items.DateItem
 import com.example.tfs.ui.topic.adapter.items.OwnerPostItem
 import com.example.tfs.ui.topic.adapter.items.UserPostItem
@@ -23,6 +25,7 @@ import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.showSnackbarError
+import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
@@ -170,33 +173,29 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     }
                 })
 
-/*                addItemDecoration(
-                    ItemDividerDecorator(
-                        context,
-                        R.layout.item_stream,
-                        STREAM_ITEM_START_PADDING.toPx,
-                        STREAM_ITEM_END_PADDING.toPx
+                addItemDecoration(
+                    ItemDateDecorator(
+                        R.layout.item_post_date,
+                        DATE_ITEM_DIVIDER.toPx,
                     )
                 )
 
                 addItemDecoration(
-                    ItemDividerDecorator(
-                        context,
-                        R.layout.item_text_shimmer,
-                        SHIMMER_ITEM_PADDING.toPx,
-                        SHIMMER_ITEM_PADDING.toPx
+                    ItemPostDecorator(
+                        viewType = R.layout.item_post_owner,
+                        verticalDivider = POST_ITEM_DIVIDER.toPx,
+                        endPadding = OWNER_POST_ITEM_END_PADDING.toPx
                     )
                 )
 
                 addItemDecoration(
-                    ItemTopicTypeDecorator(
-                        context,
-                        R.layout.item_related_topic,
-                        TOPIC_ITEM_START_PADDING.toPx,
-                        TOPIC_ITEM_INNER_DIVIDER.toPx,
-                        TOPIC_ITEM_OUTER_DIVIDER.toPx
+                    ItemPostDecorator(
+                        viewType = R.layout.item_post,
+                        verticalDivider = POST_ITEM_DIVIDER.toPx,
+                        startPadding = USER_POST_ITEM_START_PADDING.toPx,
+                        endPadding = USER_POST_ITEM_END_PADDING.toPx,
                     )
-                )*/
+                )
             }
 
             btnSendPost.setOnClickListener {
@@ -258,3 +257,10 @@ const val EMOJI_RESPONSE_KEY = "emoji_response"
 const val EMOJI_RESPONSE_MESSAGE = "emoji_key"
 const val EMOJI_RESPONSE_NAME = "emoji_name"
 const val EMOJI_RESPONSE_CODE = "emoji_id"
+
+private const val DATE_ITEM_DIVIDER = 4
+private const val POST_ITEM_DIVIDER = 16
+private const val OWNER_POST_ITEM_END_PADDING = 12
+private const val USER_POST_ITEM_START_PADDING = 12
+private const val USER_POST_ITEM_END_PADDING = 80
+

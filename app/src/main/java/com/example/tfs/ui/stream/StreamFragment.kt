@@ -4,10 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
@@ -19,7 +17,7 @@ import com.example.tfs.domain.stream.DomainStream
 import com.example.tfs.domain.stream.RelatedTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
 import com.example.tfs.ui.stream.adapter.decorations.ItemDividerDecorator
-import com.example.tfs.ui.stream.adapter.decorations.ItemTopicTypeDecorator
+import com.example.tfs.ui.stream.adapter.decorations.ItemTopicDecorator
 import com.example.tfs.ui.stream.adapter.items.StreamItem
 import com.example.tfs.ui.stream.adapter.items.TopicItem
 import com.example.tfs.ui.stream.elm.*
@@ -149,7 +147,7 @@ class StreamFragment :
             )
 
             addItemDecoration(
-                ItemTopicTypeDecorator(
+                ItemTopicDecorator(
                     context,
                     R.layout.item_related_topic,
                     TOPIC_ITEM_START_PADDING.toPx,
