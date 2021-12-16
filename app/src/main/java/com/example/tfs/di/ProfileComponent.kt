@@ -1,9 +1,9 @@
 package com.example.tfs.di
 
 import com.example.tfs.di.app.AppComponent
-import com.example.tfs.domain.contacts.ContactInteractor
-import com.example.tfs.domain.contacts.ContactRepository
-import com.example.tfs.domain.contacts.ContactRepositoryImpl
+import com.example.tfs.domain.contact.ContactInteractor
+import com.example.tfs.domain.contact.ContactRepository
+import com.example.tfs.domain.contact.ContactRepositoryImpl
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.ui.profile.elm.ProfileActor
 import dagger.Binds

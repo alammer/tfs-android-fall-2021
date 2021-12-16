@@ -1,9 +1,9 @@
 package com.example.tfs.di
 
 import com.example.tfs.di.app.AppComponent
-import com.example.tfs.domain.contacts.ContactInteractor
-import com.example.tfs.domain.contacts.ContactRepository
-import com.example.tfs.domain.contacts.ContactRepositoryImpl
+import com.example.tfs.domain.contact.ContactInteractor
+import com.example.tfs.domain.contact.ContactRepository
+import com.example.tfs.domain.contact.ContactRepositoryImpl
 import com.example.tfs.ui.contacts.ContactsFragment
 import com.example.tfs.ui.contacts.elm.ContactActor
 import dagger.Binds
@@ -18,10 +18,10 @@ annotation class ContactsScope
 
 @ContactsScope
 @Component(
-    modules = [ContactsModule::class, ContactBindings::class],
+    modules = [ContactModule::class, ContactBindings::class],
     dependencies = [AppComponent::class]
 )
-interface ContactsComponent {
+interface ContactComponent {
 
     fun inject(contactsFragment: ContactsFragment)
 
@@ -30,12 +30,12 @@ interface ContactsComponent {
 
         fun appComponent(appComponent: AppComponent): Builder
 
-        fun build(): ContactsComponent
+        fun build(): ContactComponent
     }
 }
 
 @Module
-class ContactsModule {
+class ContactModule {
 
     @Provides
     fun provideContactActor(interactor: ContactInteractor): ContactActor {

@@ -1,4 +1,4 @@
-package com.example.tfs.domain.streams
+package com.example.tfs.domain.stream
 
 import com.example.tfs.database.dao.StreamDataDao
 import com.example.tfs.database.entity.LocalStream
@@ -15,15 +15,15 @@ import javax.inject.Inject
 
 interface StreamRepository {
 
-    fun getLocalSubscribedStreams(query: String): Single<List<LocalStream>>
+    fun getLocalSubscribedStreamList(query: String): Single<List<LocalStream>>
 
-    fun getLocalUnsubscribedStreams(query: String): Single<List<LocalStream>>
+    fun getLocalUnsubscribedStreamList(query: String): Single<List<LocalStream>>
 
-    fun searchStreams(query: String, isSubscribed: Boolean): Single<List<LocalStream>>
+    fun searchInLocalStreamList(query: String, isSubscribed: Boolean): Single<List<LocalStream>>
 
-    fun updateSubscribedStreams(query: String): Single<List<LocalStream>>
+    fun updateSubscribedStreamList(query: String): Single<List<LocalStream>>
 
-    fun updateUnsubscribedStreams(query: String): Single<List<LocalStream>>
+    fun updateUnsubscribedStreamList(query: String): Single<List<LocalStream>>
 
     fun selectStream(streamId: Int): Completable
 }
@@ -33,20 +33,20 @@ class StreamRepositoryImpl @Inject constructor(
     private val localDao: StreamDataDao,
 ) : StreamRepository {
 
-    override fun getLocalUnsubscribedStreams(
+    override fun getLocalUnsubscribedStreamList(
         query: String,
     ): Single<List<LocalStream>> = localDao.getUnsubscribedStreams()
             .subscribeOn(Schedulers.io())
             .map { streams -> streams.filter { it.streamName.contains(query) } }
 
 
-    override fun getLocalSubscribedStreams(
+    override fun getLocalSubscribedStreamList(
         query: String,
     ): Single<List<LocalStream>> = localDao.getSubscribedStreams()
             .subscribeOn(Schedulers.io())
             .map { streams -> streams.filter { it.streamName.contains(query) } }
 
-    override fun searchStreams(
+    override fun searchInLocalStreamList(
         query: String,
         isSubscribed: Boolean
     ): Single<List<LocalStream>> {
@@ -78,7 +78,7 @@ class StreamRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun updateSubscribedStreams(query: String): Single<List<LocalStream>> {
+    override fun updateSubscribedStreamList(query: String): Single<List<LocalStream>> {
         return localDao.getSubscribedStreams()
             .subscribeOn(Schedulers.io())
             .flatMap { localStreamList: List<LocalStream> ->
@@ -94,7 +94,7 @@ class StreamRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun updateUnsubscribedStreams(query: String): Single<List<LocalStream>> {
+    override fun updateUnsubscribedStreamList(query: String): Single<List<LocalStream>> {
         //TODO("MAKE BIFUNCTION")
         return localDao.getAllStreams()
             .subscribeOn(Schedulers.io())

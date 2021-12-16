@@ -15,8 +15,8 @@ import com.example.tfs.appComponent
 import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
-import com.example.tfs.domain.streams.DomainStream
-import com.example.tfs.domain.streams.DomainTopic
+import com.example.tfs.domain.stream.DomainStream
+import com.example.tfs.domain.stream.DomainTopic
 import com.example.tfs.ui.stream.adapter.StreamAdapter
 import com.example.tfs.ui.stream.adapter.decorations.ItemDividerDecorator
 import com.example.tfs.ui.stream.adapter.decorations.ItemTopicTypeDecorator

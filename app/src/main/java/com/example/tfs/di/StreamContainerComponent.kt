@@ -1,9 +1,9 @@
 package com.example.tfs.di
 
 import com.example.tfs.di.app.AppComponent
-import com.example.tfs.domain.streams.StreamInteractor
-import com.example.tfs.domain.streams.StreamRepository
-import com.example.tfs.domain.streams.StreamRepositoryImpl
+import com.example.tfs.domain.stream.StreamInteractor
+import com.example.tfs.domain.stream.StreamRepository
+import com.example.tfs.domain.stream.StreamRepositoryImpl
 import com.example.tfs.ui.stream.streamcontainer.StreamContainerFragment
 import com.example.tfs.ui.stream.streamcontainer.elm.StreamContainerActor
 import dagger.Binds

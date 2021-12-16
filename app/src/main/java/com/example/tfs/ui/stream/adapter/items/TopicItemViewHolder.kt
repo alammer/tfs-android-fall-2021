@@ -3,7 +3,7 @@ package com.example.tfs.ui.stream.adapter.items
 import android.view.View
 import android.widget.TextView
 import com.example.tfs.R
-import com.example.tfs.domain.streams.DomainTopic
+import com.example.tfs.domain.stream.DomainTopic
 import com.example.tfs.common.baseadapter.BaseViewHolder
 
 class TopicItemViewHolder(

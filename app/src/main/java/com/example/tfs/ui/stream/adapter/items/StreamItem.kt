@@ -8,7 +8,7 @@ import com.example.tfs.R
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.common.baseadapter.AdapterItemBase
 import com.example.tfs.common.baseadapter.BaseViewHolder
-import com.example.tfs.domain.streams.DomainStream
+import com.example.tfs.domain.stream.DomainStream
 
 class StreamItem(
     private val onClickStream: (DomainStream) -> Unit

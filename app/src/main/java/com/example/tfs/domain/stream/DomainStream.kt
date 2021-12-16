@@ -1,4 +1,4 @@
-package com.example.tfs.domain.streams
+package com.example.tfs.domain.stream
 
 import com.example.tfs.common.baseadapter.AdapterItem
 

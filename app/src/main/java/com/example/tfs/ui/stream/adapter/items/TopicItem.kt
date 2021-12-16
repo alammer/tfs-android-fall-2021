@@ -8,7 +8,7 @@ import com.example.tfs.R
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.common.baseadapter.AdapterItemBase
 import com.example.tfs.common.baseadapter.BaseViewHolder
-import com.example.tfs.domain.streams.DomainTopic
+import com.example.tfs.domain.stream.DomainTopic
 
 class TopicItem(
     private val onClickTopic: (DomainTopic) -> Unit

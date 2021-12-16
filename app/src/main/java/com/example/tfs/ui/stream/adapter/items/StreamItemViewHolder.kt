@@ -5,7 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.tfs.R
 import com.example.tfs.common.baseadapter.BaseViewHolder
-import com.example.tfs.domain.streams.DomainStream
+import com.example.tfs.domain.stream.DomainStream
 
 class StreamItemViewHolder(
     streamView: View,

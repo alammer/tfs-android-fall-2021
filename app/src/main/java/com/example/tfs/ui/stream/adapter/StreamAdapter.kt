@@ -4,7 +4,7 @@ import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.common.baseadapter.AdapterItemBase
 import com.example.tfs.common.baseadapter.BaseAdapter
 import com.example.tfs.common.baseitems.TextShimmer
-import com.example.tfs.domain.streams.DomainStream
+import com.example.tfs.domain.stream.DomainStream
 
 class StreamAdapter(
     streamItemList: List<AdapterItemBase<*, *>>

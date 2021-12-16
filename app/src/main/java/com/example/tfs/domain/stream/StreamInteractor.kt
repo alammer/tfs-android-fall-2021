@@ -1,4 +1,4 @@
-package com.example.tfs.domain.streams
+package com.example.tfs.domain.stream
 
 
 import com.example.tfs.common.baseadapter.AdapterItem
@@ -29,9 +29,9 @@ class StreamInteractor @Inject constructor(
     fun getLocalStreamList(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
-                streamRepository.getLocalSubscribedStreams(query)
+                streamRepository.getLocalSubscribedStreamList(query)
             } else {
-                streamRepository.getLocalUnsubscribedStreams(query)
+                streamRepository.getLocalUnsubscribedStreamList(query)
             }
         return source
             .map(streamToUiItemMapper)
@@ -40,9 +40,9 @@ class StreamInteractor @Inject constructor(
     fun updateStreamListFromRemote(query: String, isSubscribed: Boolean): Single<List<AdapterItem>> {
         val source =
             if (isSubscribed) {
-                streamRepository.updateSubscribedStreams(query)
+                streamRepository.updateSubscribedStreamList(query)
             } else {
-                streamRepository.updateUnsubscribedStreams(query)
+                streamRepository.updateUnsubscribedStreamList(query)
             }
         return source
             .map(streamToUiItemMapper)

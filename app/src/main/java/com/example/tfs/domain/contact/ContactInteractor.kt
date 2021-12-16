@@ -1,4 +1,4 @@
-package com.example.tfs.domain.contacts
+package com.example.tfs.domain.contact
 
 import com.example.tfs.database.entity.LocalUser
 import io.reactivex.Maybe

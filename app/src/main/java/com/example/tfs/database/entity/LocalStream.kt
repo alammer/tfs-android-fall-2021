@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.tfs.domain.streams.DomainStream
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "streams")
