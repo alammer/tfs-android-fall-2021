@@ -10,34 +10,71 @@ class TopicReducer :
     ) {
 
     override fun Result.internal(event: TopicEvent.Internal) = when (event) {
-        is TopicEvent.Internal.TopicLoadingComplete -> {
-            state {
-                copy(
-                    isLoading = false,
-                    topicList = event.uiTopic.itemList,
-                    upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId
+        is TopicEvent.Internal.LocalTopicLoadingComplete -> {
+            if (event.uiTopic.itemList.isNotEmpty()) {
+                state {
+                    copy(
+                        topicList = event.uiTopic.itemList,
+                        upAnchor = event.uiTopic.upAnchorId,
+                        downAnchor = event.uiTopic.downAnchorId
+                    )
+                }
+            }
+            commands {
+                +Command.GetRemoteTopic(
+                    initialState.streamName,
+                    initialState.topicName
                 )
             }
         }
 
-        is TopicEvent.Internal.TopicLoadingError -> {
+        is TopicEvent.Internal.RemoteTopicLoadingComplete -> {
+            if (event.uiTopic.itemList.isNotEmpty()) {
+                state {
+                    copy(
+                        isEmptyData = false,
+                        isLoading = false,
+                        topicList = event.uiTopic.itemList,
+                        upAnchor = event.uiTopic.upAnchorId,
+                        downAnchor = event.uiTopic.downAnchorId
+                    )
+                }
+            } else {
+                state {
+                    copy(
+                        isEmptyData = true,
+                        isLoading = false,
+                        topicList = event.uiTopic.itemList,
+                        upAnchor = event.uiTopic.upAnchorId,
+                        downAnchor = event.uiTopic.downAnchorId
+                    )
+                }
+            }
+        }
+
+        is TopicEvent.Internal.LocalTopicLoadingError -> {
+            effects { +TopicEffect.LoadTopicError(event.error) }
+        }
+
+        is TopicEvent.Internal.RemoteTopicLoadingError -> {
             state { copy(isLoading = false) }
             effects { +TopicEffect.LoadTopicError(event.error) }
         }
 
-        is TopicEvent.Internal.PostListUploadingComplete -> {
+        is TopicEvent.Internal.PageUploadingComplete -> {
             state {
                 copy(
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId
+                    downAnchor = event.uiTopic.downAnchorId,
+                    isPageUploading = false
                 )
             }
         }
 
-        is TopicEvent.Internal.PostListUploadingError -> {
-            effects { +TopicEffect.PostListUploadError(event.error) }
+        is TopicEvent.Internal.PageUploadingError -> {
+            state { copy(isPageUploading = false) }
+            effects { +TopicEffect.PageUploadError(event.error) }
         }
 
         is TopicEvent.Internal.TopicUpdatingComplete -> {
@@ -73,12 +110,14 @@ class TopicReducer :
         }
     }
 
-    override fun Result.ui(event: TopicEvent.Ui) = when (event) {
+    override fun Result.ui(
+        event: TopicEvent.Ui
+    ) = when (event) {
 
         is TopicEvent.Ui.Init -> {
             state { copy(isLoading = true, error = null) }
             commands {
-                +Command.FetchRecentPostList(
+                +Command.FetchLocalTopic(
                     initialState.streamName,
                     initialState.topicName
                 )
@@ -98,6 +137,8 @@ class TopicReducer :
             state { copy(error = null) }
             commands {
                 +Command.UpdatePostReaction(
+                    state.streamName,
+                    state.topicName,
                     event.postId,
                     event.emojiName,
                     event.emojiCode
@@ -109,6 +150,8 @@ class TopicReducer :
             state { copy(error = null) }
             commands {
                 +Command.UpdatePostReaction(
+                    state.streamName,
+                    state.topicName,
                     event.postId,
                     event.emojiName,
                     event.emojiCode
@@ -123,34 +166,40 @@ class TopicReducer :
 
         is TopicEvent.Ui.PostSending -> {
             state { copy(error = null) }
-            commands { +Command.SendPost(state.streamName, state.topicName, state.messageDraft) }
+            commands {
+                +Command.SendPost(
+                    state.streamName,
+                    state.topicName,
+                    state.messageDraft
+                )
+            }
             state { copy(messageDraft = "") }
             effects { +TopicEffect.PostSend }
         }
 
-        is TopicEvent.Ui.PostListUploading -> {
-            if (event.isDownScroll) {
-                state { copy(error = null) }
-                commands {
-                    +Command.FetchNextPagePostList(
-                        state.streamName,
-                        state.topicName,
-                        state.downAnchor
-                    )
-                }
-            } else {
-                if (event.isDownScroll.not()) {
-                    state { copy(error = null) }
+        is TopicEvent.Ui.PageUploading -> {
+            if (state.isPageUploading.not()) {
+                if (event.isDownScroll) {
+                    state { copy(error = null, isPageUploading = true) }
                     commands {
-                        +Command.FetchPreviousPagePostList(
+                        +Command.FetchNextPage(
+                            state.streamName,
+                            state.topicName,
+                            state.downAnchor
+                        )
+                    }
+                } else {
+                    state { copy(error = null, isPageUploading = true) }
+                    commands {
+                        +Command.FetchPreviousPage(
                             state.streamName,
                             state.topicName,
                             state.upAnchor
                         )
                     }
-                } else {
-                    Any()
                 }
+            } else {
+                Any()
             }
         }
     }

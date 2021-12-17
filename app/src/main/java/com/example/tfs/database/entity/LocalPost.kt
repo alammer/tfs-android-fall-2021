@@ -33,7 +33,6 @@ data class LocalPost(
     @ColumnInfo(name = "sender_name")
     val senderName: String = "",
 
-    @NotNull
     @ColumnInfo(name = "content")
     val content: String,
 

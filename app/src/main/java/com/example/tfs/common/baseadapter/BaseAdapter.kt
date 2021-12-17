@@ -25,10 +25,17 @@ open class BaseAdapter(
 
     open fun addFooterItem(item: AdapterItem) = Unit
 
-    open fun addData(dataList: List<AdapterItem>) {
+/*
+    open fun appendData(dataList: List<AdapterItem>) {
         currentData = currentData + dataList
         submitList(currentData)
     }
+
+    open fun prependData(dataList: List<AdapterItem>) {
+        currentData = dataList + currentData
+        submitList(currentData)
+    }
+*/
 
     //override fun getItemCount() = getDataSize() + if (isLoading) 1 else 0
 

@@ -9,8 +9,13 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
 
     private val topicToUiItemMapper: TopicToUiItemMapper = TopicToUiItemMapper()
 
-    fun fetchRecentPostList(stream: String, topic: String): Observable<UiTopicListObject> {
-        return postRepository.fetchTopic(stream, topic)
+    fun fetchLocalTopic(stream: String, topic: String): Single<UiTopicListObject> {
+        return postRepository.fetchLocalTopic(stream, topic)
+            .map(topicToUiItemMapper)
+    }
+
+    fun getRemoteTopic(stream: String, topic: String): Single<UiTopicListObject> {
+        return postRepository.getRemoteTopic(stream, topic)
             .map(topicToUiItemMapper)
     }
 
@@ -29,8 +34,8 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
             .map(topicToUiItemMapper)
     }
 
-    fun updatePost(postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
-        return postRepository.updateReaction(postId, emojiName, emojiCode)
+    fun updatePost(stream: String, topic: String, postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
+        return postRepository.updateReaction(stream, topic, postId, emojiName, emojiCode)
             .map(topicToUiItemMapper)
     }
 }

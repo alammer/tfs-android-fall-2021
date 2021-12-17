@@ -19,6 +19,8 @@ internal class TopicToUiItemMapper : (List<PostWithReaction>) -> UiTopicListObje
         rawList: List<PostWithReaction>,
     ): UiTopicListObject {
 
+        if (rawList.isEmpty()) return UiTopicListObject()
+
         val datedPostList = mutableListOf<AdapterItem>()
         var startTopicDate = 0L
         val currentDate = System.currentTimeMillis() + localOffset
@@ -134,10 +136,10 @@ data class UiItemReaction(
 )
 
 data class UiTopicListObject(
-    val itemList: List<AdapterItem>,
-    val upAnchorId: Int,
-    val downAnchorId: Int,
-    val localDataLength: Int,
+    val itemList: List<AdapterItem> = emptyList(),
+    val upAnchorId: Int = -1,
+    val downAnchorId: Int = -1,
+    val localDataLength: Int = 0,
 )
 
 private val localOffset =

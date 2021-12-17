@@ -132,17 +132,6 @@ class StreamFragment :
                 ItemDividerDecorator(
                     context,
                     R.layout.item_stream,
-                    STREAM_ITEM_START_PADDING.toPx,
-                    STREAM_ITEM_END_PADDING.toPx
-                )
-            )
-
-            addItemDecoration(
-                ItemDividerDecorator(
-                    context,
-                    R.layout.item_text_shimmer,
-                    SHIMMER_ITEM_PADDING.toPx,
-                    SHIMMER_ITEM_PADDING.toPx
                 )
             )
 
@@ -166,12 +155,11 @@ class StreamFragment :
     private fun getItemTypes() = listOf(
         StreamItem(::clickOnStream),
         TopicItem(::moveToTopic),
-        TextShimmerItem()
     )
 
     private fun clickOnStream(stream: DomainStream) {
         if (stream.expanded.not() && stream.updated.not()) {
-            streamAdapter.addTextShimmerItem(stream, "Data loading...")
+            streamAdapter.addBackgroundShimmer(stream)
         }
         store.accept(StreamEvent.Ui.ClickOnStream(stream.id))
     }
@@ -196,10 +184,7 @@ class StreamFragment :
     }
 }
 
-private const val STREAM_ITEM_START_PADDING = 20
-private const val STREAM_ITEM_END_PADDING = 40
 private const val TOPIC_ITEM_START_PADDING = 40
-private const val SHIMMER_ITEM_PADDING = 40
 private const val TOPIC_ITEM_INNER_DIVIDER = 4
 private const val TOPIC_ITEM_OUTER_DIVIDER = 4
 

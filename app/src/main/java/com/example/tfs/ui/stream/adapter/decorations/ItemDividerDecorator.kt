@@ -14,8 +14,8 @@ import com.example.tfs.R
 class ItemDividerDecorator(
     context: Context,
     private val viewType: Int,
-    private val startPadding: Int,
-    private val endPadding: Int
+    private val startPadding: Int = 0,
+    private val endPadding: Int = 0
 ) :
     RecyclerView.ItemDecoration() {
 

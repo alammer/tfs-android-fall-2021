@@ -30,8 +30,8 @@ interface TopicDataDao {
     fun removeLastPage(newPageSize: Int): Completable
 
     @Transaction
-    @Query("SELECT * FROM posts")
-    fun getPostWithReaction(): Single<List<PostWithReaction>>
+    @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName ORDER BY post_id ASC")
+    fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable

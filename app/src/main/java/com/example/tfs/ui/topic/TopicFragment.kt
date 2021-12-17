@@ -85,6 +85,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     override fun render(state: TopicState) {
         with(viewBinding) {
             loading.root.isVisible = state.isLoading
+            empty.root.isVisible = state.isEmptyData
         }
         topicAdapter.uploadData(state.topicList)
     }
@@ -106,7 +107,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                         ?: showSnackbarError("Error on load topic")
                 }
             }
-            is TopicEffect.PostListUploadError -> {
+            is TopicEffect.PageUploadError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
                         ?: showSnackbarError("Error on upload post list")
@@ -164,7 +165,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 addOnScrollListener(object :
                     TopicScrollListetner(adapterLayoutManager) { //TODO remove in onDestroyView()
                     override fun loadPage(isDownScroll: Boolean) {
-                        store.accept(TopicEvent.Ui.PostListUploading(isDownScroll))
+                        store.accept(TopicEvent.Ui.PageUploading(isDownScroll))
                         if (isDownScroll) {
                             topicAdapter.addFooterItem(BaseLoader)
                         } else {

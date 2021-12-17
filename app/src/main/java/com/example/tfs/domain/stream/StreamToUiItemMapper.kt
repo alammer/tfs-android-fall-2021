@@ -6,6 +6,9 @@ import com.example.tfs.database.entity.LocalStream
 internal class StreamToUiItemMapper : (List<LocalStream>) -> (List<AdapterItem>) {
 
     override fun invoke(streams: List<LocalStream>): List<AdapterItem> {
+
+        if (streams.isEmpty()) return emptyList()
+
         val domainStreamList = mutableListOf<AdapterItem>()
 
         streams.forEach { stream ->

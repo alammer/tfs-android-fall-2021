@@ -7,10 +7,11 @@ data class TopicState(
     val topicList: List<AdapterItem> = emptyList(),
     val error: Throwable? = null,
     val isLoading: Boolean = false,
+    val isPageUploading: Boolean = false,
+    val isEmptyData: Boolean = false,
     val messageDraft: String = "",
     val downAnchor: Int = 0,
     val upAnchor: Int = 0,
-    val currentRVPosition: Int = 0,
     val topicName: String = "",
     val streamName: String = "",
 )
@@ -38,18 +39,22 @@ sealed class TopicEvent {
 
         object PostSending : Ui()
 
-        data class PostListUploading(val isDownScroll: Boolean) : Ui()
+        data class PageUploading(val isDownScroll: Boolean) : Ui()
     }
 
     sealed class Internal : TopicEvent() {
 
-        data class TopicLoadingComplete(val uiTopic: UiTopicListObject) : Internal()
+        data class LocalTopicLoadingComplete(val uiTopic: UiTopicListObject) : Internal()
 
-        data class TopicLoadingError(val error: Throwable) : Internal()
+        data class RemoteTopicLoadingComplete(val uiTopic: UiTopicListObject) : Internal()
 
-        data class PostListUploadingComplete(val uiTopic: UiTopicListObject) : Internal()
+        data class LocalTopicLoadingError(val error: Throwable) : Internal()
 
-        data class PostListUploadingError(val error: Throwable) : Internal()
+        data class RemoteTopicLoadingError(val error: Throwable) : Internal()
+
+        data class PageUploadingComplete(val uiTopic: UiTopicListObject) : Internal()
+
+        data class PageUploadingError(val error: Throwable) : Internal()
 
         data class TopicUpdatingComplete(val uiTopic: UiTopicListObject) : Internal()
 
@@ -65,7 +70,7 @@ sealed class TopicEffect {
 
     data class LoadTopicError(val error: Throwable) : TopicEffect()
 
-    data class PostListUploadError(val error: Throwable) : TopicEffect()
+    data class PageUploadError(val error: Throwable) : TopicEffect()
 
     data class UpdateTopicError(val error: Throwable) : TopicEffect()
 
@@ -80,17 +85,19 @@ sealed class TopicEffect {
 
 sealed class Command {
 
-    data class FetchRecentPostList(val streamName: String, val topicName: String) : Command()
+    data class FetchLocalTopic(val streamName: String, val topicName: String) : Command()
 
-    data class UpdatePostReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
+    data class GetRemoteTopic(val streamName: String, val topicName: String) : Command()
+
+    data class UpdatePostReaction(val streamName: String, val topicName: String, val postId: Int, val emojiName: String, val emojiCode: String) :
         Command()
 
     data class SendPost(val streamName: String, val topicName: String, val message: String) :
         Command()
 
-    data class FetchNextPagePostList(val streamName: String, val topicName: String, val downAnchor: Int) :
+    data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :
         Command()
 
-    data class FetchPreviousPagePostList(val streamName: String, val topicName: String, val upAnchor: Int) :
+    data class FetchPreviousPage(val streamName: String, val topicName: String, val upAnchor: Int) :
         Command()
 }
