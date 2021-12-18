@@ -105,5 +105,4 @@ dependencies {
 
     // Shimmer Layout
     implementation "com.facebook.shimmer:shimmer:$shimmer_version"
-
 }

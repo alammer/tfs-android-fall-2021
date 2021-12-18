@@ -1,5 +1,12 @@
 package com.example.tfs.domain.topic
 
+import android.graphics.Typeface
+import android.os.Build
+import android.text.Html
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
+import androidx.core.text.HtmlCompat
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -57,7 +64,7 @@ internal class TopicToUiItemMapper : (List<PostWithReaction>) -> UiTopicListObje
 fun PostWithReaction.toOwnerPostItem() =
     DomainOwnerPost(
         id = post.postId,
-        message = post.content,
+        message = getHtml(post.content),//getHtml(post.content),//getPostDescription(post.content),//post.content
         timeStamp = post.timeStamp,
         reaction = createUiReactionList(reaction)
     )
@@ -67,12 +74,28 @@ fun PostWithReaction.toUserPostItem() =
         id = post.postId,
         userId = post.senderId,
         userName = post.senderName,
-        message = post.content,
+        message = getHtml(post.content),//getPostDescription(post.content),//post.content,
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
         reaction = createUiReactionList(reaction)
     )
 
+private fun getHtml(htmlBody: String): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        Html.fromHtml(htmlBody, Html.FROM_HTML_MODE_COMPACT).toString()
+    else
+        Html.fromHtml(htmlBody).toString()
+}
+
+private fun getPostDescription(comment: String) =
+    SpannableStringBuilder(comment).apply {
+/*        setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            nickName.length,
+            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+        )*/
+    }
 
 private fun createUiReactionList(
     reaction: List<LocalReaction>,

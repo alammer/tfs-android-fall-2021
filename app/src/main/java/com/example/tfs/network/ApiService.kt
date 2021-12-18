@@ -41,6 +41,7 @@ interface ApiService {
         @Query("topic") topicName: String,
         @Query("content") content: String,
         @Query("type") type: String = "stream",
+        //@Query("apply_markdown") markdown: Boolean = true
     ): Completable
 
     @POST("api/v1/messages/{message_id}/reactions")

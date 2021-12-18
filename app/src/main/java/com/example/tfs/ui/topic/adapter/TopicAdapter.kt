@@ -9,15 +9,15 @@ class TopicAdapter(
     topicItemList: List<AdapterItemBase<*, *>>
 ) : BaseAdapter(topicItemList) {
 
-    var isPrevPageLoading = false
-    var isNextPageLoading = false
+    private var isPrevPageLoading = false
+    private var isNextPageLoading = false
 
     override fun addHeaderItem(item: AdapterItem) {
         super.addHeaderItem(item)
         if (isPrevPageLoading.not()) {
             isPrevPageLoading = true
             val newList = currentData.toMutableList()
-            newList.add(0, item)
+            newList[0] = item
             updateData(newList.toList())
         }
     }
