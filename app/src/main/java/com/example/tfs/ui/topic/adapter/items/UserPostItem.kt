@@ -36,6 +36,6 @@ class UserPostItem(
             oldItem.id == newItem.id
 
         override fun areContentsTheSame(oldItem: DomainUserPost, newItem: DomainUserPost) =
-            oldItem == newItem
+            oldItem.content == newItem.content
     }
 }

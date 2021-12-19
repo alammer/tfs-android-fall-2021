@@ -1,20 +1,22 @@
 package com.example.tfs.domain.topic
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
-import android.text.Html
-import android.text.Spannable
-import android.text.SpannableStringBuilder
+import android.text.*
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import androidx.annotation.ColorInt
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.res.ResourcesCompat.getColor
 import androidx.core.text.HtmlCompat
+import com.example.tfs.R
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.ui.topic.getUnicodeGlyph
-import com.example.tfs.util.fullDate
-import com.example.tfs.util.shortDate
-import com.example.tfs.util.startOfDay
-import com.example.tfs.util.year
+import com.example.tfs.util.*
 import java.util.*
 
 internal class TopicToUiItemMapper : (List<PostWithReaction>) -> UiTopicListObject {
@@ -64,7 +66,7 @@ internal class TopicToUiItemMapper : (List<PostWithReaction>) -> UiTopicListObje
 fun PostWithReaction.toOwnerPostItem() =
     DomainOwnerPost(
         id = post.postId,
-        message = getHtml(post.content),//getHtml(post.content),//getPostDescription(post.content),//post.content
+        message = post.content,
         timeStamp = post.timeStamp,
         reaction = createUiReactionList(reaction)
     )
@@ -74,17 +76,69 @@ fun PostWithReaction.toUserPostItem() =
         id = post.postId,
         userId = post.senderId,
         userName = post.senderName,
-        message = getHtml(post.content),//getPostDescription(post.content),//post.content,
+        message = post.content,
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction)
+        reaction = createUiReactionList(reaction),
+        content = mapPostContextToView(post.senderName, post.content,post.timeStamp)
     )
 
-private fun getHtml(htmlBody: String): String {
+private fun mapPostContextToView(
+    userName: String,
+    message: String,
+    timeStamp: Long,
+    ): String {
+    val userNameLength = userName.length
+    val spannedMessage = trimSpannable(getHtml(message))
+    val messageLength = spannedMessage.length
+    val spannedTimeStamp = timeStamp.postTimeStamp
+    val timeStampLength = spannedTimeStamp.length
+    val spannablePost = SpannableString("$userName\n$spannedMessage\n$spannedTimeStamp")
+
+    spannablePost.setSpan(
+        AbsoluteSizeSpan(USERNAME_TEXT_SIZE_SP.spToPx.toInt()),
+        0,
+        userNameLength,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+
+/*    spannablePost.setSpan(
+        ForegroundColorSpan(Color.parseColor(USERNAME_TEXT_COLOR)),
+        0,
+        userNameLength,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )*/
+    spannablePost.setSpan(
+        AbsoluteSizeSpan(MESSAGE_TEXT_SIZE_SP.spToPx.toInt()),
+        userNameLength + 1,
+        userNameLength + 1 + messageLength,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+
+    return spannablePost.toString()
+}
+
+private fun getHtml(htmlBody: String): Spanned{
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        Html.fromHtml(htmlBody, Html.FROM_HTML_MODE_COMPACT).toString()
+        Html.fromHtml(htmlBody, Html.FROM_HTML_MODE_COMPACT)
     else
-        Html.fromHtml(htmlBody).toString()
+        Html.fromHtml(htmlBody)
+}
+
+private fun trimSpannable(spanned: Spanned): SpannableStringBuilder {
+    val spannable = SpannableStringBuilder(spanned)
+    var trimStart = 0
+    var trimEnd = 0
+    var text = spannable.toString()
+    while (text.isNotEmpty() && text.startsWith("\n")) {
+        text = text.substring(1)
+        trimStart += 1
+    }
+    while (text.isNotEmpty() && text.endsWith("\n")) {
+        text = text.substring(0, text.length - 1)
+        trimEnd += 1
+    }
+    return spannable.delete(0, trimStart).delete(spannable.length - trimEnd, spannable.length)
 }
 
 private fun getPostDescription(comment: String) =
@@ -167,3 +221,8 @@ data class UiTopicListObject(
 
 private val localOffset =
     (TimeZone.getDefault().rawOffset + TimeZone.getDefault().dstSavings).toLong()
+
+private const val USERNAME_TEXT_SIZE_SP = 14
+private const val MESSAGE_TEXT_SIZE_SP = 16
+private const val POST_TIME_TEXT_SIZE_SP = 12
+private const val USERNAME_TEXT_COLOR = R.color.green_bg.toString()

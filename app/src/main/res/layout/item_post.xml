@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,52 +10,33 @@
         android:layout_width="@dimen/user_avatar_size"
         android:layout_height="@dimen/user_avatar_size"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@id/lMessage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/UserAvatarCircleOverlay" />
 
-    <LinearLayout
-        android:id="@+id/lMessage"
-        android:layout_width="0dp"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:background="@drawable/post_user_message_shape"
-        android:orientation="vertical"
-        android:paddingVertical="8dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@id/lEmojis"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imgPostAvatar"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tvPostUserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/green_bg"
-            android:textSize="@dimen/medium_text_size"
-            tools:text="Ivan Ivanov" />
+        android:layout_gravity="start"
+        android:layout_marginStart="50dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvPostMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:minWidth="140dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="4dp"
+            android:paddingVertical="8dp"
+            android:background="@drawable/post_user_message_shape"
             android:textColor="@color/white_text_color"
             android:textSize="@dimen/info_text_size" />
 
-    </LinearLayout>
+        <com.example.tfs.ui.topic.customview.EmojisLayout
+            android:id="@+id/lEmojis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.example.tfs.ui.topic.customview.EmojisLayout
-        android:id="@+id/lEmojis"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imgPostAvatar"
-        app:layout_constraintTop_toBottomOf="@id/lMessage" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

@@ -1,5 +1,6 @@
 package com.example.tfs.domain.topic
 
+import android.text.SpannableString
 import com.example.tfs.common.baseadapter.AdapterItem
 
 
@@ -13,6 +14,7 @@ data class DomainUserPost(
     val message: String,
     val avatar: String? = null,
     val timeStamp: Long,
+    val content: CharSequence,
 ) : AdapterItem
 
 data class DomainOwnerPost(

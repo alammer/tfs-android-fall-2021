@@ -20,16 +20,16 @@ class UserPostItemViewHolder(
 ) : BaseViewHolder<View, DomainUserPost>(postView) {
 
     private val userAvatar = postView.findViewById<ShapeableImageView>(R.id.imgPostAvatar)
-    private val userName = postView.findViewById<TextView>(R.id.tvPostUserName)
+    //private val userName = postView.findViewById<TextView>(R.id.tvPostUserName)
     private val postMessage = postView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = postView.findViewById<EmojisLayout>(R.id.lEmojis)
 
     override fun onBind(item: DomainUserPost) {
         super.onBind(item)
 
-        userName.text = item.userName
+        //userName.text = item.userName
 
-        postMessage.text = item.message
+        postMessage.text = item.content
 
         userAvatar.apply {
             item.avatar?.let {
