@@ -138,11 +138,9 @@ class PostRepositoryImpl @Inject constructor(
     ): Single<List<PostWithReaction>> =
         localDao.getPostWithReaction(streamName, topicName)
 
-
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         remoteApi.getRemotePostList(query)
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
-
 
     private fun insertTopicToLocal(
         remotePostList: List<PostWithReaction>,

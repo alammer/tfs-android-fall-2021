@@ -5,14 +5,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.tfs.R
-import com.example.tfs.appComponent
-import com.example.tfs.database.MessengerDB
-import com.example.tfs.ui.contacts.ContactsFragment
+import com.example.tfs.ui.contacts.ContactFragment
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.ui.stream.streamcontainer.StreamContainerFragment
 import com.example.tfs.ui.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.menu.findItem(R.id.nav_to_streams).isChecked = true
                 }
-                is ContactsFragment -> {
+                is ContactFragment -> {
                     bottomNavigationView.visibility = View.VISIBLE
                     bottomNavigationView.menu.findItem(R.id.nav_to_contacts).isChecked = true
                 }
@@ -63,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     private fun onNavItemSelected(itemId: Int) {
         when (itemId) {
             R.id.nav_to_streams -> loadFragment(StreamContainerFragment())
-            R.id.nav_to_contacts -> loadFragment(ContactsFragment())
+            R.id.nav_to_contacts -> loadFragment(ContactFragment())
             R.id.nav_to_profile -> loadFragment(ProfileFragment.newInstance())
         }
     }

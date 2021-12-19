@@ -2,7 +2,6 @@ package com.example.tfs.ui.topic
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -152,9 +151,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             tvStream.text = streamName
 
             with(rvTopic) {
-                setHasFixedSize(true)
-
                 val adapterLayoutManager = LinearLayoutManager(context)
+
+                setHasFixedSize(true)
 
                 topicAdapter.stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -217,7 +216,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     private fun tapOnPost(postId: Int, isOwner: Boolean) {
-        Log.i("TopicFragment", "Function called: selectPost() $postId $isOwner")
         //TODO("BSD for selected post")
     }
 

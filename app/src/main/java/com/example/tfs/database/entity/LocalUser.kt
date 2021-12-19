@@ -3,6 +3,7 @@ package com.example.tfs.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.tfs.common.baseadapter.AdapterItem
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "contacts")
@@ -35,4 +36,4 @@ data class LocalUser(
     @NotNull
     @ColumnInfo(name = "last_visit")
     val lastVisit: Long = 0,
-)
+) : AdapterItem

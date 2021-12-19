@@ -1,17 +1,11 @@
 package com.example.tfs.domain.topic
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Build
 import android.text.*
 import android.text.style.AbsoluteSizeSpan
+import android.text.style.AlignmentSpan
 import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import androidx.annotation.ColorInt
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.content.res.ResourcesCompat.getColor
-import androidx.core.text.HtmlCompat
-import com.example.tfs.R
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -68,7 +62,8 @@ fun PostWithReaction.toOwnerPostItem() =
         id = post.postId,
         message = post.content,
         timeStamp = post.timeStamp,
-        reaction = createUiReactionList(reaction)
+        reaction = createUiReactionList(reaction),
+        content = spanOwnerPost(post.content, post.timeStamp)
     )
 
 fun PostWithReaction.toUserPostItem() =
@@ -80,19 +75,51 @@ fun PostWithReaction.toUserPostItem() =
         avatar = post.avatarUrl,
         timeStamp = post.timeStamp,
         reaction = createUiReactionList(reaction),
-        content = mapPostContextToView(post.senderName, post.content,post.timeStamp)
+        content = spanUserPost(post.senderName, post.content, post.timeStamp)
     )
 
-private fun mapPostContextToView(
+private fun spanOwnerPost(
+    message: String,
+    timeStamp: Long,
+): SpannableString {
+    val spannedMessage = trimSpannable(getHtml(message))
+    val messageLength = spannedMessage.length
+    val spannedTimeStamp = timeStamp.postTimeStamp
+    val timeStampStart = messageLength + 1
+    val spannablePost = SpannableString("$spannedMessage\n$spannedTimeStamp")
+
+    spannablePost.setSpan(
+        AbsoluteSizeSpan(TIMESTAMP_TEXT_SIZE_SP.spToPx.toInt()),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+
+    spannablePost.setSpan(
+        ForegroundColorSpan(Color.LTGRAY),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    spannablePost.setSpan(
+        AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    return spannablePost
+}
+
+private fun spanUserPost(
     userName: String,
     message: String,
     timeStamp: Long,
-    ): String {
+): SpannableString {
     val userNameLength = userName.length
     val spannedMessage = trimSpannable(getHtml(message))
     val messageLength = spannedMessage.length
     val spannedTimeStamp = timeStamp.postTimeStamp
-    val timeStampLength = spannedTimeStamp.length
+    val timeStampStart = userNameLength + messageLength + 2
     val spannablePost = SpannableString("$userName\n$spannedMessage\n$spannedTimeStamp")
 
     spannablePost.setSpan(
@@ -102,23 +129,40 @@ private fun mapPostContextToView(
         Spanned.SPAN_INCLUSIVE_INCLUSIVE
     )
 
-/*    spannablePost.setSpan(
-        ForegroundColorSpan(Color.parseColor(USERNAME_TEXT_COLOR)),
+    spannablePost.setSpan(
+        ForegroundColorSpan(Color.parseColor(USER_TEXT_COLOR)),
         0,
         userNameLength,
         Spanned.SPAN_INCLUSIVE_INCLUSIVE
-    )*/
+    )
     spannablePost.setSpan(
         AbsoluteSizeSpan(MESSAGE_TEXT_SIZE_SP.spToPx.toInt()),
         userNameLength + 1,
-        userNameLength + 1 + messageLength,
+        timeStampStart - 2,
         Spanned.SPAN_INCLUSIVE_INCLUSIVE
     )
-
-    return spannablePost.toString()
+    spannablePost.setSpan(
+        AbsoluteSizeSpan(TIMESTAMP_TEXT_SIZE_SP.spToPx.toInt()),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    spannablePost.setSpan(
+        ForegroundColorSpan(Color.parseColor(USER_TEXT_COLOR)),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    spannablePost.setSpan(
+        AlignmentSpan.Standard(Layout.Alignment.ALIGN_OPPOSITE),
+        timeStampStart,
+        spannablePost.length,
+        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+    )
+    return spannablePost
 }
 
-private fun getHtml(htmlBody: String): Spanned{
+private fun getHtml(htmlBody: String): Spanned {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         Html.fromHtml(htmlBody, Html.FROM_HTML_MODE_COMPACT)
     else
@@ -140,16 +184,6 @@ private fun trimSpannable(spanned: Spanned): SpannableStringBuilder {
     }
     return spannable.delete(0, trimStart).delete(spannable.length - trimEnd, spannable.length)
 }
-
-private fun getPostDescription(comment: String) =
-    SpannableStringBuilder(comment).apply {
-/*        setSpan(
-            StyleSpan(Typeface.BOLD),
-            0,
-            nickName.length,
-            Spannable.SPAN_INCLUSIVE_INCLUSIVE
-        )*/
-    }
 
 private fun createUiReactionList(
     reaction: List<LocalReaction>,
@@ -224,5 +258,6 @@ private val localOffset =
 
 private const val USERNAME_TEXT_SIZE_SP = 14
 private const val MESSAGE_TEXT_SIZE_SP = 16
-private const val POST_TIME_TEXT_SIZE_SP = 12
-private const val USERNAME_TEXT_COLOR = R.color.green_bg.toString()
+private const val TIMESTAMP_TEXT_SIZE_SP = 12
+private const val USER_TEXT_COLOR = "#2A9D8F"
+private const val OWNER_TIMESTAMP_COLOR = "#2A9D8F"

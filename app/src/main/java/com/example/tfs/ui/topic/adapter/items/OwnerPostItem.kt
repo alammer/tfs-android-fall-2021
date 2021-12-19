@@ -1,5 +1,6 @@
 package com.example.tfs.ui.topic.adapter.items
 
+import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,12 @@ class OwnerPostItem(
     private val onPostTap: (postId: Int, isOwner: Boolean) -> Unit
 ) : AdapterItemBase<View, DomainOwnerPost> {
 
+    private val spannableFactory = object : Spannable.Factory() {
+        override fun newSpannable(source: CharSequence?): Spannable {
+            return source as Spannable
+        }
+    }
+
     override fun isRelativeItem(item: AdapterItem): Boolean = item is DomainOwnerPost
 
     override fun getLayoutId() = R.layout.item_post_owner
@@ -23,7 +30,7 @@ class OwnerPostItem(
         parent: ViewGroup
     ): BaseViewHolder<View, DomainOwnerPost> {
         val v = layoutInflater.inflate(R.layout.item_post_owner, parent, false)
-        return OwnerPostItemViewHolder(v, onPostTap)
+        return OwnerPostItemViewHolder(v, onPostTap, spannableFactory)
     }
 
     override fun getDiffUtil(): DiffUtil.ItemCallback<DomainOwnerPost> = diffUtil

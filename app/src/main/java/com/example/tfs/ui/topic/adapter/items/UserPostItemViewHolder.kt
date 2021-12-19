@@ -1,8 +1,9 @@
 package com.example.tfs.ui.topic.adapter.items
 
-import android.util.Log
+import android.text.Spannable
 import android.view.View
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.example.tfs.R
 import com.example.tfs.common.baseadapter.BaseViewHolder
 import com.example.tfs.domain.topic.DomainUserPost
@@ -17,23 +18,31 @@ class UserPostItemViewHolder(
     private val onChangeReactionClick: (postId: Int, emojiName: String, emojiCode: String) -> Unit,
     private val onAddReactionClick: (postId: Int) -> Unit,
     private val onPostTap: (postId: Int, isOwner: Boolean) -> Unit,
+    private val spanFactory: Spannable.Factory
 ) : BaseViewHolder<View, DomainUserPost>(postView) {
 
     private val userAvatar = postView.findViewById<ShapeableImageView>(R.id.imgPostAvatar)
+
     //private val userName = postView.findViewById<TextView>(R.id.tvPostUserName)
     private val postMessage = postView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = postView.findViewById<EmojisLayout>(R.id.lEmojis)
 
+    //val colorSpan = ForegroundColorSpan(ContextCompat.getColor(postView.context, R.color.green_bg))
+
     override fun onBind(item: DomainUserPost) {
         super.onBind(item)
 
-        //userName.text = item.userName
+        //item.content.setSpan(colorSpan, 0, item.userName.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
 
-        postMessage.text = item.content
+        postMessage.setSpannableFactory(spanFactory)
+
+        postMessage.setText(item.content, TextView.BufferType.SPANNABLE)
+
+        //postMessage.text = item.content
 
         userAvatar.apply {
             item.avatar?.let {
-                loadAvatar()
+                loadAvatar(it)
             } ?: drawUserInitials(item.userName)
         }
 
@@ -74,6 +83,13 @@ class UserPostItemViewHolder(
         }
     }
 
-    private fun loadAvatar() = Unit
-
+    private fun loadAvatar(avatarUrl: String) {
+        Glide.with(postView)
+            .load(avatarUrl)
+            .centerCrop()
+            .placeholder(R.drawable.loading_img_animation)
+            .error(R.drawable.broken_img)
+            .into(userAvatar)
+            .waitForLayout()
+    }
 }

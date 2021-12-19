@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.example.tfs.R
 import com.example.tfs.appComponent
 import com.example.tfs.databinding.FragmentProfileBinding
@@ -50,9 +51,13 @@ class ProfileFragment :
             state.user?.apply {
                 tvProfileName.text = userName
                 avatarUrl?.let { userImage ->
-                    Picasso.get().load(userImage)
-                        .resize(PROFILE_AVATAR_WIDTH.toPx, PROFILE_AVATAR_WIDTH.toPx)
-                        .centerCrop().into(imgProfileUser)
+                        Glide.with(viewBinding.root)
+                            .load(userImage)
+                            .centerCrop()
+                            .placeholder(R.drawable.loading_img_animation)
+                            .error(R.drawable.broken_img)
+                            .into(imgProfileUser)
+                            .waitForLayout()
                 } ?: imgProfileUser.drawUserInitials(userName)
 
                 tvProfileState.setUserState(userState)

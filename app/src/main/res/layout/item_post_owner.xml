@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="80dp"
+        android:minWidth="140dp"
         android:background="@drawable/post_owner_message_shape"
         android:textColor="@color/white_text_color"
         android:textSize="@dimen/info_text_size"

@@ -6,11 +6,15 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.baseitems.BaseLoader
+import com.example.tfs.common.baseitems.LoaderItem
 import com.example.tfs.databinding.FragmentContactBinding
 import com.example.tfs.di.DaggerContactComponent
-import com.example.tfs.ui.contacts.adapter.ContactViewAdapter
+import com.example.tfs.ui.contacts.adapter.ContactAdapter
+import com.example.tfs.ui.contacts.adapter.items.ContactItem
 import com.example.tfs.ui.contacts.elm.*
 import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.util.showSnackbarError
@@ -26,7 +30,7 @@ import vivid.money.elmslie.core.store.Store
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ContactsFragment :
+class ContactFragment :
     ElmFragment<ContactEvent, ContactEffect, ContactState>(R.layout.fragment_contact) {
 
     override val initEvent: ContactEvent = ContactEvent.Ui.Init
@@ -36,7 +40,7 @@ class ContactsFragment :
     @Inject
     lateinit var contactActor: ContactActor
 
-    private lateinit var contactListAdapter: ContactViewAdapter
+    private val contactAdapter = ContactAdapter(getItemTypes())
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val searchContact: PublishSubject<String> = PublishSubject.create()
@@ -51,7 +55,7 @@ class ContactsFragment :
 
     override fun render(state: ContactState) {
         viewBinding.loading.root.isVisible = state.isFetching
-        contactListAdapter.submitList(state.contactList)
+        contactAdapter.updateData(state.contactList)
     }
 
     override fun handleEffect(effect: ContactEffect) {
@@ -77,17 +81,16 @@ class ContactsFragment :
         super.onAttach(context)
     }
 
+    override fun onDestroyView() {
+        viewBinding.rvContacts.clearOnScrollListeners()  //TODO
+        super.onDestroyView()
+    }
+
     private fun initViews() {
 
         subscribeToSearchContacts()
 
-        contactListAdapter = ContactViewAdapter { contactId: Int ->
-            store.accept(ContactEvent.Ui.ContactClicked(contactId))
-        }
-
         with(viewBinding) {
-            rvContacts.adapter = contactListAdapter
-            rvContacts.layoutManager = LinearLayoutManager(context)
 
             etSearchInput.doAfterTextChanged {
                 searchContact.onNext(it.toString())
@@ -95,7 +98,37 @@ class ContactsFragment :
                     etSearchInput.clearFocus()
                 }
             }
+
+            with(rvContacts) {
+                val adapterLayoutManager = LinearLayoutManager(context)
+
+                setHasFixedSize(true)
+
+                contactAdapter.stateRestorationPolicy =
+                    RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
+                adapter = contactAdapter
+                layoutManager = adapterLayoutManager
+
+                addOnScrollListener(object :
+                    ContactScrollListener(adapterLayoutManager) { //TODO remove in onDestroyView()
+                    override fun loadPage() {
+                        //store.accept(TopicEvent.Ui.PageUploading(isDownScroll))
+                        contactAdapter.addFooterItem(BaseLoader)
+                    }
+                })
+
+            }
         }
+    }
+
+    private fun getItemTypes() = listOf(
+        ContactItem(::clickOnContact),
+        LoaderItem(),
+    )
+
+    private fun clickOnContact(contactId: Int) {
+        store.accept(ContactEvent.Ui.ContactClicked(contactId))
     }
 
     private fun subscribeToSearchContacts() {

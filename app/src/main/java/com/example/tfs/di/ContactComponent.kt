@@ -4,7 +4,7 @@ import com.example.tfs.di.app.AppComponent
 import com.example.tfs.domain.contact.ContactInteractor
 import com.example.tfs.domain.contact.ContactRepository
 import com.example.tfs.domain.contact.ContactRepositoryImpl
-import com.example.tfs.ui.contacts.ContactsFragment
+import com.example.tfs.ui.contacts.ContactFragment
 import com.example.tfs.ui.contacts.elm.ContactActor
 import dagger.Binds
 import dagger.Component
@@ -23,7 +23,7 @@ annotation class ContactsScope
 )
 interface ContactComponent {
 
-    fun inject(contactsFragment: ContactsFragment)
+    fun inject(contactFragment: ContactFragment)
 
     @Component.Builder
     interface Builder {
