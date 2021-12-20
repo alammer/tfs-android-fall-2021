@@ -20,6 +20,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.storepersisting.retainStoreHolder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -55,6 +56,8 @@ class StreamContainerFragment :
     override fun createStore(): Store<StreamContainerEvent, StreamContainerEffect, StreamContainerState> =
         StreamContainerStore.provide(actor = streamContainerActor)
 
+    override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
+
     override fun render(state: StreamContainerState) {
 
     }
@@ -70,7 +73,7 @@ class StreamContainerFragment :
         super.onAttach(context)
     }
 
-    private fun subscribeToSearchStreamQuery(adapter: FragmentPagerAdapter) {
+    private fun subscribeToSearchStreamQuery(adapter: StreamPagerAdapter) {
         searchStreamQuery
             .distinctUntilChanged()
             .debounce(500, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -86,7 +89,7 @@ class StreamContainerFragment :
 
     private fun initViews() {
 
-        val pagerAdapter = FragmentPagerAdapter(this)
+        val pagerAdapter = StreamPagerAdapter(this)
 
         subscribeToSearchStreamQuery(pagerAdapter)
 

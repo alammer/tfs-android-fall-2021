@@ -11,16 +11,15 @@ class StreamReducer :
     override fun Result.internal(event: StreamEvent.Internal) = when (event) {
 
         is StreamEvent.Internal.LocalLoadingComplete -> {
-            if (event.streams.isEmpty()) {
-                state { copy(isEmpty = true) }
-            } else {
-                state { copy(streamListItem = event.streams, isEmpty = false) }
-            }
             if (state.isInitial) {
                 state { copy(isInitial = false, isLoading = true) }
                 commands { +Command.UpdateStreamList(state.searchQuery, state.isSubscribed) }
             } else {
-                Any()
+                if (event.streams.isEmpty()) {
+                    state { copy(isEmpty = true) }
+                } else {
+                    state { copy(streamListItem = event.streams, isEmpty = false) }
+                }
             }
         }
 

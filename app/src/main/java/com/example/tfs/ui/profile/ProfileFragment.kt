@@ -20,6 +20,7 @@ import com.example.tfs.util.viewbinding.viewBinding
 import com.squareup.picasso.Picasso
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.storepersisting.retainStoreHolder
 import javax.inject.Inject
 
 class ProfileFragment :
@@ -43,6 +44,8 @@ class ProfileFragment :
 
     override fun createStore(): Store<ProfileEvent, ProfileEffect, ProfileState> =
         ProfileStore.provide(ProfileState(userId = userId),profileActor)
+
+    override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
 
     override fun render(state: ProfileState) {
         with(viewBinding) {

@@ -10,10 +10,15 @@ class ContactActor /*@Inject constructor*/(
 ) :
     ActorCompat<Command, ContactEvent.Internal> {
     override fun execute(command: Command): Observable<ContactEvent.Internal> = when (command) {
-        is Command.FetchContacts -> {
-            contactInteractor.fetch(command.query)
-                .mapEvents(ContactEvent.Internal::ContactFetchingComplete,
-                    ContactEvent.Internal::ContactFetchingError)
+        is Command.GetLocalContactList -> {
+            contactInteractor.getLocalUserList(command.query)
+                .mapEvents(ContactEvent.Internal::LocalLoadingComplete,
+                    ContactEvent.Internal::LoadingError)
+        }
+        is Command.GetRemoteContactList -> {
+            contactInteractor.getRemoteUserList(command.query)
+                .mapEvents(ContactEvent.Internal::RemoteLoadingComplete,
+                    ContactEvent.Internal::LoadingError)
         }
     }
 }

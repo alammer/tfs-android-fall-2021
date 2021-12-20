@@ -13,7 +13,9 @@ import javax.inject.Inject
 
 interface ContactRepository {
 
-    fun fetchUserList(query: String): Observable<List<LocalUser>>
+    fun getLocalUserList(query: String): Single<List<LocalUser>>
+
+    fun getRemoteUserList(query: String): Single<List<LocalUser>>
 
     fun getUser(userId: Int): Maybe<LocalUser>
 
@@ -26,26 +28,23 @@ class ContactRepositoryImpl @Inject constructor(
     private val localDao: ContactDataDao,
 ) : ContactRepository {
 
-    override fun fetchUserList(
+    override fun getLocalUserList(
         query: String,
-    ): Observable<List<LocalUser>> {
-        val remoteSource: Observable<List<LocalUser>> =
-            getRemoteUserList()
-
-        return getLocalUserList()
+    ): Single<List<LocalUser>> =
+        localDao.getAllUsers()
             .subscribeOn(Schedulers.io())
-            .flatMapObservable { localUserList: List<LocalUser> ->
-                remoteSource
-/*                    .observeOn(Schedulers.computation())    //DiffUtil maybe?
-                   .filter { remoteStreamList: List<LocalStream> ->
-                        remoteStreamList != localStreamList
-                    }*/
-                    .flatMapSingle { remoteUserList ->
-                        localDao.insertAllUsers(remoteUserList)
-                            .andThen(Single.just(remoteUserList.filter { it.userName.contains(query) }))
-                    }
-                    .startWith(localUserList.filter { it.userName.contains(query) })
-            }
+            .map { localUserList -> localUserList.filter { it.userName.contains(query) } }
+
+    override fun getRemoteUserList(
+        query: String,
+    ): Single<List<LocalUser>> {
+
+        return fetchRemoteUserList()
+            .subscribeOn(Schedulers.io())
+            .flatMap { remoteUserList ->
+                localDao.clearContacts()
+                    .andThen(localDao.insertAllUsers(remoteUserList))
+                    .andThen(Single.just(remoteUserList.filter { it.userName.contains(query) })) }
     }
 
     override fun getUser(userId: Int): Maybe<LocalUser> =
@@ -71,19 +70,14 @@ class ContactRepositoryImpl @Inject constructor(
             }
     }
 
-    private fun getLocalUserList(): Single<List<LocalUser>> =
-        localDao.getAllUsers()
-            .subscribeOn(Schedulers.io())
-
-    private fun getRemoteUserList(): Observable<List<LocalUser>> =
+    private fun fetchRemoteUserList(): Single<List<LocalUser>> =
         remoteApi.getAllUsers()
             .map { response -> response.userList }
             .toObservable()
             .retryWhenError(3, 1)
-            .concatMap { userList -> Observable.fromIterable(userList) }
-            .flatMap { user -> getUserWithPresence(user) }
+            .flatMap { userList -> Observable.fromIterable(userList) }
+            .flatMapSingle { user -> getUserWithPresence(user) }
             .toList()
-            .toObservable()
 
     private fun getUserWithPresence(user: User) =
         Single.zip(remoteApi.getUser(user.id),
@@ -97,7 +91,6 @@ class ContactRepositoryImpl @Inject constructor(
             .map { (user, presence) ->
                 user.toLocalUser(presence)
             }
-            .toObservable()
 
     private fun getUserPresence(userId: Int): Single<UserPresence> {
         return remoteApi.getUserPresence(userId)

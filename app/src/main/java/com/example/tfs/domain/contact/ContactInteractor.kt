@@ -9,14 +9,16 @@ import javax.inject.Inject
 
 class ContactInteractor @Inject constructor(private val contactRepository: ContactRepository) {
 
-    fun fetch(query: String): Observable<List<LocalUser>> {
-        return contactRepository.fetchUserList(query)
-        //TODO("return specific value from DB for empty local cache for turn MVI effects")
+    fun getRemoteUserList(query: String): Single<List<LocalUser>> {
+        return contactRepository.getRemoteUserList(query)
+    }
+
+    fun getLocalUserList(query: String): Single<List<LocalUser>> {
+        return contactRepository.getLocalUserList(query)
     }
 
     fun get(userId: Int): Maybe<LocalUser> {
         return contactRepository.getUser(userId)
-        //TODO("return specific value from DB for empty local cache")
     }
 
     fun getOwner(): Single<LocalUser> {

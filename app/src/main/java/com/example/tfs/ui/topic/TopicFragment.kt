@@ -30,6 +30,7 @@ import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.storepersisting.retainStoreHolder
 import javax.inject.Inject
 
 
@@ -79,6 +80,8 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
         TopicStore.provide(TopicState(topicName = topicName, streamName = streamName), topicActor)
+
+    override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
 
 
     override fun render(state: TopicState) {

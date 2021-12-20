@@ -27,6 +27,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.storepersisting.retainStoreHolder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -53,17 +54,20 @@ class ContactFragment :
     override fun createStore(): Store<ContactEvent, ContactEffect, ContactState> =
         ContactStore.provide(contactActor)
 
+    override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
+
     override fun render(state: ContactState) {
-        viewBinding.loading.root.isVisible = state.isFetching
+        viewBinding.loading.root.isVisible = state.isLoading
+        viewBinding.empty.root.isVisible = state.isEmpty
         contactAdapter.updateData(state.contactList)
     }
 
     override fun handleEffect(effect: ContactEffect) {
         when (effect) {
-            is ContactEffect.FetchError -> {
+            is ContactEffect.LoadingError -> {
                 with(requireView()) {
                     effect.error.message?.let { showSnackbarError(it) }
-                        ?: showSnackbarError("Error on fetch list of users")
+                        ?: showSnackbarError("Error on update contact list")
                 }
             }
             is ContactEffect.ShowUser -> {
@@ -100,24 +104,13 @@ class ContactFragment :
             }
 
             with(rvContacts) {
-                val adapterLayoutManager = LinearLayoutManager(context)
-
                 setHasFixedSize(true)
 
                 contactAdapter.stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
                 adapter = contactAdapter
-                layoutManager = adapterLayoutManager
-
-                addOnScrollListener(object :
-                    ContactScrollListener(adapterLayoutManager) { //TODO remove in onDestroyView()
-                    override fun loadPage() {
-                        //store.accept(TopicEvent.Ui.PageUploading(isDownScroll))
-                        contactAdapter.addFooterItem(BaseLoader)
-                    }
-                })
-
+                layoutManager = LinearLayoutManager(context)
             }
         }
     }

@@ -6,6 +6,7 @@ import android.text.*
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.AlignmentSpan
 import android.text.style.ForegroundColorSpan
+import androidx.core.text.HtmlCompat
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -162,12 +163,8 @@ private fun spanUserPost(
     return spannablePost
 }
 
-private fun getHtml(htmlBody: String): Spanned {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        Html.fromHtml(htmlBody, Html.FROM_HTML_MODE_COMPACT)
-    else
-        Html.fromHtml(htmlBody)
-}
+private fun getHtml(htmlBody: String): Spanned =
+        HtmlCompat.fromHtml(htmlBody, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
 private fun trimSpannable(spanned: Spanned): SpannableStringBuilder {
     val spannable = SpannableStringBuilder(spanned)

@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.tfs.ui.stream.StreamFragment
 
-class FragmentPagerAdapter(
+class StreamPagerAdapter(
     fragment: Fragment,
 ) : FragmentStateAdapter(fragment) {
 

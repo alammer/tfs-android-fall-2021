@@ -128,6 +128,8 @@ class StreamFragment :
             adapter = streamAdapter
             layoutManager = LinearLayoutManager(context)
 
+            itemAnimator = null
+
             addItemDecoration(
                 ItemDividerDecorator(
                     context,
