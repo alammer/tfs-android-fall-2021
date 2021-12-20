@@ -9,15 +9,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
-import com.example.tfs.common.baseitems.BaseLoader
-import com.example.tfs.common.baseitems.LoaderItem
 import com.example.tfs.databinding.FragmentContactBinding
 import com.example.tfs.di.DaggerContactComponent
 import com.example.tfs.ui.contacts.adapter.ContactAdapter
+import com.example.tfs.ui.contacts.adapter.decoration.ItemContactDecorator
 import com.example.tfs.ui.contacts.adapter.items.ContactItem
 import com.example.tfs.ui.contacts.elm.*
 import com.example.tfs.ui.profile.ProfileFragment
+import com.example.tfs.ui.stream.elm.StreamEvent
 import com.example.tfs.util.showSnackbarError
+import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -103,6 +104,11 @@ class ContactFragment :
                 }
             }
 
+            viewBinding.swipeLayout.setOnRefreshListener {
+                viewBinding.swipeLayout.isRefreshing = false
+                store.accept(ContactEvent.Ui.RefreshContactList)
+            }
+
             with(rvContacts) {
                 setHasFixedSize(true)
 
@@ -111,13 +117,20 @@ class ContactFragment :
 
                 adapter = contactAdapter
                 layoutManager = LinearLayoutManager(context)
+
+                addItemDecoration(
+                    ItemContactDecorator(
+                        R.layout.item_contact,
+                        CONTACT_ITEM_HORIZONTAL_PADDING.toPx,
+                        CONTACT_ITEM_VERTICAL_DIVIDER.toPx,
+                    )
+                )
             }
         }
     }
 
     private fun getItemTypes() = listOf(
         ContactItem(::clickOnContact),
-        LoaderItem(),
     )
 
     private fun clickOnContact(contactId: Int) {
@@ -139,5 +152,7 @@ class ContactFragment :
         super.onDestroy()
         compositeDisposable.dispose()
     }
-
 }
+
+private const val CONTACT_ITEM_HORIZONTAL_PADDING = 20
+private const val CONTACT_ITEM_VERTICAL_DIVIDER = 8

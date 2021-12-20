@@ -44,7 +44,9 @@ class ContactRepositoryImpl @Inject constructor(
             .flatMap { remoteUserList ->
                 localDao.clearContacts()
                     .andThen(localDao.insertAllUsers(remoteUserList))
-                    .andThen(Single.just(remoteUserList.filter { it.userName.contains(query) })) }
+                    .andThen(localDao.getAllUsers())
+                    .map {contacts -> contacts.filter { it.userName.contains(query) }  }
+            }
     }
 
     override fun getUser(userId: Int): Maybe<LocalUser> =
