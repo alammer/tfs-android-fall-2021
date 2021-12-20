@@ -29,7 +29,7 @@
         android:text="Change topic"
         android:textSize="@dimen/post_bsd_text_size"
         android:drawablePadding="@dimen/post_bsd_item_inner_padding"
-        app:drawableStartCompat="@drawable/ic_move_post1" />
+        app:drawableStartCompat="@drawable/ic_move_post" />
 
     <TextView
         android:id="@+id/tvPostEdit"
@@ -40,7 +40,7 @@
         android:text="Edit post"
         android:textSize="@dimen/post_bsd_text_size"
         android:drawablePadding="@dimen/post_bsd_item_inner_padding"
-        app:drawableStartCompat="@drawable/ic_sharp_edit_24" />
+        app:drawableStartCompat="@drawable/ic_edit" />
 
     <TextView
         android:id="@+id/tvPostCopy"
