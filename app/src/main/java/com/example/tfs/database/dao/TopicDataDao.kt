@@ -1,8 +1,10 @@
 package com.example.tfs.database.dao
 
 import androidx.room.*
+import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
+import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.database.entity.PostWithReaction
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -33,6 +35,9 @@ interface TopicDataDao {
     @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName ORDER BY post_id ASC")
     fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
+    @Query("SELECT * FROM posts WHERE post_id = :postId")
+    fun getPost(postId: Int): Maybe<LocalPost>
+
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable
 
@@ -53,4 +58,7 @@ interface TopicDataDao {
 
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
     fun deleteReactions(postId: Int): Completable
+
+    @Query("SELECT topics FROM streams WHERE stream_id = :streamId")
+    fun getTopicList(streamId: Int): Single<List<String>>
 }

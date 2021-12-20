@@ -49,6 +49,12 @@ interface ApiService {
         @Path("message_id") message_id: Int,
     ): Completable
 
+    @PATCH("api/v1/messages/{message_id}")
+    fun editMessage(
+        @Path("message_id") message_id: Int,
+        @Query("content") content: String,
+    ): Completable
+
 
     @POST("api/v1/messages/{message_id}/reactions")
     fun addReaction(

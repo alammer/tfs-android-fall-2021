@@ -14,5 +14,6 @@ data class DomainStream(
 data class RelatedTopic(
     val name: String,
     val parentStreamName: String,
+    val parentStreamId: Int,
 ) : AdapterItem
 

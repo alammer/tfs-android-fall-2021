@@ -1,5 +1,8 @@
 package com.example.tfs.domain.topic
 
+import com.example.tfs.common.baseadapter.AdapterItem
+import com.example.tfs.database.entity.LocalPost
+import io.reactivex.Maybe
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -41,5 +44,13 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
     fun updatePost(stream: String, topic: String, postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
         return postRepository.updateReaction(stream, topic, postId, emojiName, emojiCode)
             .map(topicToUiItemMapper)
+    }
+
+    fun getPost(postId: Int): Maybe<LocalPost> {
+        return postRepository.getPost(postId)
+    }
+
+    fun getTopicList(streamId: Int): Single<List<String>> {
+        return postRepository.getTopicList(streamId)
     }
 }

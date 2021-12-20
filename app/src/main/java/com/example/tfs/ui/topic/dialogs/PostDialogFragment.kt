@@ -48,7 +48,6 @@ class PostDialogFragment : BottomSheetDialogFragment() {
         changeReaction.isVisible= isOwner.not()
         movePost.isVisible = isOwner
         editPost.isVisible = isOwner
-        copyPost.isVisible = isOwner
         deletePost.isVisible = isOwner
 
         changeReaction.setOnClickListener(onClickListener)

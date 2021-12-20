@@ -13,4 +13,6 @@
     <string name="topic_name_template">Topic: %s</string>
     <string name="retry_button_text">RETRY</string>
     <string name="empty_data_message">Data not found</string>
+    <string name="edit_dialog_title">EDIT MESSAGE</string>
+    <string name="select_topic_dialog">Topics in </string>
 </resources>

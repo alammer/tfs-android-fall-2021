@@ -96,7 +96,7 @@ class StreamReducer :
 
         is StreamEvent.Ui.ClickOnTopic -> {
             state { copy(error = null) }
-            effects { +StreamEffect.ShowTopic(event.topicName, event.streamName) }
+            effects { +StreamEffect.ShowTopic(event.topicName, event.streamName, event.streamId) }
         }
     }
 }

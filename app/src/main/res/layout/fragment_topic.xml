@@ -71,7 +71,8 @@
         <EditText
             android:id="@+id/etMessage"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
             android:layout_marginVertical="@dimen/edittext_vertical_margin"
             android:background="@drawable/edittext_message_bg"
             android:hint="@string/message_input_hint"

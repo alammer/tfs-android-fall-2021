@@ -90,7 +90,7 @@ class StreamFragment :
                     .beginTransaction()
                     .replace(
                         R.id.fragment_container,
-                        TopicFragment.newInstance(effect.topicName, effect.streamName)
+                        TopicFragment.newInstance(effect.topicName, effect.streamName, effect.streamId)
                     )
                     .addToBackStack(null)
                     .commitAllowingStateLoss()
@@ -167,7 +167,7 @@ class StreamFragment :
     }
 
     private fun moveToTopic(topic: RelatedTopic) {
-        store.accept(StreamEvent.Ui.ClickOnTopic(topic.name, topic.parentStreamName))
+        store.accept(StreamEvent.Ui.ClickOnTopic(topic.name, topic.parentStreamName,topic.parentStreamId))
     }
 
     companion object {

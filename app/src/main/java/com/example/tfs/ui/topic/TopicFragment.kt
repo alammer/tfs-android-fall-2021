@@ -1,8 +1,10 @@
 package com.example.tfs.ui.topic
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -30,6 +32,7 @@ import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
 import vivid.money.elmslie.storepersisting.retainStoreHolder
@@ -40,6 +43,8 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     override val initEvent: TopicEvent = TopicEvent.Ui.Init
 
+    lateinit var clipboardManager: ClipboardManager
+
     @Inject
     lateinit var topicActor: TopicActor
 
@@ -49,6 +54,10 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     private val streamName by lazy {
         requireArguments().getString(STREAM_NAME, "")
+    }
+
+    private val streamId by lazy {
+        requireArguments().getInt(STREAM_ID, -1)
     }
 
     private val viewBinding by viewBinding(FragmentTopicBinding::bind)
@@ -84,7 +93,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 val updatedPostId = response.getInt(POST_RESPONSE_ID)
                 when (response.getInt(POST_RESPONSE_PICK)) {
                     ADD_REACTION -> store.accept(TopicEvent.Ui.NewReactionAdding(updatedPostId))
-                    MOVE_POST -> store.accept(TopicEvent.Ui.PostMoving(updatedPostId))
+                    MOVE_POST -> store.accept(TopicEvent.Ui.ChangeTopicForPost(updatedPostId))
                     EDIT_POST -> store.accept(TopicEvent.Ui.PostEditing(updatedPostId))
                     COPY_POST -> store.accept(TopicEvent.Ui.PostCopying(updatedPostId))
                     DELETE_POST -> store.accept(TopicEvent.Ui.PostDeleting(updatedPostId))
@@ -95,10 +104,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
-        TopicStore.provide(TopicState(topicName = topicName, streamName = streamName), topicActor)
+        TopicStore.provide(TopicState(topicName = topicName, streamName = streamName, streamId = streamId), topicActor)
 
     override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
-
 
     override fun render(state: TopicState) {
         with(viewBinding) {
@@ -141,10 +149,19 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     clearFocus()
                 }
             }
-            is TopicEffect.PostEditDialog -> {
-                PostDialogFragment.newInstance(effect.postId, effect.isOwner).show(childFragmentManager, tag)
+            is TopicEffect.PostCopy -> {
+                copyText(effect.message)
             }
-            is TopicEffect.AddReactionDialog -> {
+            is TopicEffect.PostEdit -> {
+            }
+            is TopicEffect.ChangeTopic -> {
+                changeTopic(effect.topicList)
+            }
+            is TopicEffect.ShowPostDialog -> {
+                PostDialogFragment.newInstance(effect.postId, effect.isOwner)
+                    .show(childFragmentManager, tag)
+            }
+            is TopicEffect.ShowReactionDialog -> {
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
         }
@@ -154,6 +171,12 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         DaggerTopicComponent.builder().appComponent(context.appComponent).build()
             .inject(this)
         super.onAttach(context)
+    }
+
+
+    override fun onDestroyView() {
+        viewBinding.rvTopic.clearOnScrollListeners() //TODO("???")
+        super.onDestroyView()
     }
 
     private fun getItemTypes() = listOf(
@@ -194,14 +217,12 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                         }
                     }
                 })
-
                 addItemDecoration(
                     ItemDateDecorator(
                         R.layout.item_post_date,
                         DATE_ITEM_DIVIDER.toPx,
                     )
                 )
-
                 addItemDecoration(
                     ItemPostDecorator(
                         viewType = R.layout.item_post_owner,
@@ -209,7 +230,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                         endPadding = OWNER_POST_ITEM_END_PADDING.toPx
                     )
                 )
-
                 addItemDecoration(
                     ItemPostDecorator(
                         viewType = R.layout.item_post,
@@ -249,24 +269,39 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         store.accept(TopicEvent.Ui.ReactionClicked(postId, emojiName, emojiCode))
     }
 
-    override fun onDestroyView() {
-        viewBinding.rvTopic.clearOnScrollListeners()
-        super.onDestroyView()
+    private fun changeTopic(topicList: List<String>) {
+        val topics = topicList.toTypedArray()
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("${resources.getString(R.string.select_topic_dialog)} #$streamName")
+            .setItems(topics) { _, which ->
+                store.accept(TopicEvent.Ui.PostMoving(topics[which]))
+            }
+            .show()
+    }
+
+    private fun copyText(message: String) {
+        clipboardManager =
+            activity?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("key", message)
+        clipboardManager.setPrimaryClip(clipData)
     }
 
     companion object {
 
+        private const val STREAM_ID = "stream_id"
         private const val TOPIC_NAME = "topic_name"
         private const val STREAM_NAME = "stream_name"
 
         fun newInstance(
             topicName: String,
             streamName: String,
+            streamId: Int,
         ): TopicFragment {
             return TopicFragment().apply {
                 arguments = bundleOf(
                     TOPIC_NAME to topicName,
                     STREAM_NAME to streamName,
+                    STREAM_ID to streamId
                 )
             }
         }
@@ -283,8 +318,6 @@ const val POST_RESPONCE_KEY = "post_bsd_responce"
 const val POST_RESPONSE_ID = "post_key"
 const val POST_RESPONSE_PICK = "post_bsd_pick"
 const val POST_REQUEST_KEY = "post_bsd_request"
-
-
 
 private const val DATE_ITEM_DIVIDER = 4
 private const val POST_ITEM_DIVIDER = 16

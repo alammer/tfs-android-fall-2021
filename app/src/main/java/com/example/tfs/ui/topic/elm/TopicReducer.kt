@@ -109,6 +109,30 @@ class TopicReducer :
             }
             effects { +TopicEffect.UpdateTopicError(event.error) }
         }
+
+        is TopicEvent.Internal.GetPostForCopyComplete -> {
+            effects { +TopicEffect.PostCopy(event.post.content) }
+        }
+
+        is TopicEvent.Internal.GetPostForEditComplete -> {
+            effects { +TopicEffect.PostEdit(event.post) }
+        }
+
+        is TopicEvent.Internal.GetPostComplition -> {
+            effects { +TopicEffect.PostNotFound }
+        }
+
+        is TopicEvent.Internal.GetPostError -> {
+            effects { +TopicEffect.PostNotFound }
+        }
+
+        is TopicEvent.Internal.GetTopicListComplete -> {
+            effects { +TopicEffect.ChangeTopic(event.topicList) }
+        }
+
+        is TopicEvent.Internal.GetTopicListError -> {
+            effects { +TopicEffect.UpdateTopicError(event.error) }
+        }
     }
 
     override fun Result.ui(
@@ -130,7 +154,7 @@ class TopicReducer :
         }
 
         is TopicEvent.Ui.NewReactionAdding -> {
-            effects { +TopicEffect.AddReactionDialog(event.postId) }
+            effects { +TopicEffect.ShowReactionDialog(event.postId) }
         }
 
         is TopicEvent.Ui.ReactionClicked -> {
@@ -148,7 +172,7 @@ class TopicReducer :
 
         is TopicEvent.Ui.PostTapped -> {
             if (state.isLoading.not()) {
-                effects { +TopicEffect.PostEditDialog(event.postId, event.isOwner) }
+                effects { +TopicEffect.ShowPostDialog(event.postId, event.isOwner) }
             } else {
                 Any()
             }
@@ -211,16 +235,22 @@ class TopicReducer :
             }
         }
 
-        is TopicEvent.Ui.PostMoving -> {
-            Any()
-        }
-
         is TopicEvent.Ui.PostEditing -> {
-            Any()
+            commands { +Command.EditPost(event.postId) }
         }
 
         is TopicEvent.Ui.PostCopying -> {
-            Any()
+            commands { +Command.CopyPost(event.postId) }
+        }
+
+        is TopicEvent.Ui.ChangeTopicForPost -> {
+            state { copy(selectedPostId = event.postId) }
+            commands { +Command.GetTopicList(state.streamId) }
+        }
+
+        is TopicEvent.Ui.PostMoving -> {
+            state { copy(isLoading = true) }
+            commands { +Command.MovePost(state.streamName, event.newTopicName, state.selectedPostId) }
         }
 
         is TopicEvent.Ui.PostDeleting -> {

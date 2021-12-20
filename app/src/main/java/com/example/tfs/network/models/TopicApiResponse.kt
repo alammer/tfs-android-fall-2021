@@ -1,5 +1,8 @@
 package com.example.tfs.network.models
 
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import androidx.core.text.HtmlCompat
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -59,7 +62,7 @@ fun RemotePost.toLocalPostWithReaction(ownerId: Int) =
             senderId = senderId,
             isSelf = senderId == ownerId,
             senderName = senderName,
-            content = content,
+            content = trimSpannable(getHtml(content)).toString(),
             avatarUrl = avatar,
             timeStamp = timeStamp,
             postFlags = postStatus,
@@ -76,6 +79,25 @@ fun PostReaction.toLocalReaction(postId: Int, ownerId: Int) =
         isClicked = userId == ownerId,
         isCustom = type == "zulip_extra_emoji",
     )
+
+private fun getHtml(htmlBody: String): Spanned =
+    HtmlCompat.fromHtml(htmlBody, HtmlCompat.FROM_HTML_MODE_COMPACT)
+
+private fun trimSpannable(spanned: Spanned): SpannableStringBuilder {
+    val spannable = SpannableStringBuilder(spanned)
+    var trimStart = 0
+    var trimEnd = 0
+    var text = spannable.toString()
+    while (text.isNotEmpty() && text.startsWith("\n")) {
+        text = text.substring(1)
+        trimStart += 1
+    }
+    while (text.isNotEmpty() && text.endsWith("\n")) {
+        text = text.substring(0, text.length - 1)
+        trimEnd += 1
+    }
+    return spannable.delete(0, trimStart).delete(spannable.length - trimEnd, spannable.length)
+}
 
 
 

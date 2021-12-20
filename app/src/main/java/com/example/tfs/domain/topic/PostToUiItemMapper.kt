@@ -1,12 +1,10 @@
 package com.example.tfs.domain.topic
 
 import android.graphics.Color
-import android.os.Build
 import android.text.*
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.AlignmentSpan
 import android.text.style.ForegroundColorSpan
-import androidx.core.text.HtmlCompat
 import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalReaction
 import com.example.tfs.database.entity.PostWithReaction
@@ -83,11 +81,10 @@ private fun spanOwnerPost(
     message: String,
     timeStamp: Long,
 ): SpannableString {
-    val spannedMessage = trimSpannable(getHtml(message))
-    val messageLength = spannedMessage.length
+    val messageLength = message.length
     val spannedTimeStamp = timeStamp.postTimeStamp
     val timeStampStart = messageLength + 1
-    val spannablePost = SpannableString("$spannedMessage\n$spannedTimeStamp")
+    val spannablePost = SpannableString("$message\n$spannedTimeStamp")
 
     spannablePost.setSpan(
         AbsoluteSizeSpan(TIMESTAMP_TEXT_SIZE_SP.spToPx.toInt()),
@@ -117,11 +114,10 @@ private fun spanUserPost(
     timeStamp: Long,
 ): SpannableString {
     val userNameLength = userName.length
-    val spannedMessage = trimSpannable(getHtml(message))
-    val messageLength = spannedMessage.length
+    val messageLength = message.length
     val spannedTimeStamp = timeStamp.postTimeStamp
     val timeStampStart = userNameLength + messageLength + 2
-    val spannablePost = SpannableString("$userName\n$spannedMessage\n$spannedTimeStamp")
+    val spannablePost = SpannableString("$userName\n$message\n$spannedTimeStamp")
 
     spannablePost.setSpan(
         AbsoluteSizeSpan(USERNAME_TEXT_SIZE_SP.spToPx.toInt()),
@@ -161,25 +157,6 @@ private fun spanUserPost(
         Spanned.SPAN_INCLUSIVE_INCLUSIVE
     )
     return spannablePost
-}
-
-private fun getHtml(htmlBody: String): Spanned =
-        HtmlCompat.fromHtml(htmlBody, HtmlCompat.FROM_HTML_MODE_COMPACT)
-
-private fun trimSpannable(spanned: Spanned): SpannableStringBuilder {
-    val spannable = SpannableStringBuilder(spanned)
-    var trimStart = 0
-    var trimEnd = 0
-    var text = spannable.toString()
-    while (text.isNotEmpty() && text.startsWith("\n")) {
-        text = text.substring(1)
-        trimStart += 1
-    }
-    while (text.isNotEmpty() && text.endsWith("\n")) {
-        text = text.substring(0, text.length - 1)
-        trimEnd += 1
-    }
-    return spannable.delete(0, trimStart).delete(spannable.length - trimEnd, spannable.length)
 }
 
 private fun createUiReactionList(

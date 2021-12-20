@@ -7,6 +7,7 @@ import com.example.tfs.database.entity.PostWithReaction
 import com.example.tfs.network.ApiService
 import com.example.tfs.network.models.toLocalPostWithReaction
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -42,16 +43,20 @@ interface PostRepository {
     fun deleteMessage(
         streamName: String,
         topicName: String,
-        messageId: Int,
+        postId: Int,
     ): Single<List<PostWithReaction>>
 
     fun updateReaction(
         streamName: String,
         topicName: String,
-        messageId: Int,
+        postId: Int,
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>>
+
+    fun getPost(postId: Int): Maybe<LocalPost>
+
+    fun getTopicList(streamId: Int): Single<List<String>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -134,20 +139,32 @@ class PostRepositoryImpl @Inject constructor(
     override fun updateReaction(
         streamName: String,
         topicName: String,
-        messageId: Int,
+        postId: Int,
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> {
-        return localDao.getReactionForPost(messageId, emojiCode, ownerId)
+        return localDao.getReactionForPost(postId, emojiCode, ownerId)
             .subscribeOn(Schedulers.io())
             .defaultIfEmpty(emptyReaction)
             .flatMapSingle { reaction ->
                 if (reaction.userId == -1) {
-                    addReaction(streamName, topicName, messageId, emojiName, emojiCode)
+                    addReaction(streamName, topicName, postId, emojiName, emojiCode)
                 } else {
-                    removeReaction(streamName, topicName, messageId, emojiName, emojiCode)
+                    removeReaction(streamName, topicName, postId, emojiName, emojiCode)
                 }
             }
+    }
+
+    override fun getPost(postId: Int): Maybe<LocalPost> {
+        return localDao.getPost(postId)
+            .subscribeOn(Schedulers.io())
+    }
+
+    override fun getTopicList(streamId: Int): Single<List<String>> {
+        return Single.fromObservable(remoteApi.getStreamRelatedTopicList(streamId))
+            .subscribeOn(Schedulers.io())
+            .retry(3)
+            .map { response -> response.remoteTopicResponseList.map { it.name } }
     }
 
     private fun getLocalTopic(
@@ -213,16 +230,16 @@ class PostRepositoryImpl @Inject constructor(
     private fun addReaction(
         streamName: String,
         topicName: String,
-        messageId: Int,
+        postId: Int,
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> =
-        remoteApi.addReaction(messageId, emojiName, emojiCode)
+        remoteApi.addReaction(postId, emojiName, emojiCode)
             .retry(1)
             .andThen(
                 localDao.insertReaction(
                     LocalReaction(
-                        postId = messageId,
+                        postId = postId,
                         name = emojiName,
                         code = emojiCode,
                         userId = ownerId,
@@ -236,13 +253,13 @@ class PostRepositoryImpl @Inject constructor(
     private fun removeReaction(
         streamName: String,
         topicName: String,
-        messageId: Int,
+        postId: Int,
         emojiName: String,
         emojiCode: String,
     ): Single<List<PostWithReaction>> =
-        remoteApi.removeReaction(messageId, emojiName, emojiCode)
+        remoteApi.removeReaction(postId, emojiName, emojiCode)
             .retry(1)
-            .andThen(localDao.deleteReaction(messageId, emojiCode, ownerId))
+            .andThen(localDao.deleteReaction(postId, emojiCode, ownerId))
             .andThen(getLocalTopic(streamName, topicName))
 
     private fun recentPageQuery(streamName: String, topicName: String) =

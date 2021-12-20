@@ -15,7 +15,7 @@ internal class StreamToUiItemMapper : (List<LocalStream>) -> (List<AdapterItem>)
             domainStreamList.add(stream.toDomainStream())
             if (stream.isExpanded) {
                 stream.topics.forEach { topicName ->
-                    domainStreamList.add(RelatedTopic(topicName, stream.streamName))
+                    domainStreamList.add(RelatedTopic(topicName, stream.streamName, stream.streamId))
                 }
             }
         }

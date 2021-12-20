@@ -12,7 +12,7 @@ import com.example.tfs.ui.topic.customview.addReaction
 
 class OwnerPostItemViewHolder(
     private val ownerPostView: View,
-    private val onPostTap: (postId: Int, isOwner: Boolean) -> Unit,
+    private val onPostTap: (post: Int, isOwner: Boolean) -> Unit,
     private val spanFactory: Spannable.Factory
 ) : BaseViewHolder<View, DomainOwnerPost>(ownerPostView) {
 

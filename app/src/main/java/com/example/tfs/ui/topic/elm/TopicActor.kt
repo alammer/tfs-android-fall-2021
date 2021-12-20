@@ -1,6 +1,5 @@
 package com.example.tfs.ui.topic.elm
 
-import android.util.Log
 import com.example.tfs.domain.topic.PostInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
@@ -40,6 +39,29 @@ class TopicActor /*@Inject constructor*/(
             postInteractor.deletePost(command.streamName, command.topicName, command.postId)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
                     TopicEvent.Internal::TopicUpdatingError)
+        }
+        is Command.CopyPost -> {
+            postInteractor.getPost(command.postId)
+                .mapEvents(TopicEvent.Internal::GetPostForCopyComplete,
+                    TopicEvent.Internal.GetPostComplition,
+                    TopicEvent.Internal::GetPostError)
+        }
+        is Command.EditPost -> {
+            postInteractor.getPost(command.postId)
+                .mapEvents(TopicEvent.Internal::GetPostForEditComplete,
+                    TopicEvent.Internal.GetPostComplition,
+                    TopicEvent.Internal::GetPostError)
+        }
+        is Command.GetTopicList -> {
+            postInteractor.getTopicList(command.streamId)
+                .mapEvents(TopicEvent.Internal::GetTopicListComplete,
+                    TopicEvent.Internal::GetTopicListError)
+        }
+        is Command.MovePost -> {
+            postInteractor.getPost(command.postId)
+                .mapEvents(TopicEvent.Internal::GetPostForEditComplete,
+                    TopicEvent.Internal.GetPostComplition,
+                    TopicEvent.Internal::GetPostError)
         }
         is Command.UpdatePostReaction -> {
             postInteractor.updatePost(command.streamName, command.topicName, command.postId, command.emojiName, command.emojiCode)

@@ -1,6 +1,7 @@
 package com.example.tfs.ui.topic.elm
 
 import com.example.tfs.common.baseadapter.AdapterItem
+import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.domain.topic.UiTopicListObject
 
 data class TopicState(
@@ -14,6 +15,8 @@ data class TopicState(
     val upAnchor: Int = 0,
     val topicName: String = "",
     val streamName: String = "",
+    val streamId: Int = -1,
+    val selectedPostId: Int = -1,
 )
 
 sealed class TopicEvent {
@@ -43,10 +46,11 @@ sealed class TopicEvent {
 
         data class PageUploading(val isDownScroll: Boolean) : Ui()
 
-        data class PostMoving(val postId: Int) : Ui()
+        data class ChangeTopicForPost(val postId: Int) : Ui()
         data class PostEditing(val postId: Int) : Ui()
         data class PostCopying(val postId: Int) : Ui()
         data class PostDeleting(val postId: Int) : Ui()
+        data class PostMoving(val newTopicName: String) : Ui()
     }
 
     sealed class Internal : TopicEvent() {
@@ -70,6 +74,18 @@ sealed class TopicEvent {
         data class PostSendingComplete(val uiTopic: UiTopicListObject) : Internal()
 
         data class PostSendingError(val error: Throwable) : Internal()
+
+        data class GetPostForCopyComplete(val post: LocalPost) : Internal()
+
+        data class GetPostForEditComplete(val post: LocalPost) : Internal()
+
+        data class GetPostError(val error: Throwable) : Internal()
+
+        object GetPostComplition : Internal()
+
+        data class GetTopicListComplete(val topicList: List<String>) : Internal()
+
+        data class GetTopicListError(val error: Throwable) : Internal()
     }
 }
 
@@ -85,11 +101,19 @@ sealed class TopicEffect {
 
     object BackNavigation : TopicEffect()
 
-    data class PostEditDialog(val postId: Int, val isOwner: Boolean) : TopicEffect()
+    object PostNotFound : TopicEffect()
 
-    data class AddReactionDialog(val postId: Int) : TopicEffect()
+    data class ShowPostDialog(val postId: Int, val isOwner: Boolean) : TopicEffect()
+
+    data class ShowReactionDialog(val postId: Int) : TopicEffect()
 
     data class MessageDraftChange(val draft: String) : TopicEffect()
+
+    data class PostCopy(val message: String) : TopicEffect()
+
+    data class PostEdit(val post: LocalPost) : TopicEffect()
+
+    data class ChangeTopic(val topicList: List<String>) : TopicEffect()
 }
 
 sealed class Command {
@@ -105,6 +129,18 @@ sealed class Command {
         Command()
 
     data class DeletePost(val streamName: String, val topicName: String, val postId: Int) :
+        Command()
+
+    data class CopyPost(val postId: Int) :
+        Command()
+
+    data class EditPost(val postId: Int) :
+        Command()
+
+    data class GetTopicList(val streamId: Int) :
+        Command()
+
+    data class MovePost(val streamName: String, val topicName: String, val postId: Int) :
         Command()
 
     data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :
