@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic.emoji_dialog
+package com.example.tfs.ui.topic.dialogs.add_emoji_bsd
 
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +14,7 @@ class EmojiRecyclerAdapter(private val onEmojiClick: (String) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.bsd_emoji_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.emoji_bsd_item, parent, false)
         return EmojiViewHolder(view)
     }
 

@@ -16,4 +16,7 @@
     <dimen name="text_base_margin_start">20dp</dimen>
     <dimen name="channel_name_text_size">18sp</dimen>
     <dimen name="info_text_size">16sp</dimen>
+    <dimen name="post_bsd_item_heigth">30dp</dimen>
+    <dimen name="post_bsd_text_size">20sp</dimen>
+    <dimen name="post_bsd_item_inner_padding">20dp</dimen>
 </resources>

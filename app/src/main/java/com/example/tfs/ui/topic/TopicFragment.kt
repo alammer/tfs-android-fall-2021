@@ -2,6 +2,7 @@ package com.example.tfs.ui.topic
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -22,8 +23,9 @@ import com.example.tfs.ui.topic.adapter.decorations.ItemPostDecorator
 import com.example.tfs.ui.topic.adapter.items.DateItem
 import com.example.tfs.ui.topic.adapter.items.OwnerPostItem
 import com.example.tfs.ui.topic.adapter.items.UserPostItem
+import com.example.tfs.ui.topic.dialogs.*
 import com.example.tfs.ui.topic.elm.*
-import com.example.tfs.ui.topic.emoji_dialog.EmojiDialogFragment
+import com.example.tfs.ui.topic.dialogs.add_emoji_bsd.EmojiDialogFragment
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx
@@ -60,20 +62,34 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        childFragmentManager.setFragmentResultListener(TOPIC_REQUEST_KEY, this) { _, bundle ->
+        childFragmentManager.setFragmentResultListener(EMOJI_REQUEST_KEY, this) { _, bundle ->
             bundle.getBundle(EMOJI_RESPONSE_KEY)?.let { response ->
-                val updatedMessageId = response.getInt(EMOJI_RESPONSE_MESSAGE)
+                val updatedPostId = response.getInt(EMOJI_RESPONSE_POST)
                 val updatedEmojiName =
                     response.getString(EMOJI_RESPONSE_NAME) ?: return@setFragmentResultListener
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
                 store.accept(
                     TopicEvent.Ui.NewReactionPicked(
-                        updatedMessageId,
+                        updatedPostId,
                         updatedEmojiName,
                         updatedEmojiCode
                     )
                 )
+            }
+        }
+        childFragmentManager.setFragmentResultListener(POST_REQUEST_KEY, this) { _, bundle ->
+
+            bundle.getBundle(POST_RESPONCE_KEY)?.let { response ->
+                val updatedPostId = response.getInt(POST_RESPONSE_ID)
+                when (response.getInt(POST_RESPONSE_PICK)) {
+                    ADD_REACTION -> store.accept(TopicEvent.Ui.NewReactionAdding(updatedPostId))
+                    MOVE_POST -> store.accept(TopicEvent.Ui.PostMoving(updatedPostId))
+                    EDIT_POST -> store.accept(TopicEvent.Ui.PostEditing(updatedPostId))
+                    COPY_POST -> store.accept(TopicEvent.Ui.PostCopying(updatedPostId))
+                    DELETE_POST -> store.accept(TopicEvent.Ui.PostDeleting(updatedPostId))
+                    else -> return@setFragmentResultListener
+                }
             }
         }
     }
@@ -125,7 +141,11 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     clearFocus()
                 }
             }
+            is TopicEffect.PostEditDialog -> {
+                PostDialogFragment.newInstance(effect.postId, effect.isOwner).show(childFragmentManager, tag)
+            }
             is TopicEffect.AddReactionDialog -> {
+                Log.i("TopicFragment", "Function called: handleEffect()")
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
         }
@@ -219,11 +239,11 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     private fun tapOnPost(postId: Int, isOwner: Boolean) {
-        //TODO("BSD for selected post")
+        store.accept(TopicEvent.Ui.PostTapped(postId, isOwner))
     }
 
-    private fun addReaction(messageId: Int) {
-        store.accept(TopicEvent.Ui.NewReactionAdding(messageId))
+    private fun addReaction(postId: Int) {
+        store.accept(TopicEvent.Ui.NewReactionAdding(postId))
     }
 
     private fun updateReaction(postId: Int, emojiName: String, emojiCode: String) {
@@ -254,11 +274,18 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 }
 
-const val TOPIC_REQUEST_KEY = "emoji_request"
+const val EMOJI_REQUEST_KEY = "emoji_request"
 const val EMOJI_RESPONSE_KEY = "emoji_response"
-const val EMOJI_RESPONSE_MESSAGE = "emoji_key"
+const val EMOJI_RESPONSE_POST = "emoji_key"
 const val EMOJI_RESPONSE_NAME = "emoji_name"
 const val EMOJI_RESPONSE_CODE = "emoji_id"
+
+const val POST_RESPONCE_KEY = "post_bsd_responce"
+const val POST_RESPONSE_ID = "post_key"
+const val POST_RESPONSE_PICK = "post_bsd_pick"
+const val POST_REQUEST_KEY = "post_bsd_request"
+
+
 
 private const val DATE_ITEM_DIVIDER = 4
 private const val POST_ITEM_DIVIDER = 16

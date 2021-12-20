@@ -27,6 +27,8 @@ sealed class TopicEvent {
         data class ReactionClicked(val postId: Int, val emojiName: String, val emojiCode: String) :
             Ui()
 
+        data class PostTapped(val postId: Int, val isOwner: Boolean) : Ui()
+
         data class NewReactionAdding(val postId: Int) : Ui()
 
         data class NewReactionPicked(
@@ -40,6 +42,11 @@ sealed class TopicEvent {
         object PostSending : Ui()
 
         data class PageUploading(val isDownScroll: Boolean) : Ui()
+
+        data class PostMoving(val postId: Int) : Ui()
+        data class PostEditing(val postId: Int) : Ui()
+        data class PostCopying(val postId: Int) : Ui()
+        data class PostDeleting(val postId: Int) : Ui()
     }
 
     sealed class Internal : TopicEvent() {
@@ -77,6 +84,8 @@ sealed class TopicEffect {
     object PostSend : TopicEffect()
 
     object BackNavigation : TopicEffect()
+
+    data class PostEditDialog(val postId: Int, val isOwner: Boolean) : TopicEffect()
 
     data class AddReactionDialog(val postId: Int) : TopicEffect()
 

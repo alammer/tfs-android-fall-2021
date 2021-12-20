@@ -145,6 +145,14 @@ class TopicReducer :
             }
         }
 
+        is TopicEvent.Ui.PostTapped -> {
+            if (state.isLoading.not()) {
+                effects { +TopicEffect.PostEditDialog(event.postId, event.isOwner) }
+            } else {
+                Any()
+            }
+        }
+
         is TopicEvent.Ui.NewReactionPicked -> {
             state { copy(error = null) }
             commands {
@@ -200,6 +208,22 @@ class TopicReducer :
             } else {
                 Any()
             }
+        }
+
+        is TopicEvent.Ui.PostMoving -> {
+            Any()
+        }
+
+        is TopicEvent.Ui.PostEditing -> {
+            Any()
+        }
+
+        is TopicEvent.Ui.PostCopying -> {
+            Any()
+        }
+
+        is TopicEvent.Ui.PostDeleting -> {
+            Any()
         }
     }
 }

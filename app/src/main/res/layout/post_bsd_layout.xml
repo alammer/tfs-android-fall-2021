@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lPostBSD"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="80dp"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvPostEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/post_bsd_item_heigth"
+        android:layout_marginVertical="4dp"
+        android:textColor="@color/white_text_color"
+        android:text="Add reaction"
+        android:textSize="@dimen/post_bsd_text_size"
+        android:drawablePadding="@dimen/post_bsd_item_inner_padding"
+        app:drawableStartCompat="@drawable/ic_emoji" />
+
+    <TextView
+        android:id="@+id/tvPostMove"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/post_bsd_item_heigth"
+        android:layout_marginVertical="4dp"
+        android:textColor="@color/white_text_color"
+        android:text="Change topic"
+        android:textSize="@dimen/post_bsd_text_size"
+        android:drawablePadding="@dimen/post_bsd_item_inner_padding"
+        app:drawableStartCompat="@drawable/ic_move_post1" />
+
+    <TextView
+        android:id="@+id/tvPostEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/post_bsd_item_heigth"
+        android:layout_marginVertical="4dp"
+        android:textColor="@color/white_text_color"
+        android:text="Edit post"
+        android:textSize="@dimen/post_bsd_text_size"
+        android:drawablePadding="@dimen/post_bsd_item_inner_padding"
+        app:drawableStartCompat="@drawable/ic_sharp_edit_24" />
+
+    <TextView
+        android:id="@+id/tvPostCopy"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/post_bsd_item_heigth"
+        android:layout_marginVertical="4dp"
+        android:textColor="@color/white_text_color"
+        android:text="Copy post"
+        android:textSize="@dimen/post_bsd_text_size"
+        android:drawablePadding="@dimen/post_bsd_item_inner_padding"
+        app:drawableStartCompat="@drawable/ic_copy" />
+
+    <TextView
+        android:id="@+id/tvPostDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/post_bsd_item_heigth"
+        android:layout_marginVertical="4dp"
+        android:textColor="@color/white_text_color"
+        android:text="Delete post"
+        android:textSize="@dimen/post_bsd_text_size"
+        android:drawablePadding="@dimen/post_bsd_item_inner_padding"
+        app:drawableStartCompat="@drawable/ic_delete" />
+
+</LinearLayout>

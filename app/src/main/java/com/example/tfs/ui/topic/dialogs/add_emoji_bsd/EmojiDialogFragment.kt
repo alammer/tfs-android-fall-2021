@@ -1,4 +1,4 @@
-package com.example.tfs.ui.topic.emoji_dialog
+package com.example.tfs.ui.topic.dialogs.add_emoji_bsd
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,7 +26,7 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return LayoutInflater.from(context).inflate(R.layout.bsd_layout, container, false)
+        return LayoutInflater.from(context).inflate(R.layout.emoji_bsd_layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,12 +36,12 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
             val emojiName = emojiMap.keys.firstOrNull { emojiMap[it]?.second == emojiCode }
             val emojiApiCode = emojiMap[emojiName]?.first
             val response = bundleOf(
-                EMOJI_RESPONSE_MESSAGE to requireArguments().getInt(MESSAGE_KEY, -1),
+                EMOJI_RESPONSE_POST to requireArguments().getInt(POST_KEY, -1),
                 EMOJI_RESPONSE_NAME to emojiName,
                 EMOJI_RESPONSE_CODE to emojiApiCode
             )
             setFragmentResult(
-                TOPIC_REQUEST_KEY,
+                EMOJI_REQUEST_KEY,
                 bundleOf(EMOJI_RESPONSE_KEY to response),
             )
             dismiss()
@@ -73,14 +73,14 @@ class EmojiDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
 
-        private const val MESSAGE_KEY = "message_id"
+        private const val POST_KEY = "post_id"
 
         fun newInstance(
-            messageId: Int,
+            postId: Int,
         ): EmojiDialogFragment {
             val fragment = EmojiDialogFragment()
             val arguments = Bundle()
-            arguments.putInt(MESSAGE_KEY, messageId)
+            arguments.putInt(POST_KEY, postId)
             fragment.arguments = arguments
             return fragment
         }
