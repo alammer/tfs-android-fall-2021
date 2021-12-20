@@ -1,6 +1,5 @@
 package com.example.tfs.domain.topic
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -31,6 +30,11 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
 
     fun sendPost(stream: String, topic: String, message: String): Single<UiTopicListObject> {
         return postRepository.sendMessage(stream, topic, message)
+            .map(topicToUiItemMapper)
+    }
+
+    fun deletePost(stream: String, topic: String, postId: Int): Single<UiTopicListObject> {
+        return postRepository.deleteMessage(stream, topic, postId)
             .map(topicToUiItemMapper)
     }
 

@@ -145,7 +145,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 PostDialogFragment.newInstance(effect.postId, effect.isOwner).show(childFragmentManager, tag)
             }
             is TopicEffect.AddReactionDialog -> {
-                Log.i("TopicFragment", "Function called: handleEffect()")
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
         }

@@ -39,6 +39,12 @@ interface PostRepository {
         content: String,
     ): Single<List<PostWithReaction>>
 
+    fun deleteMessage(
+        streamName: String,
+        topicName: String,
+        messageId: Int,
+    ): Single<List<PostWithReaction>>
+
     fun updateReaction(
         streamName: String,
         topicName: String,
@@ -110,6 +116,18 @@ class PostRepositoryImpl @Inject constructor(
                         content = content
                     )
                 )
+            )
+            .andThen(getLocalTopic(streamName, topicName))
+
+    override fun deleteMessage(
+        streamName: String,
+        topicName: String,
+        postId: Int
+    ): Single<List<PostWithReaction>> =
+        remoteApi.deleteMessage(postId)
+            .subscribeOn(Schedulers.io())
+            .andThen(
+                localDao.deletePost(postId)
             )
             .andThen(getLocalTopic(streamName, topicName))
 

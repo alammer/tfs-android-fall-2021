@@ -36,6 +36,11 @@ class TopicActor /*@Inject constructor*/(
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
                     TopicEvent.Internal::TopicUpdatingError)
         }
+        is Command.DeletePost -> {
+            postInteractor.deletePost(command.streamName, command.topicName, command.postId)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
+        }
         is Command.UpdatePostReaction -> {
             postInteractor.updatePost(command.streamName, command.topicName, command.postId, command.emojiName, command.emojiCode)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,

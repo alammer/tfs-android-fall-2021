@@ -44,6 +44,12 @@ interface ApiService {
         //@Query("apply_markdown") markdown: Boolean = true
     ): Completable
 
+    @DELETE("api/v1/messages/{message_id}")
+    fun deleteMessage(
+        @Path("message_id") message_id: Int,
+    ): Completable
+
+
     @POST("api/v1/messages/{message_id}/reactions")
     fun addReaction(
         @Path("message_id") message_id: Int,

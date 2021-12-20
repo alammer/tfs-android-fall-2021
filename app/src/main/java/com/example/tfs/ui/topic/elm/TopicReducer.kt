@@ -82,13 +82,14 @@ class TopicReducer :
                 copy(
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId
+                    downAnchor = event.uiTopic.downAnchorId,
+                    isLoading = false
                 )
             }
         }
 
         is TopicEvent.Internal.TopicUpdatingError -> {
-            state { copy() }
+            state { copy(isLoading = false) }
             effects { +TopicEffect.UpdateTopicError(event.error) }
         }
 
@@ -172,7 +173,7 @@ class TopicReducer :
         }
 
         is TopicEvent.Ui.PostSending -> {
-            state { copy(error = null) }
+            state { copy(error = null, isLoading = true) }
             commands {
                 +Command.SendPost(
                     state.streamName,
@@ -223,7 +224,14 @@ class TopicReducer :
         }
 
         is TopicEvent.Ui.PostDeleting -> {
-            Any()
+            state { copy(error = null, isLoading = true) }
+            commands {
+                +Command.DeletePost(
+                    state.streamName,
+                    state.topicName,
+                    event.postId
+                )
+            }
         }
     }
 }

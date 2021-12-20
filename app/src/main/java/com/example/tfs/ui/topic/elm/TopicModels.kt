@@ -104,6 +104,9 @@ sealed class Command {
     data class SendPost(val streamName: String, val topicName: String, val message: String) :
         Command()
 
+    data class DeletePost(val streamName: String, val topicName: String, val postId: Int) :
+        Command()
+
     data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :
         Command()
 
