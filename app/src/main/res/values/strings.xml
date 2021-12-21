@@ -15,4 +15,14 @@
     <string name="empty_data_message">Data not found</string>
     <string name="edit_dialog_title">EDIT MESSAGE</string>
     <string name="select_topic_dialog">Topics in </string>
+    <string name="edit_layout_title">Редактировать сообщение</string>
+    <string name="topic_bsd_add_reaction_item">Add reaction</string>
+    <string name="topic_bsd_change_topic_item">Change topic</string>
+    <string name="topic_bsd_edit_post_item">Edit post</string>
+    <string name="topic_bsd_copy_post_item">Copy post</string>
+    <string name="topic_bsd_delete_post_item">Delete post</string>
+    <string name="bottom_nav_channels_item">Channels</string>
+    <string name="bottom_navbar_people_item">People</string>
+    <string name="bottom_navbar_profile_item">Profile</string>
+    <string name="user_unvailable_message">User info not available</string>
 </resources>

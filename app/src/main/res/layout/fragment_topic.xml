@@ -47,8 +47,8 @@
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="@dimen/large_text_size"
-        app:layout_constraintTop_toBottomOf="@id/appbar"
-        app:layout_constraintBottom_toTopOf="@+id/rvTopic"/>
+        app:layout_constraintBottom_toTopOf="@+id/rvTopic"
+        app:layout_constraintTop_toBottomOf="@id/appbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTopic"
@@ -72,10 +72,10 @@
             android:id="@+id/etMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
             android:layout_marginVertical="@dimen/edittext_vertical_margin"
             android:background="@drawable/edittext_message_bg"
             android:hint="@string/message_input_hint"
+            android:minHeight="50dp"
             android:paddingHorizontal="@dimen/new_message_horizontal_padding"
             android:textColor="@color/light_grey"
             android:textColorHint="@color/light_grey"
@@ -99,14 +99,108 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lEditLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/layout_bg"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvTopic">
+
+        <ImageView
+            android:id="@+id/imgEditLabel"
+            android:layout_width="@dimen/edit_layout_ic_size"
+            android:layout_height="@dimen/edit_layout_ic_size"
+            android:background="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@id/lEditTitle"
+            app:layout_constraintEnd_toStartOf="@id/lEditTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/lEditTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="4dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/imgEditCancel"
+            app:layout_constraintStart_toEndOf="@+id/imgEditLabel"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvEditViewTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_layout_title"
+                android:textColor="@color/white_text_color"
+                android:textSize="@dimen/info_text_size" />
+
+            <TextView
+                android:id="@+id/tvEditPost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/grey_text_color"
+                android:textSize="@dimen/medium_text_size" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_grey"
+            app:layout_constraintBottom_toTopOf="@id/etPostBody"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lEditTitle" />
+
+        <ImageView
+            android:id="@+id/imgEditCancel"
+            android:layout_width="@dimen/edit_layout_ic_size"
+            android:layout_height="@dimen/edit_layout_ic_size"
+            android:background="@drawable/ic_edit_cancel"
+            app:layout_constraintBottom_toBottomOf="@id/lEditTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lEditTitle"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etPostBody"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginVertical="4dp"
+            android:textColor="@color/white_text_color"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imgEditComplete"
+            app:layout_constraintStart_toEndOf="@id/imgEditLabel"
+            app:layout_constraintTop_toBottomOf="@id/lEditTitle" />
+
+        <ImageView
+            android:id="@+id/imgEditComplete"
+            android:layout_width="@dimen/edit_layout_ic_size"
+            android:layout_height="@dimen/edit_layout_ic_size"
+            android:background="@drawable/ic_edit_complete"
+            app:layout_constraintBottom_toBottomOf="@id/etPostBody"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/etPostBody"
+            app:layout_constraintTop_toTopOf="@id/etPostBody" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <include
         android:id="@+id/empty"
-        android:visibility="gone"
-        layout="@layout/data_empty_state" />
+        layout="@layout/data_empty_state"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/loading"
-        android:visibility="gone"
-        layout="@layout/data_loading_state" />
+        layout="@layout/data_loading_state"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

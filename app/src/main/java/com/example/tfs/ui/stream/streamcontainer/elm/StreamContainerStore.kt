@@ -1,7 +1,6 @@
 package com.example.tfs.ui.stream.streamcontainer.elm
 
 import vivid.money.elmslie.core.ElmStoreCompat
-import javax.inject.Inject
 
 object StreamContainerStore {
 

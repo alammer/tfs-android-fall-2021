@@ -55,7 +55,7 @@ class EmojiView @JvmOverloads constructor(
     init {
         count?.let {
             currentCount = count
-            emojiGlyph = emojiCode//StringBuilder().appendCodePoint(emojiCode).toString()
+            emojiGlyph = emojiCode
             setReaction(emojiGlyph, currentCount)
         }
     }

@@ -3,15 +3,15 @@
         android:id="@+id/nav_to_streams"
         android:enabled="true"
         android:icon="@drawable/ic_channel"
-        android:title="Channels"/>
+        android:title="@string/bottom_nav_channels_item"/>
     <item
         android:id="@+id/nav_to_contacts"
         android:enabled="true"
         android:icon="@drawable/ic_people"
-        android:title="People"/>
+        android:title="@string/bottom_navbar_people_item"/>
     <item
         android:id="@+id/nav_to_profile"
         android:enabled="true"
         android:icon="@drawable/ic_profile"
-        android:title="Profile"/>
+        android:title="@string/bottom_navbar_profile_item"/>
 </menu>

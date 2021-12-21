@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:background="@color/layout_bg">
 
-    <include layout="@layout/appbar_layout"
+    <include
         android:id="@+id/appbar"
+        layout="@layout/appbar_layout"
         app:layout_constraintBottom_toTopOf="@+id/view_pager"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

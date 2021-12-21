@@ -85,8 +85,7 @@ class TopicReducer :
 
                     )
                 }
-            }
-            else {
+            } else {
                 state {
                     copy(
                         isEmptyData = true,
@@ -124,10 +123,11 @@ class TopicReducer :
         }
 
         is TopicEvent.Internal.GetPostForEditComplete -> {
+            state { copy(isEditMode = true) }
             effects { +TopicEffect.PostEdit(event.post) }
         }
 
-        is TopicEvent.Internal.GetPostComplition -> {
+        is TopicEvent.Internal.PostNotExist -> {
             effects { +TopicEffect.PostNotFound }
         }
 
@@ -136,7 +136,7 @@ class TopicReducer :
         }
 
         is TopicEvent.Internal.GetTopicListComplete -> {
-            effects { +TopicEffect.ChangeTopic(event.topicList) }
+            effects { +TopicEffect.TopicChange(event.topicList) }
         }
 
         is TopicEvent.Internal.GetTopicListError -> {
@@ -185,7 +185,7 @@ class TopicReducer :
             }
         }
 
-        is TopicEvent.Ui.NewReactionPicked -> {
+        is TopicEvent.Ui.NewReactionPick -> {
             state { copy(error = null) }
             commands {
                 +Command.UpdatePostReaction(
@@ -204,7 +204,7 @@ class TopicReducer :
         is TopicEvent.Ui.PostSending -> {
             state { copy(error = null, isLoading = true) }
             commands {
-                +Command.SendPost(
+                +Command.SendNewPost(
                     state.streamName,
                     state.topicName,
                     state.messageDraft,
@@ -241,25 +241,47 @@ class TopicReducer :
             }
         }
 
-        is TopicEvent.Ui.PostEditing -> {
-            commands { +Command.EditPost(event.postId) }
+        is TopicEvent.Ui.PostEditPick -> {
+            state { copy(selectedPostId = event.postId) }
+            commands { +Command.GetPostForEdit(event.postId) }
+        }
+        is TopicEvent.Ui.PostEditComplete -> {
+            state { copy(isEditMode = false) }
+            commands {
+                +Command.SendEditPost(
+                    event.newContent,
+                    state.selectedPostId,
+                    state.upAnchor,
+                    state.streamName,
+                    state.topicName
+                )
+            }
+        }
+        is TopicEvent.Ui.PostEditCancel -> {
+            state { copy(isEditMode = false) }
         }
 
-        is TopicEvent.Ui.PostCopying -> {
-            commands { +Command.CopyPost(event.postId) }
+        is TopicEvent.Ui.PostCopyPick -> {
+            commands { +Command.GetPostForCopy(event.postId) }
         }
 
-        is TopicEvent.Ui.ChangeTopicForPost -> {
+        is TopicEvent.Ui.ChangeTopicForPostPick -> {
             state { copy(selectedPostId = event.postId) }
             commands { +Command.GetTopicList(state.streamId) }
         }
 
-        is TopicEvent.Ui.PostMoving -> {
+        is TopicEvent.Ui.NewTopicForPostPick -> {
             state { copy(isLoading = true) }
-            commands { +Command.MovePost(state.streamName, event.newTopicName, state.selectedPostId) }
+            commands {
+                +Command.ChangeTopicForPost(
+                    state.streamName,
+                    event.newTopicName,
+                    state.selectedPostId
+                )
+            }
         }
 
-        is TopicEvent.Ui.PostDeleting -> {
+        is TopicEvent.Ui.PostDeletePick -> {
             state { copy(error = null, isLoading = true) }
             commands {
                 +Command.DeletePost(

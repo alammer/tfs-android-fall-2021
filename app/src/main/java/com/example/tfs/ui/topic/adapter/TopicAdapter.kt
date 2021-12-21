@@ -36,16 +36,13 @@ class TopicAdapter(
         when {
             isPrevPageLoading -> {
                 isPrevPageLoading = false
-                //TODO("implement smooth scroll logic HERE")
                 updateData(data)
             }
             isNextPageLoading -> {
                 isNextPageLoading = false
-                //TODO("implement smooth scroll logic HERE")
                 updateData(data)
             }
             else -> {
-                //TODO("implement smooth scroll logic HERE")
                 updateData(data)
             }
         }

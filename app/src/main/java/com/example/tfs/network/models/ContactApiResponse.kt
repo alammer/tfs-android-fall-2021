@@ -1,6 +1,5 @@
 package com.example.tfs.network.models
 
-import com.example.tfs.database.entity.LocalOwner
 import com.example.tfs.database.entity.LocalUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

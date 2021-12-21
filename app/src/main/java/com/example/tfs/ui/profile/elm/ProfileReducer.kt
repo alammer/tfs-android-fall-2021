@@ -5,7 +5,8 @@ import vivid.money.elmslie.core.store.dsl_reducer.ScreenDslReducer
 class ProfileReducer :
     ScreenDslReducer<ProfileEvent, ProfileEvent.Ui, ProfileEvent.Internal, ProfileState, ProfileEffect, Command>(
         ProfileEvent.Ui::class,
-        ProfileEvent.Internal::class) {
+        ProfileEvent.Internal::class
+    ) {
 
     override fun Result.internal(event: ProfileEvent.Internal) = when (event) {
         is ProfileEvent.Internal.ProfileFetchingComplete -> {

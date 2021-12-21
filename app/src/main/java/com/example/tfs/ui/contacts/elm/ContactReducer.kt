@@ -55,8 +55,12 @@ class ContactReducer :
         }
 
         is ContactEvent.Ui.RefreshContactList -> {
-            state { copy(isLoading = true, error = null) }
-            commands { +Command.GetRemoteContactList(state.query) }
+            if (state.isLoading.not()) {
+                state { copy(isLoading = true, error = null) }
+                commands { +Command.GetRemoteContactList(state.query) }
+            } else {
+                Any()
+            }
         }
 
         is ContactEvent.Ui.SearchQueryChange -> {

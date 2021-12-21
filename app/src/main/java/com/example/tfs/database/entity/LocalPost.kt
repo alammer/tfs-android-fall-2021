@@ -43,6 +43,10 @@ data class LocalPost(
     @ColumnInfo(name = "timestamp")
     val timeStamp: Long,
 
+    @NotNull
+    @ColumnInfo(name = "is_confirmed")
+    val isConfirmed: Boolean = true,
+
     @field:TypeConverters(Converters::class)
     @ColumnInfo(name = "flags")
     val postFlags: List<String> = emptyList(),
@@ -52,12 +56,13 @@ data class LocalPost(
     tableName = "reactions",
     primaryKeys = ["owner_post_id", "emoji_code", "user_id"],
     foreignKeys = [
-        ForeignKey(entity = LocalPost::class,
+        ForeignKey(
+            entity = LocalPost::class,
             parentColumns = ["post_id"],
             childColumns = ["owner_post_id"],
-            onDelete = CASCADE)
+            onDelete = CASCADE
+        )
     ],
-    /*indices = [Index(value = ["owner_post_id"], unique = true)]*/
 )
 data class LocalReaction(
 

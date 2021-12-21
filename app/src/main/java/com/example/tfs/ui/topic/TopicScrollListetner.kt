@@ -1,9 +1,7 @@
 package com.example.tfs.ui.topic
 
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
 
 abstract class TopicScrollListetner(
     private val layoutManager: LinearLayoutManager
@@ -20,7 +18,7 @@ abstract class TopicScrollListetner(
 
         val updateDownScrollPosition = totalItemCount - UPDATE_THRESHOLD
 
-        if (lastVisibleItemPosition > updateDownScrollPosition && dy > 0 ) {
+        if (lastVisibleItemPosition > updateDownScrollPosition && dy > 0) {
             loadPage()
         }
 

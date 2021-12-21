@@ -16,7 +16,6 @@ import com.example.tfs.ui.contacts.adapter.decoration.ItemContactDecorator
 import com.example.tfs.ui.contacts.adapter.items.ContactItem
 import com.example.tfs.ui.contacts.elm.*
 import com.example.tfs.ui.profile.ProfileFragment
-import com.example.tfs.ui.stream.elm.StreamEvent
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding

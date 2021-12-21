@@ -10,9 +10,7 @@ import retrofit2.http.*
 interface ApiService {
 
     @GET("api/v1/streams")
-    fun getAllStreams(
-        //@Query("include_subscribed") include_subs: Boolean = false,  //don't support by backend?
-    ): Single<AllStreamResponse>
+    fun getAllStreams(): Single<AllStreamResponse>
 
     @GET("api/v1/users/me/subscriptions")
     fun getSubscribedStreams(): Single<SubscribedStreamResponse>
@@ -41,7 +39,6 @@ interface ApiService {
         @Query("topic") topicName: String,
         @Query("content") content: String,
         @Query("type") type: String = "stream",
-        //@Query("apply_markdown") markdown: Boolean = true
     ): Completable
 
     @DELETE("api/v1/messages/{message_id}")
@@ -54,7 +51,6 @@ interface ApiService {
         @Path("message_id") message_id: Int,
         @Query("content") content: String,
     ): Completable
-
 
     @POST("api/v1/messages/{message_id}/reactions")
     fun addReaction(

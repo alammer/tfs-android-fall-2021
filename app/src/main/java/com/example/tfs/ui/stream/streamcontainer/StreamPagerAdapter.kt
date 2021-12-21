@@ -18,9 +18,7 @@ class StreamPagerAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return 2
-    }
+    override fun getItemCount() = 2
 
     fun setCurrentSearchQuery(query: String) {
         currentSearchQuery = query

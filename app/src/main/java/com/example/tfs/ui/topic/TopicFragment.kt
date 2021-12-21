@@ -26,8 +26,8 @@ import com.example.tfs.ui.topic.adapter.items.DateItem
 import com.example.tfs.ui.topic.adapter.items.OwnerPostItem
 import com.example.tfs.ui.topic.adapter.items.UserPostItem
 import com.example.tfs.ui.topic.dialogs.*
-import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.ui.topic.dialogs.add_emoji_bsd.EmojiDialogFragment
+import com.example.tfs.ui.topic.elm.*
 import com.example.tfs.util.hideSoftKeyboard
 import com.example.tfs.util.showSnackbarError
 import com.example.tfs.util.toPx
@@ -79,7 +79,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 val updatedEmojiCode =
                     response.getString(EMOJI_RESPONSE_CODE) ?: return@setFragmentResultListener
                 store.accept(
-                    TopicEvent.Ui.NewReactionPicked(
+                    TopicEvent.Ui.NewReactionPick(
                         updatedPostId,
                         updatedEmojiName,
                         updatedEmojiCode
@@ -93,10 +93,10 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 val updatedPostId = response.getInt(POST_RESPONSE_ID)
                 when (response.getInt(POST_RESPONSE_PICK)) {
                     ADD_REACTION -> store.accept(TopicEvent.Ui.NewReactionAdding(updatedPostId))
-                    MOVE_POST -> store.accept(TopicEvent.Ui.ChangeTopicForPost(updatedPostId))
-                    EDIT_POST -> store.accept(TopicEvent.Ui.PostEditing(updatedPostId))
-                    COPY_POST -> store.accept(TopicEvent.Ui.PostCopying(updatedPostId))
-                    DELETE_POST -> store.accept(TopicEvent.Ui.PostDeleting(updatedPostId))
+                    MOVE_POST -> store.accept(TopicEvent.Ui.ChangeTopicForPostPick(updatedPostId))
+                    EDIT_POST -> store.accept(TopicEvent.Ui.PostEditPick(updatedPostId))
+                    COPY_POST -> store.accept(TopicEvent.Ui.PostCopyPick(updatedPostId))
+                    DELETE_POST -> store.accept(TopicEvent.Ui.PostDeletePick(updatedPostId))
                     else -> return@setFragmentResultListener
                 }
             }
@@ -104,7 +104,13 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
     }
 
     override fun createStore(): Store<TopicEvent, TopicEffect, TopicState> =
-        TopicStore.provide(TopicState(topicName = topicName, streamName = streamName, streamId = streamId), topicActor)
+        TopicStore.provide(
+            TopicState(
+                topicName = topicName,
+                streamName = streamName,
+                streamId = streamId
+            ), topicActor
+        )
 
     override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
 
@@ -112,6 +118,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         with(viewBinding) {
             loading.root.isVisible = state.isLoading
             empty.root.isVisible = state.isEmptyData
+            lEditLayout.isVisible = state.isEditMode
         }
         topicAdapter.uploadData(state.topicList)
     }
@@ -153,9 +160,15 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 copyText(effect.message)
             }
             is TopicEffect.PostEdit -> {
+                editPost(effect.post.content)
             }
-            is TopicEffect.ChangeTopic -> {
+            is TopicEffect.TopicChange -> {
                 changeTopic(effect.topicList)
+            }
+            is TopicEffect.PostNotFound -> {
+                with(requireView()) {
+                    showSnackbarError("Can't find requested post!")
+                }
             }
             is TopicEffect.ShowPostDialog -> {
                 PostDialogFragment.newInstance(effect.postId, effect.isOwner)
@@ -167,12 +180,18 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         }
     }
 
+    private fun editPost(content: String) {
+        with(viewBinding) {
+            tvEditPost.text = content
+            etPostBody.setText(content)
+        }
+    }
+
     override fun onAttach(context: Context) {
         DaggerTopicComponent.builder().appComponent(context.appComponent).build()
             .inject(this)
         super.onAttach(context)
     }
-
 
     override fun onDestroyView() {
         viewBinding.rvTopic.clearOnScrollListeners() //TODO("???")
@@ -240,6 +259,14 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                 )
             }
 
+            imgEditCancel.setOnClickListener {
+                store.accept(TopicEvent.Ui.PostEditCancel)
+            }
+
+            imgEditComplete.setOnClickListener {
+                store.accept(TopicEvent.Ui.PostEditComplete(etPostBody.text.toString()))
+            }
+
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
                     store.accept(TopicEvent.Ui.PostSending)
@@ -274,7 +301,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("${resources.getString(R.string.select_topic_dialog)} #$streamName")
             .setItems(topics) { _, which ->
-                store.accept(TopicEvent.Ui.PostMoving(topics[which]))
+                store.accept(TopicEvent.Ui.NewTopicForPostPick(topics[which]))
             }
             .show()
     }
@@ -314,7 +341,7 @@ const val EMOJI_RESPONSE_POST = "emoji_key"
 const val EMOJI_RESPONSE_NAME = "emoji_name"
 const val EMOJI_RESPONSE_CODE = "emoji_id"
 
-const val POST_RESPONCE_KEY = "post_bsd_responce"
+const val POST_RESPONCE_KEY = "post_bsd_response"
 const val POST_RESPONSE_ID = "post_key"
 const val POST_RESPONSE_PICK = "post_bsd_pick"
 const val POST_REQUEST_KEY = "post_bsd_request"

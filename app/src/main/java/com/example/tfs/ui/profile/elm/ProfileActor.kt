@@ -4,8 +4,7 @@ import com.example.tfs.domain.contact.ContactInteractor
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
 
-//@ProfileScope are we need scope here?
-class ProfileActor /*@Inject constructor*/(
+class ProfileActor(
     private val contactInteractor: ContactInteractor,
 ) :
     ActorCompat<Command, ProfileEvent.Internal> {
@@ -13,12 +12,16 @@ class ProfileActor /*@Inject constructor*/(
         is Command.GetUser -> {
             if (command.userId == -1) {
                 contactInteractor.getOwner()
-                    .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
-                        ProfileEvent.Internal.ProfileFetchingError)
+                    .mapEvents(
+                        ProfileEvent.Internal::ProfileFetchingComplete,
+                        ProfileEvent.Internal.ProfileFetchingError
+                    )
             } else {
                 contactInteractor.get(command.userId)
-                    .mapEvents(ProfileEvent.Internal::ProfileFetchingComplete,
-                        ProfileEvent.Internal.ProfileFetchingError)
+                    .mapEvents(
+                        ProfileEvent.Internal::ProfileFetchingComplete,
+                        ProfileEvent.Internal.ProfileFetchingError
+                    )
             }
         }
     }

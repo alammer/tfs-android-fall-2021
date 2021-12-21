@@ -91,8 +91,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation "com.squareup.picasso:picasso:$picasso_version"
-
     //elmslie
     implementation "com.github.vivid-money.elmslie:elmslie-core:$elmslie_version"
     implementation "com.github.vivid-money.elmslie:elmslie-android:$elmslie_version"

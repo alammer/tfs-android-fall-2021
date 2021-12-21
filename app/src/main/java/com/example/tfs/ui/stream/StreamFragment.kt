@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
-import com.example.tfs.common.baseitems.TextShimmerItem
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.stream.DomainStream
@@ -61,7 +60,6 @@ class StreamFragment :
             streamActor
         )
 
-
     override fun render(state: StreamState) {
         if (state.isShowing) {
             viewBinding.empty.root.isVisible = state.isEmpty
@@ -84,13 +82,16 @@ class StreamFragment :
                         ?: showSnackbarError("Error on load stream list")
                 }
             }
-
             is StreamEffect.ShowTopic -> {
                 requireActivity().supportFragmentManager
                     .beginTransaction()
                     .replace(
                         R.id.fragment_container,
-                        TopicFragment.newInstance(effect.topicName, effect.streamName, effect.streamId)
+                        TopicFragment.newInstance(
+                            effect.topicName,
+                            effect.streamName,
+                            effect.streamId
+                        )
                     )
                     .addToBackStack(null)
                     .commitAllowingStateLoss()
@@ -113,13 +114,10 @@ class StreamFragment :
 
     override fun onPause() {
         super.onPause()
-        //fragment hide by viewpager but continue accept receive search string state from container
         store.accept(StreamEvent.Ui.HideFragment(isSubscribed))
     }
 
-
     private fun initViews() {
-
         with(viewBinding.rvStreams) {
             setHasFixedSize(true)
 
@@ -136,7 +134,6 @@ class StreamFragment :
                     R.layout.item_stream,
                 )
             )
-
             addItemDecoration(
                 ItemTopicDecorator(
                     context,
@@ -167,7 +164,13 @@ class StreamFragment :
     }
 
     private fun moveToTopic(topic: RelatedTopic) {
-        store.accept(StreamEvent.Ui.ClickOnTopic(topic.name, topic.parentStreamName,topic.parentStreamId))
+        store.accept(
+            StreamEvent.Ui.ClickOnTopic(
+                topic.name,
+                topic.parentStreamName,
+                topic.parentStreamId
+            )
+        )
     }
 
     companion object {

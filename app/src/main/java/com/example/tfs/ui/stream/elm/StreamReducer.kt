@@ -69,7 +69,12 @@ class StreamReducer :
         is StreamEvent.Ui.Init -> {
             state { copy(error = null) }
             commands { +Command.ObserveSearchQuery }
-            commands { +Command.GetLocalStreamList(initialState.searchQuery, initialState.isSubscribed) }
+            commands {
+                +Command.GetLocalStreamList(
+                    initialState.searchQuery,
+                    initialState.isSubscribed
+                )
+            }
         }
 
         is StreamEvent.Ui.RefreshStreamList -> {

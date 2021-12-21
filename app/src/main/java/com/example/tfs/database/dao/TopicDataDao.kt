@@ -1,10 +1,8 @@
 package com.example.tfs.database.dao
 
 import androidx.room.*
-import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalPost
 import com.example.tfs.database.entity.LocalReaction
-import com.example.tfs.database.entity.LocalStream
 import com.example.tfs.database.entity.PostWithReaction
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -45,8 +43,8 @@ interface TopicDataDao {
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable
 
-    @Query("DELETE FROM posts WHERE post_id < 1")
-    fun deleteDraftPosts(): Completable
+    @Query("DELETE FROM posts WHERE is_confirmed = 0")
+    fun deleteUnconfirmedPosts(): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReactions(localReaction: List<LocalReaction>): Completable

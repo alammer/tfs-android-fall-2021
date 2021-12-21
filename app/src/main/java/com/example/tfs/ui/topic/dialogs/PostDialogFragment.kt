@@ -9,7 +9,10 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import com.example.tfs.R
-import com.example.tfs.ui.topic.*
+import com.example.tfs.ui.topic.POST_REQUEST_KEY
+import com.example.tfs.ui.topic.POST_RESPONCE_KEY
+import com.example.tfs.ui.topic.POST_RESPONSE_ID
+import com.example.tfs.ui.topic.POST_RESPONSE_PICK
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -45,7 +48,7 @@ class PostDialogFragment : BottomSheetDialogFragment() {
                 }
             }
 
-        changeReaction.isVisible= isOwner.not()
+        changeReaction.isVisible = isOwner.not()
         movePost.isVisible = isOwner
         editPost.isVisible = isOwner
         deletePost.isVisible = isOwner
@@ -68,7 +71,6 @@ class PostDialogFragment : BottomSheetDialogFragment() {
         )
         dismiss()
     }
-
 
     companion object {
 

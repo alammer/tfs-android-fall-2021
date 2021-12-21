@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, StreamContainerFragment())
-                //.add(R.id.fragment_container, TopicFragment.newInstance("swimming turtles", "general") )
+                .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
 

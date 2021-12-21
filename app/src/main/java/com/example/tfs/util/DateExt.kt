@@ -11,7 +11,7 @@ val Long.fullDate
     get() = SimpleDateFormat("d MMMM',' ' 'yyyy", Locale("ru", "RU"))
         .format(this * 1000L).replace(".", "")
 
-val Long.postTimeStamp
+val Long.postTimeStamp: String
     get() = SimpleDateFormat("HH:mm", Locale("ru", "RU"))
         .format(this * 1000L)//.replace(".", "")
 

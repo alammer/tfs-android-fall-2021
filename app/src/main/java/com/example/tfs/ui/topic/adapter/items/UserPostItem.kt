@@ -23,7 +23,6 @@ class UserPostItem(
         }
     }
 
-
     override fun isRelativeItem(item: AdapterItem): Boolean = item is DomainUserPost
 
     override fun getLayoutId() = R.layout.item_post

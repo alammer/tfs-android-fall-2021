@@ -28,7 +28,8 @@ sealed class StreamEvent {
 
         data class ClickOnStream(val streamId: Int) : Ui()
 
-        data class ClickOnTopic(val topicName: String, val streamName: String, val streamId: Int) : Ui()
+        data class ClickOnTopic(val topicName: String, val streamName: String, val streamId: Int) :
+            Ui()
     }
 
     sealed class Internal : StreamEvent() {
@@ -52,7 +53,8 @@ sealed class StreamEvent {
 sealed class StreamEffect {
 
     data class LoadingDataError(val error: Throwable) : StreamEffect()
-    data class ShowTopic(val topicName: String, val streamName: String, val streamId: Int) : StreamEffect()
+    data class ShowTopic(val topicName: String, val streamName: String, val streamId: Int) :
+        StreamEffect()
 }
 
 sealed class Command {

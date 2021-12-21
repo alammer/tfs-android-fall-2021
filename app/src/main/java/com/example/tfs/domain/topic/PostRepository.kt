@@ -34,14 +34,23 @@ interface PostRepository {
         anchorId: Int,
     ): Single<List<PostWithReaction>>
 
-    fun sendMessage(
+    fun sendNewPost(
         streamName: String,
         topicName: String,
         content: String,
         downAnchor: Int
     ): Single<List<PostWithReaction>>
 
-    fun deleteMessage(
+    fun sendEditPost(
+        content: String,
+        postId: Int,
+        upAnchor: Int,
+        streamName: String,
+        topicName: String
+    ): Single<List<PostWithReaction>>
+
+
+    fun deletePost(
         postId: Int,
     ): Single<List<PostWithReaction>>
 
@@ -55,7 +64,11 @@ interface PostRepository {
 
     fun getTopicList(streamId: Int): Single<List<String>>
 
-    fun movePostToTopic(streamName: String, topicName: String, postId: Int): Single<List<PostWithReaction>>
+    fun movePostToTopic(
+        streamName: String,
+        topicName: String,
+        postId: Int
+    ): Single<List<PostWithReaction>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -80,7 +93,7 @@ class PostRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .flatMap { remotePostList ->
                 localDao.deleteTopic()
-                    .andThen(cacheRemoteTopic(remotePostList))
+                    .andThen(cachedRemoteTopic(remotePostList))
                     .andThen(localDao.getCurrentLocalTopic())
             }
     }
@@ -101,7 +114,7 @@ class PostRepositoryImpl @Inject constructor(
         fetchPage(streamName, topicName, anchorId, isNext = false)
             .subscribeOn(Schedulers.io())
 
-    override fun sendMessage(
+    override fun sendNewPost(
         streamName: String,
         topicName: String,
         content: String,
@@ -109,22 +122,39 @@ class PostRepositoryImpl @Inject constructor(
     ): Single<List<PostWithReaction>> =
         remoteApi.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
+            .retry(3)
             .andThen(
-                localDao.insertPost(
-                    LocalPost(
-                        postId = downAnchor + 1,
-                        topicName = topicName,
-                        streamName = streamName,
-                        isSelf = true,
-                        senderId = ownerId,
-                        timeStamp = System.currentTimeMillis() / 1000L,
-                        content = content
-                    )
-                )
-            )
-            .andThen(localDao.getCurrentLocalTopic())
+                getRemoteTopic(recentPageQuery(streamName, topicName))
+                    .flatMap { remotePostList ->
+                        localDao.deleteTopic()
+                            .andThen(cachedRemoteTopic(remotePostList))
+                            .andThen(localDao.getCurrentLocalTopic())
+                    }
 
-    override fun deleteMessage(
+            ) //TODO("Ugly UX in offline mode")
+
+    override fun sendEditPost(
+        content: String,
+        postId: Int,
+        upAnchor: Int,
+        streamName: String,
+        topicName: String
+    ): Single<List<PostWithReaction>> {
+        return remoteApi.editMessage(postId, content)
+            .subscribeOn(Schedulers.io())
+            .retry(3)
+            .andThen(
+                getRemoteTopic(currentPageQuery(streamName, topicName, upAnchor))
+                    .flatMap { remotePostList ->
+                        localDao.deleteTopic()
+                            .andThen(cachedRemoteTopic(remotePostList))
+                            .andThen(localDao.getCurrentLocalTopic())
+                    }
+
+            ) //TODO("Ugly UX in offline mode")
+    }
+
+    override fun deletePost(
         postId: Int
     ): Single<List<PostWithReaction>> =
         remoteApi.deleteMessage(postId)
@@ -172,6 +202,7 @@ class PostRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .flatMapSingle { post ->
                 remoteApi.sendMessage(streamName, topicName, post.content)
+                    .andThen(remoteApi.deleteMessage(postId))
                     .andThen(localDao.deletePost(postId))
                     .andThen(localDao.getCurrentLocalTopic())
             }
@@ -181,18 +212,11 @@ class PostRepositoryImpl @Inject constructor(
         remoteApi.getRemotePostList(query)
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
 
-    private fun cacheRemoteTopic(
+    private fun cachedRemoteTopic(
         remotePostList: List<PostWithReaction>,
     ): Completable =
         localDao.deleteTopic()
             .andThen(insertPostList(remotePostList))
-
-    private fun insertPostList(remotePostList: List<PostWithReaction>): Completable {
-        return Completable.concat(remotePostList.map { post ->
-            localDao.insertPost(post.post)
-                .andThen(localDao.insertReactions(post.reaction))
-        })
-    }
 
     private fun fetchPage(
         streamName: String,
@@ -223,12 +247,20 @@ class PostRepositoryImpl @Inject constructor(
         } else {
             if (isNext) {
                 localDao.removeFirstPage(newPage.size - (TOPIC_CACHED_SIZE - currentSize + 1))
+                    .andThen(localDao.deleteUnconfirmedPosts())
                     .andThen(insertPostList(newPage))
             } else {
                 localDao.removeLastPage(newPage.size - (TOPIC_CACHED_SIZE - currentSize + 1))
                     .andThen(insertPostList(newPage))
             }
         }
+    }
+
+    private fun insertPostList(remotePostList: List<PostWithReaction>): Completable {
+        return Completable.concat(remotePostList.map { post ->
+            localDao.insertPost(post.post)
+                .andThen(localDao.insertReactions(post.reaction))
+        })
     }
 
     private fun addReaction(
@@ -245,7 +277,7 @@ class PostRepositoryImpl @Inject constructor(
                         name = emojiName,
                         code = emojiCode,
                         userId = ownerId,
-                        isClicked = true
+                        isClicked = true,
                     )
                 )
             )
@@ -292,6 +324,19 @@ class PostRepositoryImpl @Inject constructor(
             "anchor" to anchorId,
             "num_before" to 0,
             "num_after" to PAGE_FETCH_SIZE,
+            "narrow" to Json.encodeToString(
+                listOf(
+                    NarrowObject(streamName, "stream"),
+                    NarrowObject(topicName, "topic")
+                )
+            )
+        )
+
+    private fun currentPageQuery(streamName: String, topicName: String, upAnchorId: Int) =
+        hashMapOf<String, Any>(
+            "anchor" to upAnchorId,
+            "num_before" to 0,
+            "num_after" to TOPIC_CACHED_SIZE,
             "narrow" to Json.encodeToString(
                 listOf(
                     NarrowObject(streamName, "stream"),

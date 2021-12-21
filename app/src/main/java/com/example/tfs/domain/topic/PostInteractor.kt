@@ -1,6 +1,5 @@
 package com.example.tfs.domain.topic
 
-import com.example.tfs.common.baseadapter.AdapterItem
 import com.example.tfs.database.entity.LocalPost
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -31,13 +30,29 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
             .map(topicToUiItemMapper)
     }
 
-    fun sendPost(stream: String, topic: String, message: String, downAnchor: Int): Single<UiTopicListObject> {
-        return postRepository.sendMessage(stream, topic, message, downAnchor)
+    fun sendNewPost(
+        stream: String,
+        topic: String,
+        message: String,
+        downAnchor: Int
+    ): Single<UiTopicListObject> {
+        return postRepository.sendNewPost(stream, topic, message, downAnchor)
+            .map(topicToUiItemMapper)
+    }
+
+    fun sendEditPost(
+        message: String,
+        postId: Int,
+        upAnchor: Int,
+        stream: String,
+        topic: String
+    ): Single<UiTopicListObject> {
+        return postRepository.sendEditPost(message, postId, upAnchor, stream, topic)
             .map(topicToUiItemMapper)
     }
 
     fun deletePost(postId: Int): Single<UiTopicListObject> {
-        return postRepository.deleteMessage(postId)
+        return postRepository.deletePost(postId)
             .map(topicToUiItemMapper)
     }
 
@@ -54,7 +69,7 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
         return postRepository.getTopicList(streamId)
     }
 
-    fun movePost(stream: String,topic: String, postId: Int): Single<UiTopicListObject> {
+    fun movePost(stream: String, topic: String, postId: Int): Single<UiTopicListObject> {
         return postRepository.movePostToTopic(stream, topic, postId)
             .map(topicToUiItemMapper)
     }

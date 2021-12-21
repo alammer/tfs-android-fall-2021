@@ -15,9 +15,7 @@ import com.example.tfs.di.DaggerProfileComponent
 import com.example.tfs.ui.profile.elm.*
 import com.example.tfs.util.drawUserInitials
 import com.example.tfs.util.showSnackbarError
-import com.example.tfs.util.toPx
 import com.example.tfs.util.viewbinding.viewBinding
-import com.squareup.picasso.Picasso
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.store.Store
 import vivid.money.elmslie.storepersisting.retainStoreHolder
@@ -43,7 +41,7 @@ class ProfileFragment :
     }
 
     override fun createStore(): Store<ProfileEvent, ProfileEffect, ProfileState> =
-        ProfileStore.provide(ProfileState(userId = userId),profileActor)
+        ProfileStore.provide(ProfileState(userId = userId), profileActor)
 
     override val storeHolder by retainStoreHolder(storeProvider = ::createStore)
 
@@ -54,17 +52,17 @@ class ProfileFragment :
             state.user?.apply {
                 tvProfileName.text = userName
                 avatarUrl?.let { userImage ->
-                        Glide.with(viewBinding.root)
-                            .load(userImage)
-                            .centerCrop()
-                            .placeholder(R.drawable.loading_img_animation)
-                            .error(R.drawable.broken_img)
-                            .into(imgProfileUser)
-                            .waitForLayout()
+                    Glide.with(viewBinding.root)
+                        .load(userImage)
+                        .centerCrop()
+                        .placeholder(R.drawable.loading_img_animation)
+                        .error(R.drawable.broken_img)
+                        .into(imgProfileUser)
+                        .waitForLayout()
                 } ?: imgProfileUser.drawUserInitials(userName)
 
                 tvProfileState.setUserState(userState)
-            } ?: { tvProfileName.text = "User info not available" }
+            } ?: { tvProfileName.text = getString(R.string.user_unvailable_message) }
         }
     }
 
@@ -116,5 +114,3 @@ fun TextView.setUserState(userState: String) {
     }
     text = userState
 }
-
-private const val PROFILE_AVATAR_WIDTH = 185

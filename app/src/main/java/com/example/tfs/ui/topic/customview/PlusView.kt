@@ -64,7 +64,6 @@ class PlusView @JvmOverloads constructor(
             centerPoint.y + LINE_LENGHT,
             linePaint
         )
-
     }
 
     companion object {

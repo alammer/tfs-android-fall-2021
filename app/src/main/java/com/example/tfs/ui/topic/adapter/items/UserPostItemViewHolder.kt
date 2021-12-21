@@ -22,23 +22,15 @@ class UserPostItemViewHolder(
 ) : BaseViewHolder<View, DomainUserPost>(postView) {
 
     private val userAvatar = postView.findViewById<ShapeableImageView>(R.id.imgPostAvatar)
-
-    //private val userName = postView.findViewById<TextView>(R.id.tvPostUserName)
     private val postMessage = postView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = postView.findViewById<EmojisLayout>(R.id.lEmojis)
-
-    //val colorSpan = ForegroundColorSpan(ContextCompat.getColor(postView.context, R.color.green_bg))
 
     override fun onBind(item: DomainUserPost) {
         super.onBind(item)
 
-        //item.content.setSpan(colorSpan, 0, item.userName.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-
         postMessage.setSpannableFactory(spanFactory)
 
         postMessage.setText(item.content, TextView.BufferType.SPANNABLE)
-
-        //postMessage.text = item.content
 
         userAvatar.apply {
             item.avatar?.let {

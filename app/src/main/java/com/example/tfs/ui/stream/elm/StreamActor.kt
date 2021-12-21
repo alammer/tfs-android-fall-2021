@@ -5,7 +5,7 @@ import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
 
 
-class StreamActor /*@Inject constructor*/(
+class StreamActor(
     private val streamInteractor: StreamInteractor,
 ) :
     ActorCompat<Command, StreamEvent.Internal> {
@@ -42,7 +42,10 @@ class StreamActor /*@Inject constructor*/(
         }
         is Command.ObserveSearchQuery -> {
             streamInteractor.observeSearchQuery()
-                .mapEvents(StreamEvent.Internal::SearchQueryChange, StreamEvent.Internal::UpdateDataError)
+                .mapEvents(
+                    StreamEvent.Internal::SearchQueryChange,
+                    StreamEvent.Internal::UpdateDataError
+                )
         }
     }
 }

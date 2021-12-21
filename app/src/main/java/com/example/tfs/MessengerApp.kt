@@ -17,7 +17,6 @@ class MessengerApp : Application() {
             .context(this)
             .ownerId(getOwner())
             .build()
-
     }
 
     private fun getOwner(): Int {
@@ -30,8 +29,6 @@ class MessengerApp : Application() {
         }
     }
 }
-
-
 
 val Context.appComponent: AppComponent
     get() = when (this) {

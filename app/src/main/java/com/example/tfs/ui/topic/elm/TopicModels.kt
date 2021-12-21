@@ -10,6 +10,7 @@ data class TopicState(
     val isLoading: Boolean = false,
     val isPageUploading: Boolean = false,
     val isEmptyData: Boolean = false,
+    val isEditMode: Boolean = false,
     val messageDraft: String = "",
     val downAnchor: Int = 0,
     val upAnchor: Int = 0,
@@ -34,7 +35,7 @@ sealed class TopicEvent {
 
         data class NewReactionAdding(val postId: Int) : Ui()
 
-        data class NewReactionPicked(
+        data class NewReactionPick(
             val postId: Int,
             val emojiName: String,
             val emojiCode: String
@@ -46,11 +47,13 @@ sealed class TopicEvent {
 
         data class PageUploading(val isDownScroll: Boolean) : Ui()
 
-        data class ChangeTopicForPost(val postId: Int) : Ui()
-        data class PostEditing(val postId: Int) : Ui()
-        data class PostCopying(val postId: Int) : Ui()
-        data class PostDeleting(val postId: Int) : Ui()
-        data class PostMoving(val newTopicName: String) : Ui()
+        data class ChangeTopicForPostPick(val postId: Int) : Ui()
+        data class PostEditPick(val postId: Int) : Ui()
+        data class PostEditComplete(val newContent: String) : Ui()
+        object PostEditCancel : Ui()
+        data class PostCopyPick(val postId: Int) : Ui()
+        data class PostDeletePick(val postId: Int) : Ui()
+        data class NewTopicForPostPick(val newTopicName: String) : Ui()
     }
 
     sealed class Internal : TopicEvent() {
@@ -81,7 +84,7 @@ sealed class TopicEvent {
 
         data class GetPostError(val error: Throwable) : Internal()
 
-        object GetPostComplition : Internal()
+        object PostNotExist : Internal()
 
         data class GetTopicListComplete(val topicList: List<String>) : Internal()
 
@@ -113,7 +116,7 @@ sealed class TopicEffect {
 
     data class PostEdit(val post: LocalPost) : TopicEffect()
 
-    data class ChangeTopic(val topicList: List<String>) : TopicEffect()
+    data class TopicChange(val topicList: List<String>) : TopicEffect()
 }
 
 sealed class Command {
@@ -125,22 +128,36 @@ sealed class Command {
     data class UpdatePostReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
         Command()
 
-    data class SendPost(val streamName: String, val topicName: String, val message: String, val downAnchor: Int) :
+    data class SendNewPost(
+        val streamName: String,
+        val topicName: String,
+        val message: String,
+        val downAnchor: Int
+    ) :
+        Command()
+
+    data class SendEditPost(
+        val newContent: String,
+        val postId: Int,
+        val upAnchor: Int,
+        val streamName: String,
+        val topicName: String
+    ) :
         Command()
 
     data class DeletePost(val postId: Int) :
         Command()
 
-    data class CopyPost(val postId: Int) :
+    data class GetPostForCopy(val postId: Int) :
         Command()
 
-    data class EditPost(val postId: Int) :
+    data class GetPostForEdit(val postId: Int) :
         Command()
 
     data class GetTopicList(val streamId: Int) :
         Command()
 
-    data class MovePost(val streamName: String, val topicName: String, val postId: Int) :
+    data class ChangeTopicForPost(val streamName: String, val topicName: String, val postId: Int) :
         Command()
 
     data class FetchNextPage(val streamName: String, val topicName: String, val downAnchor: Int) :

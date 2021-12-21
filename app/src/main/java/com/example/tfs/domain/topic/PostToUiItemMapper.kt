@@ -1,7 +1,9 @@
 package com.example.tfs.domain.topic
 
 import android.graphics.Color
-import android.text.*
+import android.text.Layout
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.AlignmentSpan
 import android.text.style.ForegroundColorSpan
@@ -234,4 +236,3 @@ private const val USERNAME_TEXT_SIZE_SP = 14
 private const val MESSAGE_TEXT_SIZE_SP = 16
 private const val TIMESTAMP_TEXT_SIZE_SP = 12
 private const val USER_TEXT_COLOR = "#2A9D8F"
-private const val OWNER_TIMESTAMP_COLOR = "#2A9D8F"

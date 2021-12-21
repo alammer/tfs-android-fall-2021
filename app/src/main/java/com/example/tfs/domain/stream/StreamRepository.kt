@@ -36,15 +36,15 @@ class StreamRepositoryImpl @Inject constructor(
     override fun getLocalUnsubscribedStreamList(
         query: String,
     ): Single<List<LocalStream>> = localDao.getUnsubscribedStreams()
-            .subscribeOn(Schedulers.io())
-            .map { streams -> streams.filter { it.streamName.contains(query) } }
+        .subscribeOn(Schedulers.io())
+        .map { streams -> streams.filter { it.streamName.contains(query) } }
 
 
     override fun getLocalSubscribedStreamList(
         query: String,
     ): Single<List<LocalStream>> = localDao.getSubscribedStreams()
-            .subscribeOn(Schedulers.io())
-            .map { streams -> streams.filter { it.streamName.contains(query) } }
+        .subscribeOn(Schedulers.io())
+        .map { streams -> streams.filter { it.streamName.contains(query) } }
 
     override fun searchInLocalStreamList(
         query: String,
