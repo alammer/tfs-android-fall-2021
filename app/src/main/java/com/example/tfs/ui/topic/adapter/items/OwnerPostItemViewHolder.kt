@@ -19,6 +19,14 @@ class OwnerPostItemViewHolder(
     private val postMessage: TextView = ownerPostView.findViewById(R.id.tvPostMessage)
     private val emojiGroup: EmojisLayout = ownerPostView.findViewById(R.id.lEmojis)
 
+    init {
+        ownerPostView.setOnLongClickListener {
+            onPostTap(item.id, true)
+            return@setOnLongClickListener true
+        }
+
+    }
+
     override fun onBind(item: DomainOwnerPost) {
         super.onBind(item)
 
@@ -26,16 +34,7 @@ class OwnerPostItemViewHolder(
 
         postMessage.setText(item.content, TextView.BufferType.SPANNABLE)
 
-        ownerPostView.setOnLongClickListener {
-            onPostTap(item.id, true)
-            return@setOnLongClickListener true
-        }
-
         createPostReaction(item.reaction)
-    }
-
-    override fun onBind(item: DomainOwnerPost, payloads: List<Any>) {
-        super.onBind(item, payloads)
     }
 
     private fun createPostReaction(reaction: List<UiItemReaction>) {

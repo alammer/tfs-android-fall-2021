@@ -49,6 +49,11 @@ class UserPostItem(
             oldItem.id == newItem.id
 
         override fun areContentsTheSame(oldItem: DomainUserPost, newItem: DomainUserPost) =
-            oldItem.message == newItem.message
+            oldItem.message == newItem.message && oldItem.reaction == newItem.reaction
+
+        override fun getChangePayload(oldItem: DomainUserPost, newItem: DomainUserPost): Any? {
+            if (oldItem.reaction != newItem.reaction) return newItem.reaction
+            return super.getChangePayload(oldItem, newItem)
+        }
     }
 }

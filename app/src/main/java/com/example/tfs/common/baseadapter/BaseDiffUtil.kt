@@ -7,34 +7,31 @@ internal class BaseDiffUtil(
 ) : DiffUtil.ItemCallback<AdapterItem>() {
 
     override fun areItemsTheSame(
-        oldStreamListItem: AdapterItem,
-        newStreamListItem: AdapterItem
+        oldItem: AdapterItem,
+        newItem: AdapterItem
     ): Boolean {
-        if (oldStreamListItem::class != newStreamListItem::class) return false
+        if (oldItem::class != newItem::class) return false
 
-        return getItemCallback(oldStreamListItem).areItemsTheSame(
-            oldStreamListItem,
-            newStreamListItem
+        return getItemCallback(oldItem).areItemsTheSame(
+            oldItem,
+            newItem
         )
     }
 
     override fun areContentsTheSame(
-        oldStreamListItem: AdapterItem,
-        newStreamListItem: AdapterItem
+        oldItem: AdapterItem,
+        newItem: AdapterItem
     ): Boolean {
-        if (oldStreamListItem::class != newStreamListItem::class) return false
+        if (oldItem::class != newItem::class) return false
 
-        return getItemCallback(oldStreamListItem).areContentsTheSame(
-            oldStreamListItem,
-            newStreamListItem
-        )
+        return getItemCallback(oldItem).areContentsTheSame(oldItem, newItem)
     }
 
-/*    override fun getChangePayload(oldStreamListItem: AdapterItem, newStreamListItem: AdapterItem): Any? {
-        if (oldStreamListItem::class != newStreamListItem::class) return false
+    override fun getChangePayload(oldItem: AdapterItem, newItem: AdapterItem): Any? {
+        if (oldItem::class != newItem::class) return false
 
-        return getItemCallback(oldStreamListItem).getChangePayload(oldStreamListItem, newStreamListItem)
-    }*/
+        return getItemCallback(oldItem).getChangePayload(oldItem, newItem)
+    }
 
     @Suppress("UNCHECKED_CAST")
     private fun getItemCallback(

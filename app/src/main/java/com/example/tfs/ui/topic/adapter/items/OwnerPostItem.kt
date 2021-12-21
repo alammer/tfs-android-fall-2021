@@ -41,6 +41,6 @@ class OwnerPostItem(
             oldItem.id == newItem.id
 
         override fun areContentsTheSame(oldItem: DomainOwnerPost, newItem: DomainOwnerPost) =
-            oldItem == newItem
+            oldItem.message == newItem.message
     }
 }

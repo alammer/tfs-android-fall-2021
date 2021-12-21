@@ -1,6 +1,7 @@
 package com.example.tfs.ui.topic.adapter.items
 
 import android.text.Spannable
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -25,6 +26,13 @@ class UserPostItemViewHolder(
     private val postMessage = postView.findViewById<TextView>(R.id.tvPostMessage)
     private val emojiGroup = postView.findViewById<EmojisLayout>(R.id.lEmojis)
 
+    init {
+        postView.setOnLongClickListener {
+            onPostTap(item.id, false)
+            return@setOnLongClickListener true
+        }
+    }
+
     override fun onBind(item: DomainUserPost) {
         super.onBind(item)
 
@@ -37,13 +45,13 @@ class UserPostItemViewHolder(
                 loadAvatar(it)
             } ?: drawUserInitials(item.userName)
         }
-
-        postView.setOnLongClickListener {
-            onPostTap(item.id, false)
-            return@setOnLongClickListener true
-        }
-
         createPostReaction(item.reaction)
+    }
+
+    override fun onBind(item: DomainUserPost, payloads: List<Any>) {
+        super.onBind(item, payloads)
+        val reaction = payloads.last() as List<UiItemReaction>
+        createPostReaction(reaction)
     }
 
     private fun createPostReaction(reaction: List<UiItemReaction>) {
