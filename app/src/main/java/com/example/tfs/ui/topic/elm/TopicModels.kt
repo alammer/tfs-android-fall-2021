@@ -43,7 +43,7 @@ sealed class TopicEvent {
 
         data class PostDraftChanging(val draft: String) : Ui()
 
-        object PostSending : Ui()
+        object NewPostSending : Ui()
 
         data class PageUploading(val isDownScroll: Boolean) : Ui()
 
@@ -74,7 +74,7 @@ sealed class TopicEvent {
 
         data class TopicUpdatingError(val error: Throwable) : Internal()
 
-        data class PostSendingComplete(val uiTopic: UiTopicListObject) : Internal()
+        data class NewPostAccept(val uiTopic: UiTopicListObject) : Internal()
 
         data class PostSendingError(val error: Throwable) : Internal()
 
@@ -106,6 +106,8 @@ sealed class TopicEffect {
 
     object PostNotFound : TopicEffect()
 
+    data class ShowNewPost(val topicSize: Int) : TopicEffect()
+
     data class ShowPostDialog(val postId: Int, val isOwner: Boolean) : TopicEffect()
 
     data class ShowReactionDialog(val postId: Int) : TopicEffect()
@@ -132,7 +134,6 @@ sealed class Command {
         val streamName: String,
         val topicName: String,
         val message: String,
-        val downAnchor: Int
     ) :
         Command()
 

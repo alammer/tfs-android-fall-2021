@@ -100,7 +100,7 @@ class TopicReducer :
             effects { +TopicEffect.UpdateTopicError(event.error) }
         }
 
-        is TopicEvent.Internal.PostSendingComplete -> {
+        is TopicEvent.Internal.NewPostAccept -> {
             state {
                 copy(
                     topicList = event.uiTopic.itemList,
@@ -109,6 +109,7 @@ class TopicReducer :
                     isLoading = false
                 )
             }
+            effects { +TopicEffect.ShowNewPost(event.uiTopic.itemList.size) }
         }
 
         is TopicEvent.Internal.PostSendingError -> {
@@ -201,14 +202,13 @@ class TopicReducer :
             effects { +TopicEffect.MessageDraftChange(event.draft) }
         }
 
-        is TopicEvent.Ui.PostSending -> {
+        is TopicEvent.Ui.NewPostSending -> {
             state { copy(error = null, isLoading = true) }
             commands {
                 +Command.SendNewPost(
                     state.streamName,
                     state.topicName,
                     state.messageDraft,
-                    state.downAnchor
                 )
             }
             state { copy(messageDraft = "") }

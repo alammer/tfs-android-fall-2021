@@ -38,7 +38,6 @@ interface PostRepository {
         streamName: String,
         topicName: String,
         content: String,
-        downAnchor: Int
     ): Single<List<PostWithReaction>>
 
     fun sendEditPost(
@@ -118,7 +117,6 @@ class PostRepositoryImpl @Inject constructor(
         streamName: String,
         topicName: String,
         content: String,
-        downAnchor: Int
     ): Single<List<PostWithReaction>> =
         remoteApi.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())

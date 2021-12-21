@@ -47,10 +47,9 @@ class TopicActor(
                 command.streamName,
                 command.topicName,
                 command.message,
-                command.downAnchor
             )
                 .mapEvents(
-                    TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::NewPostAccept,
                     TopicEvent.Internal::TopicUpdatingError
                 )
         }

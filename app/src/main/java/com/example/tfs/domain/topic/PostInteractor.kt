@@ -34,9 +34,8 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
         stream: String,
         topic: String,
         message: String,
-        downAnchor: Int
     ): Single<UiTopicListObject> {
-        return postRepository.sendNewPost(stream, topic, message, downAnchor)
+        return postRepository.sendNewPost(stream, topic, message)
             .map(topicToUiItemMapper)
     }
 

@@ -13,10 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
-import com.example.tfs.common.animation.AddItemAnimator
-import com.example.tfs.common.animation.custom.SimpleCommonAnimator
-import com.example.tfs.common.animation.custom.SlideInLeftCommonAnimator
-import com.example.tfs.common.animation.custom.SlideInTopCommonAnimator
 import com.example.tfs.common.baseitems.BaseLoader
 import com.example.tfs.common.baseitems.LoaderItem
 import com.example.tfs.common.baseitems.TextShimmerItem
@@ -160,6 +156,9 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
                     clearFocus()
                 }
             }
+            is TopicEffect.ShowNewPost -> {
+                scrollToLast(effect.topicSize)
+            }
             is TopicEffect.PostCopy -> {
                 copyText(effect.message)
             }
@@ -181,13 +180,6 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
             is TopicEffect.ShowReactionDialog -> {
                 EmojiDialogFragment.newInstance(effect.postId).show(childFragmentManager, tag)
             }
-        }
-    }
-
-    private fun editPost(content: String) {
-        with(viewBinding) {
-            tvEditPost.text = content
-            etPostBody.setText(content)
         }
     }
 
@@ -273,7 +265,7 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
             btnSendPost.setOnClickListener {
                 if (etMessage.text.isNotBlank()) {
-                    store.accept(TopicEvent.Ui.PostSending)
+                    store.accept(TopicEvent.Ui.NewPostSending)
                 }
                 requireActivity().currentFocus?.apply { hideSoftKeyboard() }
             }
@@ -290,6 +282,17 @@ class TopicFragment : ElmFragment<TopicEvent, TopicEffect, TopicState>(R.layout.
 
     private fun tapOnPost(postId: Int, isOwner: Boolean) {
         store.accept(TopicEvent.Ui.PostTapped(postId, isOwner))
+    }
+
+    private fun scrollToLast(lastPositon: Int) {
+        viewBinding.rvTopic.smoothScrollToPosition(lastPositon - 1) //TODO("AdapterDataObserver")
+    }
+
+    private fun editPost(content: String) {
+        with(viewBinding) {
+            tvEditPost.text = content
+            etPostBody.setText(content)
+        }
     }
 
     private fun addReaction(postId: Int) {

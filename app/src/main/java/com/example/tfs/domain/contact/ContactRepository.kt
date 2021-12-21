@@ -22,7 +22,6 @@ interface ContactRepository {
     fun getOwner(): Single<LocalUser>
 }
 
-
 class ContactRepositoryImpl @Inject constructor(
     private val remoteApi: ApiService,
     private val localDao: ContactDataDao,
