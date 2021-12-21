@@ -13,6 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.animation.AddItemAnimator
+import com.example.tfs.common.animation.custom.SimpleCommonAnimator
+import com.example.tfs.common.animation.custom.SlideInLeftCommonAnimator
+import com.example.tfs.common.animation.custom.SlideInTopCommonAnimator
 import com.example.tfs.common.baseitems.BaseLoader
 import com.example.tfs.common.baseitems.LoaderItem
 import com.example.tfs.common.baseitems.TextShimmerItem

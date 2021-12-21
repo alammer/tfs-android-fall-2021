@@ -10,6 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfs.R
 import com.example.tfs.appComponent
+import com.example.tfs.common.animation.AddItemAnimator
+import com.example.tfs.common.animation.custom.SimpleCommonAnimator
+import com.example.tfs.common.animation.custom.SlideInLeftCommonAnimator
+import com.example.tfs.common.animation.custom.SlideInTopCommonAnimator
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.stream.DomainStream
@@ -143,6 +147,12 @@ class StreamFragment :
                     TOPIC_ITEM_OUTER_DIVIDER.toPx
                 )
             )
+
+            itemAnimator = AddItemAnimator(SimpleCommonAnimator()).also { animator ->
+                animator.addViewTypeAnimation(R.layout.item_related_topic, SlideInLeftCommonAnimator())
+                animator.addDuration = 300L
+                animator.removeDuration = 300L
+            }
         }
 
         viewBinding.swipeLayout.setOnRefreshListener {
