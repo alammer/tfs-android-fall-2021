@@ -19,9 +19,6 @@ interface TopicDataDao {
     @Query("DELETE FROM posts")
     fun deleteTopic(): Completable
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPost(localPost: LocalPost): Completable
-
     @Query("SELECT count(post_id) FROM posts WHERE post_id > 0")
     fun getTopicSize(): Single<Int>
 
@@ -33,10 +30,17 @@ interface TopicDataDao {
 
     @Transaction
     @Query("SELECT * FROM posts WHERE stream_name = :streamName AND topic_name = :topicName ORDER BY post_id ASC")
-    fun getPostWithReaction(streamName: String, topicName: String): Single<List<PostWithReaction>>
+    fun fetchTopicFromLocal(streamName: String, topicName: String): Single<List<PostWithReaction>>
+
+    @Transaction
+    @Query("SELECT * FROM posts ORDER BY post_id ASC")
+    fun getCurrentLocalTopic(): Single<List<PostWithReaction>>
 
     @Query("SELECT * FROM posts WHERE post_id = :postId")
     fun getPost(postId: Int): Maybe<LocalPost>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPost(localPost: LocalPost): Completable
 
     @Query("DELETE FROM posts WHERE post_id = :postId")
     fun deletePost(postId: Int): Completable
@@ -56,9 +60,6 @@ interface TopicDataDao {
     @Query("DELETE FROM reactions WHERE owner_post_id = :postId AND emoji_code = :code AND user_id = :ownerId ")
     fun deleteReaction(postId: Int, code: String, ownerId: Int): Completable
 
-    @Query("DELETE FROM reactions WHERE owner_post_id = :postId")
-    fun deleteReactions(postId: Int): Completable
-
     @Query("SELECT topics FROM streams WHERE stream_id = :streamId")
-    fun getTopicList(streamId: Int): Single<List<String>>
+    fun getAvailableTopics(streamId: Int): Single<List<String>>
 }

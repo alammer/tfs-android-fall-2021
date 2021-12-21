@@ -20,7 +20,7 @@ interface PostRepository {
 
     fun fetchLocalTopic(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
-    fun getRemoteTopic(streamName: String, topicName: String): Single<List<PostWithReaction>>
+    fun fetchRemoteTopic(streamName: String, topicName: String): Single<List<PostWithReaction>>
 
     fun fetchNextPage(
         streamName: String,
@@ -38,17 +38,14 @@ interface PostRepository {
         streamName: String,
         topicName: String,
         content: String,
+        downAnchor: Int
     ): Single<List<PostWithReaction>>
 
     fun deleteMessage(
-        streamName: String,
-        topicName: String,
         postId: Int,
     ): Single<List<PostWithReaction>>
 
     fun updateReaction(
-        streamName: String,
-        topicName: String,
         postId: Int,
         emojiName: String,
         emojiCode: String,
@@ -57,6 +54,8 @@ interface PostRepository {
     fun getPost(postId: Int): Maybe<LocalPost>
 
     fun getTopicList(streamId: Int): Single<List<String>>
+
+    fun movePostToTopic(streamName: String, topicName: String, postId: Int): Single<List<PostWithReaction>>
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -70,19 +69,19 @@ class PostRepositoryImpl @Inject constructor(
     override fun fetchLocalTopic(
         streamName: String,
         topicName: String,
-    ): Single<List<PostWithReaction>> = getLocalTopic(streamName, topicName)
+    ): Single<List<PostWithReaction>> = localDao.fetchTopicFromLocal(streamName, topicName)
         .subscribeOn(Schedulers.io())
 
-    override fun getRemoteTopic(
+    override fun fetchRemoteTopic(
         streamName: String,
         topicName: String
     ): Single<List<PostWithReaction>> {
         return getRemoteTopic(recentPageQuery(streamName, topicName))
             .subscribeOn(Schedulers.io())
             .flatMap { remotePostList ->
-                localDao.deleteDraftPosts()
-                    .andThen(insertTopicToLocal(remotePostList))
-                    .andThen(Single.just(remotePostList))
+                localDao.deleteTopic()
+                    .andThen(cacheRemoteTopic(remotePostList))
+                    .andThen(localDao.getCurrentLocalTopic())
             }
     }
 
@@ -106,27 +105,26 @@ class PostRepositoryImpl @Inject constructor(
         streamName: String,
         topicName: String,
         content: String,
+        downAnchor: Int
     ): Single<List<PostWithReaction>> =
         remoteApi.sendMessage(streamName, topicName, content)
             .subscribeOn(Schedulers.io())
             .andThen(
                 localDao.insertPost(
                     LocalPost(
-                        postId = -(System.currentTimeMillis() * 1000).toInt() % 10000,
+                        postId = downAnchor + 1,
                         topicName = topicName,
                         streamName = streamName,
                         isSelf = true,
                         senderId = ownerId,
-                        timeStamp = System.currentTimeMillis() * 1000L,
+                        timeStamp = System.currentTimeMillis() / 1000L,
                         content = content
                     )
                 )
             )
-            .andThen(getLocalTopic(streamName, topicName))
+            .andThen(localDao.getCurrentLocalTopic())
 
     override fun deleteMessage(
-        streamName: String,
-        topicName: String,
         postId: Int
     ): Single<List<PostWithReaction>> =
         remoteApi.deleteMessage(postId)
@@ -134,11 +132,9 @@ class PostRepositoryImpl @Inject constructor(
             .andThen(
                 localDao.deletePost(postId)
             )
-            .andThen(getLocalTopic(streamName, topicName))
+            .andThen(localDao.getCurrentLocalTopic())
 
     override fun updateReaction(
-        streamName: String,
-        topicName: String,
         postId: Int,
         emojiName: String,
         emojiCode: String,
@@ -148,9 +144,9 @@ class PostRepositoryImpl @Inject constructor(
             .defaultIfEmpty(emptyReaction)
             .flatMapSingle { reaction ->
                 if (reaction.userId == -1) {
-                    addReaction(streamName, topicName, postId, emojiName, emojiCode)
+                    addReaction(postId, emojiName, emojiCode)
                 } else {
-                    removeReaction(streamName, topicName, postId, emojiName, emojiCode)
+                    removeReaction(postId, emojiName, emojiCode)
                 }
             }
     }
@@ -167,17 +163,25 @@ class PostRepositoryImpl @Inject constructor(
             .map { response -> response.remoteTopicResponseList.map { it.name } }
     }
 
-    private fun getLocalTopic(
+    override fun movePostToTopic(
         streamName: String,
-        topicName: String
-    ): Single<List<PostWithReaction>> =
-        localDao.getPostWithReaction(streamName, topicName)
+        topicName: String,
+        postId: Int
+    ): Single<List<PostWithReaction>> {
+        return localDao.getPost(postId)
+            .subscribeOn(Schedulers.io())
+            .flatMapSingle { post ->
+                remoteApi.sendMessage(streamName, topicName, post.content)
+                    .andThen(localDao.deletePost(postId))
+                    .andThen(localDao.getCurrentLocalTopic())
+            }
+    }
 
     private fun getRemoteTopic(query: HashMap<String, Any>) =
         remoteApi.getRemotePostList(query)
             .map { response -> response.remotePostList.map { it.toLocalPostWithReaction(ownerId) } }
 
-    private fun insertTopicToLocal(
+    private fun cacheRemoteTopic(
         remotePostList: List<PostWithReaction>,
     ): Completable =
         localDao.deleteTopic()
@@ -205,7 +209,7 @@ class PostRepositoryImpl @Inject constructor(
             { newPage, currentSize -> Pair(newPage, currentSize) })
             .flatMap { (page, size) ->
                 addPage(page, size, isNext)
-                    .andThen(localDao.getPostWithReaction(streamName, topicName))
+                    .andThen(localDao.getCurrentLocalTopic())
             }
     }
 
@@ -228,8 +232,6 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     private fun addReaction(
-        streamName: String,
-        topicName: String,
         postId: Int,
         emojiName: String,
         emojiCode: String,
@@ -247,12 +249,9 @@ class PostRepositoryImpl @Inject constructor(
                     )
                 )
             )
-            .andThen(getLocalTopic(streamName, topicName))
-
+            .andThen(localDao.getCurrentLocalTopic())
 
     private fun removeReaction(
-        streamName: String,
-        topicName: String,
         postId: Int,
         emojiName: String,
         emojiCode: String,
@@ -260,7 +259,7 @@ class PostRepositoryImpl @Inject constructor(
         remoteApi.removeReaction(postId, emojiName, emojiCode)
             .retry(1)
             .andThen(localDao.deleteReaction(postId, emojiCode, ownerId))
-            .andThen(getLocalTopic(streamName, topicName))
+            .andThen(localDao.getCurrentLocalTopic())
 
     private fun recentPageQuery(streamName: String, topicName: String) =
         hashMapOf<String, Any>(

@@ -120,15 +120,15 @@ sealed class Command {
 
     data class FetchLocalTopic(val streamName: String, val topicName: String) : Command()
 
-    data class GetRemoteTopic(val streamName: String, val topicName: String) : Command()
+    data class FetchRemoteTopic(val streamName: String, val topicName: String) : Command()
 
-    data class UpdatePostReaction(val streamName: String, val topicName: String, val postId: Int, val emojiName: String, val emojiCode: String) :
+    data class UpdatePostReaction(val postId: Int, val emojiName: String, val emojiCode: String) :
         Command()
 
-    data class SendPost(val streamName: String, val topicName: String, val message: String) :
+    data class SendPost(val streamName: String, val topicName: String, val message: String, val downAnchor: Int) :
         Command()
 
-    data class DeletePost(val streamName: String, val topicName: String, val postId: Int) :
+    data class DeletePost(val postId: Int) :
         Command()
 
     data class CopyPost(val postId: Int) :

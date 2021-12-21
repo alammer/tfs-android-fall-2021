@@ -15,8 +15,8 @@ class TopicActor /*@Inject constructor*/(
                 .mapEvents(TopicEvent.Internal::LocalTopicLoadingComplete,
                     TopicEvent.Internal::LocalTopicLoadingError)
         }
-        is Command.GetRemoteTopic -> {
-            postInteractor.getRemoteTopic(command.streamName, command.topicName)
+        is Command.FetchRemoteTopic -> {
+            postInteractor.fetchRemoteTopic(command.streamName, command.topicName)
                 .mapEvents(TopicEvent.Internal::RemoteTopicLoadingComplete,
                     TopicEvent.Internal::RemoteTopicLoadingError)
         }
@@ -31,12 +31,12 @@ class TopicActor /*@Inject constructor*/(
                     TopicEvent.Internal::PageUploadingError)
         }
         is Command.SendPost -> {
-            postInteractor.sendPost(command.streamName, command.topicName, command.message)
+            postInteractor.sendPost(command.streamName, command.topicName, command.message, command.downAnchor)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
                     TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.DeletePost -> {
-            postInteractor.deletePost(command.streamName, command.topicName, command.postId)
+            postInteractor.deletePost(command.postId)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
                     TopicEvent.Internal::TopicUpdatingError)
         }
@@ -58,13 +58,12 @@ class TopicActor /*@Inject constructor*/(
                     TopicEvent.Internal::GetTopicListError)
         }
         is Command.MovePost -> {
-            postInteractor.getPost(command.postId)
-                .mapEvents(TopicEvent.Internal::GetPostForEditComplete,
-                    TopicEvent.Internal.GetPostComplition,
-                    TopicEvent.Internal::GetPostError)
+            postInteractor.movePost(command.streamName, command.topicName, command.postId)
+                .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
+                    TopicEvent.Internal::TopicUpdatingError)
         }
         is Command.UpdatePostReaction -> {
-            postInteractor.updatePost(command.streamName, command.topicName, command.postId, command.emojiName, command.emojiCode)
+            postInteractor.updatePost(command.postId, command.emojiName, command.emojiCode)
                 .mapEvents(TopicEvent.Internal::TopicUpdatingComplete,
                     TopicEvent.Internal::TopicUpdatingError)
         }

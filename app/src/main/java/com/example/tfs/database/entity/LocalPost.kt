@@ -5,7 +5,7 @@ import androidx.room.ForeignKey.CASCADE
 import org.jetbrains.annotations.NotNull
 
 
-@Entity(tableName = "posts") //TODO UNIQUE KEY for backend replace self-sending posts
+@Entity(tableName = "posts")
 data class LocalPost(
 
     @PrimaryKey

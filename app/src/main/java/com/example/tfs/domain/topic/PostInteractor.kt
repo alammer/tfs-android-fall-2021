@@ -16,8 +16,8 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
             .map(topicToUiItemMapper)
     }
 
-    fun getRemoteTopic(stream: String, topic: String): Single<UiTopicListObject> {
-        return postRepository.getRemoteTopic(stream, topic)
+    fun fetchRemoteTopic(stream: String, topic: String): Single<UiTopicListObject> {
+        return postRepository.fetchRemoteTopic(stream, topic)
             .map(topicToUiItemMapper)
     }
 
@@ -31,18 +31,18 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
             .map(topicToUiItemMapper)
     }
 
-    fun sendPost(stream: String, topic: String, message: String): Single<UiTopicListObject> {
-        return postRepository.sendMessage(stream, topic, message)
+    fun sendPost(stream: String, topic: String, message: String, downAnchor: Int): Single<UiTopicListObject> {
+        return postRepository.sendMessage(stream, topic, message, downAnchor)
             .map(topicToUiItemMapper)
     }
 
-    fun deletePost(stream: String, topic: String, postId: Int): Single<UiTopicListObject> {
-        return postRepository.deleteMessage(stream, topic, postId)
+    fun deletePost(postId: Int): Single<UiTopicListObject> {
+        return postRepository.deleteMessage(postId)
             .map(topicToUiItemMapper)
     }
 
-    fun updatePost(stream: String, topic: String, postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
-        return postRepository.updateReaction(stream, topic, postId, emojiName, emojiCode)
+    fun updatePost(postId: Int, emojiName: String, emojiCode: String): Single<UiTopicListObject> {
+        return postRepository.updateReaction(postId, emojiName, emojiCode)
             .map(topicToUiItemMapper)
     }
 
@@ -52,5 +52,10 @@ class PostInteractor @Inject constructor(private val postRepository: PostReposit
 
     fun getTopicList(streamId: Int): Single<List<String>> {
         return postRepository.getTopicList(streamId)
+    }
+
+    fun movePost(stream: String,topic: String, postId: Int): Single<UiTopicListObject> {
+        return postRepository.movePostToTopic(stream, topic, postId)
+            .map(topicToUiItemMapper)
     }
 }

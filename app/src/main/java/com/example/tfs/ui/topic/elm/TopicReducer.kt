@@ -21,7 +21,7 @@ class TopicReducer :
                 }
             }
             commands {
-                +Command.GetRemoteTopic(
+                +Command.FetchRemoteTopic(
                     initialState.streamName,
                     initialState.topicName
                 )
@@ -44,9 +44,6 @@ class TopicReducer :
                     copy(
                         isEmptyData = true,
                         isLoading = false,
-                        topicList = event.uiTopic.itemList,
-                        upAnchor = event.uiTopic.upAnchorId,
-                        downAnchor = event.uiTopic.downAnchorId
                     )
                 }
             }
@@ -78,13 +75,24 @@ class TopicReducer :
         }
 
         is TopicEvent.Internal.TopicUpdatingComplete -> {
-            state {
-                copy(
-                    topicList = event.uiTopic.itemList,
-                    upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId,
-                    isLoading = false
-                )
+            if (event.uiTopic.itemList.isNotEmpty()) {
+                state {
+                    copy(
+                        topicList = event.uiTopic.itemList,
+                        upAnchor = event.uiTopic.upAnchorId,
+                        downAnchor = event.uiTopic.downAnchorId,
+                        isLoading = false
+
+                    )
+                }
+            }
+            else {
+                state {
+                    copy(
+                        isEmptyData = true,
+                        isLoading = false,
+                    )
+                }
             }
         }
 
@@ -98,14 +106,15 @@ class TopicReducer :
                 copy(
                     topicList = event.uiTopic.itemList,
                     upAnchor = event.uiTopic.upAnchorId,
-                    downAnchor = event.uiTopic.downAnchorId
+                    downAnchor = event.uiTopic.downAnchorId,
+                    isLoading = false
                 )
             }
         }
 
         is TopicEvent.Internal.PostSendingError -> {
             state {
-                copy()
+                copy(isLoading = false)
             }
             effects { +TopicEffect.UpdateTopicError(event.error) }
         }
@@ -161,8 +170,6 @@ class TopicReducer :
             state { copy(error = null) }
             commands {
                 +Command.UpdatePostReaction(
-                    state.streamName,
-                    state.topicName,
                     event.postId,
                     event.emojiName,
                     event.emojiCode
@@ -182,8 +189,6 @@ class TopicReducer :
             state { copy(error = null) }
             commands {
                 +Command.UpdatePostReaction(
-                    state.streamName,
-                    state.topicName,
                     event.postId,
                     event.emojiName,
                     event.emojiCode
@@ -202,7 +207,8 @@ class TopicReducer :
                 +Command.SendPost(
                     state.streamName,
                     state.topicName,
-                    state.messageDraft
+                    state.messageDraft,
+                    state.downAnchor
                 )
             }
             state { copy(messageDraft = "") }
@@ -257,8 +263,6 @@ class TopicReducer :
             state { copy(error = null, isLoading = true) }
             commands {
                 +Command.DeletePost(
-                    state.streamName,
-                    state.topicName,
                     event.postId
                 )
             }
