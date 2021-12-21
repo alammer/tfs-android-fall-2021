@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, StreamContainerFragment())
-                .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
 
