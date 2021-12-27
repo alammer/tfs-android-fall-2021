@@ -13,7 +13,6 @@ import com.example.tfs.appComponent
 import com.example.tfs.common.animation.AddItemAnimator
 import com.example.tfs.common.animation.custom.SimpleCommonAnimator
 import com.example.tfs.common.animation.custom.SlideInLeftCommonAnimator
-import com.example.tfs.common.animation.custom.SlideInTopCommonAnimator
 import com.example.tfs.databinding.FragmentStreamBinding
 import com.example.tfs.di.DaggerStreamComponent
 import com.example.tfs.domain.stream.DomainStream
