@@ -65,7 +65,7 @@ class ItemTopicDecorator(
         return currentPosition < lastIndex && getItemViewType(currentPosition + 1) == viewType
     }
 
-    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         parent.adapter?.let { adapter ->
 
             parent.children
@@ -84,7 +84,7 @@ class ItemTopicDecorator(
     private fun drawBackground(view: View, canvas: Canvas, position: Int) {
         val backPaint = Paint().apply {
             isAntiAlias = true
-            style = Paint.Style.STROKE
+            style = Paint.Style.FILL
             color = ContextCompat.getColor(context, colors[position % 3])
         }
         val left = view.left - startPadding
