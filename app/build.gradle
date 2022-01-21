@@ -7,10 +7,10 @@ plugins {
 
 android {
     compileSdk 31
-    //Properties properties = new Properties()
-    //properties.load(project.rootProject.file("local.properties").newDataInputStream())
-    //def zulipApiKey = properties.getProperty("zulip_api_key", "")
-    //def email = properties.getProperty("email", "")
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+    def zulipApiKey = properties.getProperty("zulip_api_key", "")
+    def email = properties.getProperty("email", "")
 
 
     defaultConfig {
@@ -20,11 +20,8 @@ android {
         versionCode 1
         versionName "1.0"
 
-        //buildConfigField 'String', 'ZULIP_API_KEY', zulipApiKey
-        //buildConfigField 'String', 'ZULIP_USER', email
-
-        buildConfigField "String","ZULIP_API_KEY", '"m0Qcm3CdEc36SZgc8693s3a8gBbkIxcM"'
-        buildConfigField "String","ZULIP_USER", '"mail1478@mail.ru"'
+        buildConfigField 'String', 'ZULIP_API_KEY', zulipApiKey
+        buildConfigField 'String', 'ZULIP_USER', email
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

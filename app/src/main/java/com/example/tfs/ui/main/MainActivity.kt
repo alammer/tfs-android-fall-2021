@@ -1,6 +1,7 @@
 package com.example.tfs.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -10,6 +11,8 @@ import com.example.tfs.ui.profile.ProfileFragment
 import com.example.tfs.ui.stream.streamcontainer.StreamContainerFragment
 import com.example.tfs.ui.topic.TopicFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.PublishSubject
 
 class MainActivity : AppCompatActivity() {
 
