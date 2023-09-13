@@ -157,8 +157,8 @@ class StreamRepositoryImpl @Inject constructor(
         Observable.just(stream).zipWith(
             getRemoteRelatedTopics(stream.id)
                 .retry(1)
-                .onErrorReturn { emptyList() },
-            { expandedStream, topicList -> Pair(expandedStream, topicList) })
+                .onErrorReturn { emptyList() }
+        ) { expandedStream, topicList -> Pair(expandedStream, topicList) }
             .map { (stream, topicList) ->
                 stream.toLocalStream(
                     isSubscribed = isSubscribed,
